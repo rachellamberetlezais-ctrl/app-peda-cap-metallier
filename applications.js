@@ -10,7 +10,7 @@
  *   lien: './applications/A1S3M1/index.html'
  * },
  */
-window.APPLICATIONS = [const applications = [
+window.APPLICATIONS = [
   {
     code: 'A1S2M1',
     annee: 1,
@@ -31,4 +31,4 @@ window.APPLICATIONS = [const applications = [
     description: 'Utiliser les puissances de 10, la notation scientifique et les ordres de grandeur dans des situations de mesure et de contrôle en métallerie.',
     lien: './applications/A1S2M2/index.html'
   }
-];];
+];
