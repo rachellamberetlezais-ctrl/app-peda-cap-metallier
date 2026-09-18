@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMA Formation - CAP Métallier : Automatismes & Puissances de 10</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Configuration et chargement de MathJax v3 -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
+  <style>
+    :root {
+      --cma-bordeaux: #A50F23;
+      --cma-corail: #EE3C3D;
+      --cma-bg: #F8FAFC;
+      --cma-text: #1E293B;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--cma-bg);
+      color: var(--cma-text);
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* En-tête officiel CMA Formation et ruban inférieur */
+    .app-header {
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 20px;
+      background: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .cma-wave-border {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 14px;
+      margin: 0;
+      border: 0;
+      background-image: url("ruban_vague.png");
+      background-repeat: repeat-x;
+      background-size: 102.941176px 102.941176px;
+      background-position: left -46.941176px;
+    }
+
+    .app-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .icon-bullet {
+      height: 18px;
+      width: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
+
+    /* Commandes tactiles ergonomiques Mobile-First */
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .math-input {
+      font-size: 16px;
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      border: 2px solid #CBD5E1;
+      border-radius: 0.5rem;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #FFFFFF;
+    }
+
+    .math-input:focus {
+      outline: none;
+      border-color: var(--cma-bordeaux);
+      box-shadow: 0 0 0 3px rgba(165, 15, 35, 0.15);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Styles d'impression pour l'attestation pédagogique */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-certificate-zone, #print-certificate-zone * {
+        visibility: visible;
+      }
+      #print-certificate-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        background: white;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+
+  <!-- ==================== HEADER OFFICIEL CMA ==================== -->
+  <header class="app-header">
+    <div class="max-w-4xl mx-auto px-4 pt-3 pb-1 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="Logo CMA Formation" class="app-logo" onerror="this.src='https://placehold.co/140x48/A50F23/ffffff?text=CMA+Formation'">
+        <div>
+          <span class="block text-[11px] uppercase tracking-wider text-slate-500 font-bold">CMA Formation Sainte-Clotilde</span>
+          <h1 class="text-base sm:text-lg font-bold text-[#A50F23] leading-tight">CAP Métallier - Mathématiques</h1>
+        </div>
+      </div>
+      <div class="text-right text-xs bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-200">
+        <p class="font-bold text-slate-800">Séance A1 S2 M2</p>
+        <p class="text-slate-600 text-[11px]">Automatismes : Puissances de 10 & Métrologie</p>
+      </div>
+    </div>
+    <div class="cma-wave-border"></div>
+  </header>
+
+  <!-- Barre de progression générale compacte (8 px) -->
+  <div class="w-full bg-slate-200 h-2">
+    <div id="general-progress-bar" class="bg-[#EE3C3D] h-2 transition-all duration-500" style="width: 0%;"></div>
+  </div>
+
+  <!-- ==================== MAIN CONTAINER ==================== -->
+  <main class="max-w-4xl mx-auto w-full px-3 sm:px-6 py-4 flex-grow">
+
+    <!-- Navigation horizontale des 4 étapes -->
+    <nav class="flex space-x-2 overflow-x-auto pb-2 mb-4 no-scrollbar border-b border-slate-200" aria-label="Étapes de la séance">
+      <button onclick="switchStep(1)" id="nav-btn-1" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-[#A50F23] text-white shadow-sm flex items-center">
+        <span>Étape 1 : Découverte</span>
+      </button>
+      <button onclick="switchStep(2)" id="nav-btn-2" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 2 : Cours & Simulateurs</span>
+      </button>
+      <button onclick="switchStep(3)" id="nav-btn-3" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 3 : Entraînement</span>
+      </button>
+      <button onclick="switchStep(4)" id="nav-btn-4" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 4 : Bilan & Attestation</span>
+      </button>
+    </nav>
+
+    <!-- Suivi Socle CAP et Points Bonus -->
+    <div class="bg-white rounded-xl p-3 sm:p-4 mb-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+        <span class="text-xs sm:text-sm font-semibold text-slate-700">Progression Socle CAP (Niv. 1) : <span id="socle-percent" class="text-[#A50F23] font-bold">0%</span></span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span class="text-xs sm:text-sm font-semibold text-slate-700">Bonus Dépassement : <span id="bonus-points" class="text-amber-600 font-bold">0 pts</span></span>
+        <span id="badge-pill" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-500 font-medium rounded-full border border-slate-200">En cours</span>
+      </div>
+    </div>
+
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 1 : DÉCOUVERTE ==================== -->
+    <!-- ============================================================== -->
+    <section id="step-1" class="space-y-6">
+
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Contexte Professionnel : Découpe & Contrôle Dimensionnel à Sainte-Clotilde
+        </h2>
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 sm:p-4 rounded-r-lg text-xs sm:text-sm text-slate-800 space-y-2">
+          <p>
+            Dans l'atelier <strong>« Métal Réunion Océan Indien »</strong> situé dans la Z.I. du Chaudron à Sainte-Clotilde, les métalliers fabriquent des bardages métalliques et des platines d'ancrage pour une halle logistique au Port.
+          </p>
+          <p>
+            Sur les chantiers réunionnais soumis aux embruns salins et aux fortes dépressions cycloniques, le respect rigoureux des épaisseurs de tôles (galvanisées ou inox) et des tolérances de débitage à la cisaille guillotine ou au banc plasma est vital. Une erreur d'ordre de grandeur de $0,1\text{ mm}$ ou $10^{-3}\text{ m}$ fragilise l'assemblage mécano-soudé ou entraîne le rejet de pièces coûteuses.
+          </p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm sm:text-base">$6\,000\text{ mm}$</span>
+            <span class="text-slate-600">Poutrelle ($6\times 10^3\text{ mm}$)</span>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm sm:text-base">$0,75\text{ mm}$</span>
+            <span class="text-slate-600">Tôle ($7,5\times 10^{-1}\text{ mm}$)</span>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm sm:text-base">$0,05\text{ mm}$</span>
+            <span class="text-slate-600">Clinquant ($5\times 10^{-2}\text{ mm}$)</span>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm sm:text-base">$\pm 0,02\text{ mm}$</span>
+            <span class="text-slate-600">Tolérance ($\pm 2\times 10^{-2}$)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 1 : Tableau de correspondance -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          1. Tableau de correspondance : Décimales, Fractions et Puissances de 10
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Complétez les exposants de puissances de 10 manquants pour chaque élément métrologique d'atelier :
+        </p>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-xs sm:text-sm text-left border-collapse min-w-[480px]">
+            <thead class="bg-slate-100 text-slate-700 font-semibold">
+              <tr>
+                <th class="p-2.5 border-b">Élément mesuré</th>
+                <th class="p-2.5 border-b text-center">Écriture décimale</th>
+                <th class="p-2.5 border-b text-center">Fraction</th>
+                <th class="p-2.5 border-b text-center">Puissance de 10</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr>
+                <td class="p-2.5 font-medium">Mètre en millimètres</td>
+                <td class="p-2.5 text-center font-mono">1 000 mm</td>
+                <td class="p-2.5 text-center font-mono">1 000 / 1</td>
+                <td class="p-2.5 text-center font-mono font-bold text-emerald-700">10<sup>3</sup> mm</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium">Dixième de millimètre</td>
+                <td class="p-2.5 text-center font-mono">0,1 mm</td>
+                <td class="p-2.5 text-center font-mono">1 / 10</td>
+                <td class="p-2.5 text-center font-mono font-bold text-emerald-700">10<sup>-1</sup> mm</td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium">Centième de millimètre</td>
+                <td class="p-2.5 text-center font-mono">0,01 mm</td>
+                <td class="p-2.5 text-center font-mono">1 / 100</td>
+                <td class="p-2.5 text-center">
+                  <div class="inline-flex items-center gap-1">
+                    <span>10</span>
+                    <sup class="w-16"><input type="text" inputmode="decimal" id="dec-exp-1" class="math-input py-0 px-1 text-center font-bold text-[#A50F23]" placeholder="Votre résultat..."></sup>
+                    <span>mm</span>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium">Millimètre en mètres</td>
+                <td class="p-2.5 text-center font-mono">0,001 m</td>
+                <td class="p-2.5 text-center font-mono">1 / 1 000</td>
+                <td class="p-2.5 text-center">
+                  <div class="inline-flex items-center gap-1">
+                    <span>10</span>
+                    <sup class="w-16"><input type="text" inputmode="decimal" id="dec-exp-2" class="math-input py-0 px-1 text-center font-bold text-[#A50F23]" placeholder="Votre résultat..."></sup>
+                    <span>m</span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button onclick="checkDiscoveryQ1()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition">
+          Valider les puissances
+        </button>
+        <div id="dec-q1-feedback" class="text-xs sm:text-sm"></div>
+      </div>
+
+      <!-- Questions 2 et 3 -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          2 & 3. Épaisseurs fines et cote d'assemblage
+        </h3>
+
+        <div class="space-y-2">
+          <p class="text-xs sm:text-sm text-slate-700">
+            <strong>Question 2 :</strong> Pourquoi est-il plus commode d'écrire l'épaisseur d'une couche d'antirouille de $0,00008\text{ m}$ sous la forme $8\times 10^{-5}\text{ m}$ ou $80\,\mu\text{m}$ dans un rapport d'atelier ?
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <button onclick="selectDecQ2(this, true)" class="touch-target p-3 text-left border-2 border-slate-200 rounded-xl text-xs hover:border-[#A50F23] transition dec-opt-q2">
+              <strong>A.</strong> Évite les erreurs de lecture dues aux séries de zéros et correspond aux unités micrométriques d'atelier.
+            </button>
+            <button onclick="selectDecQ2(this, false)" class="touch-target p-3 text-left border-2 border-slate-200 rounded-xl text-xs hover:border-[#A50F23] transition dec-opt-q2">
+              <strong>B.</strong> Rend la pièce plus légère lors du pesage de contrôle.
+            </button>
+            <button onclick="selectDecQ2(this, false)" class="touch-target p-3 text-left border-2 border-slate-200 rounded-xl text-xs hover:border-[#A50F23] transition dec-opt-q2">
+              <strong>C.</strong> Permet d'éviter de mesurer la couche de zinc avec un palmer.
+            </button>
+          </div>
+          <div id="dec-q2-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 space-y-2">
+          <p class="text-xs sm:text-sm text-slate-700">
+            <strong>Question 3 :</strong> Exprimez la cote $2\,500\text{ mm}$ sous forme d'un produit $a\times 10^n$ avec $1\le a < 10$ :
+          </p>
+          <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+            <span>$2\,500\text{ mm} =$</span>
+            <div class="w-32">
+              <input type="text" inputmode="decimal" id="dec-q3-a" class="math-input text-center" placeholder="Votre résultat...">
+            </div>
+            <span>$\times 10$</span>
+            <sup class="w-20"><input type="text" inputmode="decimal" id="dec-q3-n" class="math-input py-0 px-1 text-center font-bold" placeholder="Votre résultat..."></sup>
+            <span>mm</span>
+            <button onclick="checkDiscoveryQ3()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition">
+              Valider la cote
+            </button>
+          </div>
+          <div id="dec-q3-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="switchStep(2)" class="touch-target bg-slate-800 hover:bg-black text-white px-6 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2">
+          <span>Passer à l'Étape 2 : Cours & Simulateurs</span>
+          <span>&rarr;</span>
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 2 : COURS & SIMULATEURS =========== -->
+    <!-- ============================================================== -->
+    <section id="step-2" class="space-y-6 hidden">
+
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          À Retenir : L'Essentiel du Cours
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm text-slate-700">
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">1. Puissances de 10 (exposants positifs et négatifs)</h3>
+            <p>• Exposant positif : $10^n = 1\underbrace{00\dots 0}_{n\text{ zéros}}$ ($10^3 = 1\,000$).</p>
+            <p>• Exposant négatif : $10^{-n} = \dfrac{1}{10^n} = \underbrace{0,00\dots 0}_{n\text{ zéros}}1$ ($10^{-2} = 0,01$).</p>
+            <p>• Conventions clés : $10^0 = 1$ et $10^1 = 10$.</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">2. Règles de calcul fondamentales</h3>
+            <p>• Produit : $10^a \times 10^b = 10^{a+b}$</p>
+            <p>• Quotient : $\dfrac{10^a}{10^b} = 10^{a-b}$</p>
+            <p>• Puissance de puissance : $(10^a)^b = 10^{a\times b}$</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">3. Notation Scientifique</h3>
+            <p>Tout nombre décimal positif s'écrit de façon unique :</p>
+            <div class="text-center font-mono font-bold bg-white p-2 rounded border border-slate-200 text-[#A50F23]">
+              $a \times 10^n \quad \text{avec } 1 \le a < 10 \text{ et } n \in \mathbb{Z}$
+            </div>
+            <p class="text-[11px] text-slate-500">Exemple : $15\,400\text{ mm} = 1,54\times 10^4\text{ mm}$ ; $0,0045\text{ m} = 4,5\times 10^{-3}\text{ m}$.</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">4. Encadrement de Tolérances d'Atelier</h3>
+            <p>Une pièce de cote nominale $C$ et de tolérance $\pm t$ est <strong>conforme</strong> si sa mesure $x$ vérifie :</p>
+            <div class="text-center font-mono font-bold bg-white p-2 rounded border border-slate-200 text-emerald-700">
+              $C - t \le x \le C + t$
+            </div>
+            <p class="text-[11px] text-slate-500">Si $x < C - t$ ou $x > C + t$, la pièce est déclarée au rebut.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SIMULATEUR 1 : Métrologie d'atelier & tolérances -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Simulateur 1 : Métrologie d'Atelier & Contrôle de Tolérance
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Réglez la cote nominale $C$, la tolérance d'usinage $\pm t$, puis testez la cote réelle mesurée au pied à coulisse pour vérifier instantanément la conformité.
+        </p>
+
+        <!-- Commandes de réglage -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200 text-xs sm:text-sm">
+          <div>
+            <label for="sim-c" class="block font-semibold text-slate-700 mb-1">Cote nominale $C$ (mm) :</label>
+            <input type="number" id="sim-c" value="25.00" step="0.1" oninput="updateMetrologySim()" class="math-input text-center font-bold text-[#A50F23]">
+          </div>
+          <div>
+            <label for="sim-t" class="block font-semibold text-slate-700 mb-1">Tolérance $\pm t$ (mm) :</label>
+            <input type="number" id="sim-t" value="0.05" step="0.01" oninput="updateMetrologySim()" class="math-input text-center font-bold text-amber-700">
+          </div>
+          <div>
+            <label for="sim-x" class="block font-semibold text-slate-700 mb-1">Cote mesurée $x$ (mm) :</label>
+            <input type="number" id="sim-x" value="25.03" step="0.01" oninput="updateMetrologySim()" class="math-input text-center font-bold text-blue-700">
+          </div>
+        </div>
+
+        <!-- Synthèse de contrôle -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+          <div class="p-2 bg-slate-50 rounded-lg border border-slate-200">
+            <span class="text-slate-500 block">Cote minimale $C-t$</span>
+            <span id="sim-c-min" class="font-bold text-slate-800 text-sm sm:text-base">24.95 mm</span>
+          </div>
+          <div class="p-2 bg-slate-50 rounded-lg border border-slate-200">
+            <span class="text-slate-500 block">Cote maximale $C+t$</span>
+            <span id="sim-c-max" class="font-bold text-slate-800 text-sm sm:text-base">25.05 mm</span>
+          </div>
+          <div class="p-2 bg-blue-50 rounded-lg border border-blue-200">
+            <span class="text-slate-500 block">Écart mesuré</span>
+            <span id="sim-ecart" class="font-bold text-blue-800 text-sm sm:text-base">+0.03 mm</span>
+          </div>
+          <div id="sim-verdict-box" class="p-2 bg-emerald-50 rounded-lg border border-emerald-300">
+            <span class="text-slate-500 block">Verdict Pièce</span>
+            <span id="sim-verdict" class="font-black text-emerald-700 text-sm sm:text-base">CONFORME</span>
+          </div>
+        </div>
+
+        <!-- Jauge visuelle SVG -->
+        <div class="w-full bg-slate-900 rounded-xl p-3 sm:p-4 shadow-inner">
+          <svg id="sim-gauge" viewBox="0 0 460 140" class="w-full h-auto overflow-visible">
+            <!-- Rendu dynamique JS -->
+          </svg>
+        </div>
+      </div>
+
+      <!-- SIMULATEUR 2 : CONVERSIONS BIDIRECTIONNELLES DÉCIMAL <-> SCIENTIFIQUE -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Simulateur 2 : Convertisseur Bidirectionnel « Décimale &harr; Scientifique »
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Ce simulateur d'atelier permet de passer de la <strong>forme décimale standard</strong> à l'<strong>écriture scientifique</strong> $a \times 10^n$ ($1 \le a < 10$), et réciproquement.
+        </p>
+
+        <!-- Préréglages rapides d'atelier -->
+        <div class="space-y-1.5">
+          <span class="text-xs font-semibold text-slate-600 block">Préréglages rapides de métallerie :</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="applyPreset(0.75)" class="touch-target px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 rounded-lg font-medium border border-slate-300 transition">
+              Tôle couverture (0,75 mm)
+            </button>
+            <button onclick="applyPreset(0.05)" class="touch-target px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 rounded-lg font-medium border border-slate-300 transition">
+              Clinquant calage (0,05 mm)
+            </button>
+            <button onclick="applyPreset(6000)" class="touch-target px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 rounded-lg font-medium border border-slate-300 transition">
+              Poutrelle hangar (6 000 mm)
+            </button>
+            <button onclick="applyPreset(0.001)" class="touch-target px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 rounded-lg font-medium border border-slate-300 transition">
+              Micromètre (0,001 mm)
+            </button>
+            <button onclick="applyPreset(2500)" class="touch-target px-3 py-1.5 text-xs bg-slate-100 hover:bg-slate-200 rounded-lg font-medium border border-slate-300 transition">
+              Cote auvent (2 500 mm)
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <!-- Entrée Décimale -> Sortie Scientifique -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs sm:text-sm text-slate-800">Mode A : Entrée Décimale</span>
+              <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">Nombre standard</span>
+            </div>
+            <div>
+              <label for="conv-dec-input" class="block text-xs font-semibold text-slate-700 mb-1">Saisir un nombre décimal :</label>
+              <input type="text" inputmode="decimal" id="conv-dec-input" value="0.75" oninput="convertDecToSci()" class="math-input text-center font-bold text-[#A50F23]" placeholder="Votre résultat...">
+            </div>
+            <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+              <span class="text-[11px] text-slate-500 block mb-1">Écriture scientifique calculée :</span>
+              <span id="conv-sci-output" class="text-base sm:text-lg font-mono font-bold text-emerald-700">7,5 &times; 10<sup>-1</sup></span>
+            </div>
+            <div id="conv-dec-step" class="text-[11px] text-slate-600 bg-emerald-50 p-2 rounded border border-emerald-200 leading-tight">
+              Décalage de virgule : 1 rang vers la droite &rarr; exposant n = -1.
+            </div>
+          </div>
+
+          <!-- Entrée Scientifique -> Sortie Décimale -->
+          <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-xs sm:text-sm text-slate-800">Mode B : Entrée Scientifique</span>
+              <span class="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded font-mono">a &times; 10^n</span>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label for="conv-a-input" class="block text-xs font-semibold text-slate-700 mb-1">Mantisse $a$ ($1 \le a < 10$) :</label>
+                <input type="text" inputmode="decimal" id="conv-a-input" value="7.5" oninput="convertSciToDec()" class="math-input text-center font-bold text-amber-700" placeholder="Votre résultat...">
+              </div>
+              <div>
+                <label for="conv-n-input" class="block text-xs font-semibold text-slate-700 mb-1">Exposant $n$ (entier) :</label>
+                <input type="number" id="conv-n-input" value="-1" step="1" oninput="convertSciToDec()" class="math-input text-center font-bold text-blue-700" placeholder="Votre résultat...">
+              </div>
+            </div>
+            <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+              <span class="text-[11px] text-slate-500 block mb-1">Forme décimale calculée :</span>
+              <span id="conv-dec-output" class="text-base sm:text-lg font-mono font-bold text-[#A50F23]">0,75</span>
+            </div>
+            <div id="conv-sci-step" class="text-[11px] text-slate-600 bg-amber-50 p-2 rounded border border-amber-200 leading-tight">
+              Multiplication par 10<sup>-1</sup> (division par 10) &rarr; résultat 0,75.
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-700 flex items-center justify-between">
+          <span><strong>Ordre de grandeur estimé :</strong> <span id="conv-order-mag" class="font-bold text-[#A50F23]">10<sup>-1</sup></span></span>
+          <span class="text-[11px] text-slate-500">Pratique pour vérifier les devis et fiches de débit</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between pt-2">
+        <button onclick="switchStep(1)" class="touch-target bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition">
+          &larr; Étape 1 : Découverte
+        </button>
+        <button onclick="switchStep(3)" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-6 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition">
+          Passer à l'Étape 3 : Entraînement &rarr;
+        </button>
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 3 : ENTRAÎNEMENT GAMIFIÉ ========== -->
+    <!-- ============================================================== -->
+    <section id="step-3" class="space-y-6 hidden">
+
+      <!-- Onglets des 3 niveaux -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+        <button onclick="switchLevel(1)" id="lvl-tab-1" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white flex items-center gap-1.5 shadow-sm">
+          <span>🟢 Niveau 1 : Socle CAP</span>
+        </button>
+        <button onclick="switchLevel(2)" id="lvl-tab-2" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-500 flex items-center gap-1.5 cursor-not-allowed" disabled>
+          <span>🔒 Niveau 2 : Avancé</span>
+        </button>
+        <button onclick="switchLevel(3)" id="lvl-tab-3" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-500 flex items-center gap-1.5 cursor-not-allowed" disabled>
+          <span>🔒 Niveau 3 : Expert</span>
+        </button>
+      </div>
+
+      <!-- ==================== NIVEAU 1 : SOCLE CAP ==================== -->
+      <div id="level-1-container" class="space-y-6">
+        <div class="bg-emerald-50 border border-emerald-200 p-3 sm:p-4 rounded-xl flex items-center justify-between text-xs sm:text-sm text-emerald-900">
+          <span><strong>Socle CAP (Niveau 1) :</strong> Validez les 5 exercices pour atteindre 100 %, débloquer l'Attestation Numérique et accéder aux bonus.</span>
+          <span id="lvl1-count-badge" class="font-bold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full">0 / 5</span>
+        </div>
+
+        <!-- Exercice 1.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.1 (C1, C2) - Écriture décimale de puissances de 10
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Donnez l'écriture décimale standard des grandeurs d'atelier suivantes :
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex11-q1" class="block font-semibold text-slate-700 mb-1">1. $10^4 =$</label>
+              <input type="text" inputmode="decimal" id="ex11-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex11-q2" class="block font-semibold text-slate-700 mb-1">2. $10^{-3} =$</label>
+              <input type="text" inputmode="decimal" id="ex11-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex11-q3" class="block font-semibold text-slate-700 mb-1">3. $2,5 \times 10^2 =$</label>
+              <input type="text" inputmode="decimal" id="ex11-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex11-q4" class="block font-semibold text-slate-700 mb-1">4. $8 \times 10^{-2} =$</label>
+              <input type="text" inputmode="decimal" id="ex11-q4" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx11()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.1
+          </button>
+          <div id="ex11-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.2 (C2) - Écriture sous forme $10^n$ ou $a \times 10^n$
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Saisissez le coefficient $a$ et l'exposant $n$ (avec $a=1$ lorsque le nombre est écrit simplement $10^n$) :
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <!-- 1 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">1. $10\,000\text{ mm} = 10^n$ :</span>
+              <div class="flex items-center gap-1">
+                <span>$10$</span>
+                <sup class="w-24"><input type="text" inputmode="decimal" id="ex12-n1" class="math-input py-0 px-2 text-center" placeholder="Votre résultat..."></sup>
+                <span>mm</span>
+              </div>
+            </div>
+            <!-- 2 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">2. $0,001\text{ m} = 10^n$ :</span>
+              <div class="flex items-center gap-1">
+                <span>$10$</span>
+                <sup class="w-24"><input type="text" inputmode="decimal" id="ex12-n2" class="math-input py-0 px-2 text-center" placeholder="Votre résultat..."></sup>
+                <span>m</span>
+              </div>
+            </div>
+            <!-- 3 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">3. $0,08\text{ mm} = a \times 10^n$ ($1\le a < 10$) :</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex12-a3" class="math-input w-20 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex12-n3" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>mm</span>
+              </div>
+            </div>
+            <!-- 4 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">4. $4\,500\text{ kg} = a \times 10^n$ ($1\le a < 10$) :</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex12-a4" class="math-input w-20 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex12-n4" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>kg</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="checkEx12()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.2
+          </button>
+          <div id="ex12-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.3 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.3 (C1, C2) - Écriture scientifique directe ($a \times 10^n$ avec $1 \le a < 10$)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Transformez les cotes suivantes en notation scientifique :
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <!-- 1 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">1. Longueur auvent métallique : $7\,800\text{ mm}$</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex13-a1" class="math-input w-24 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex13-n1" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>mm</span>
+              </div>
+            </div>
+            <!-- 2 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">2. Épaisseur tôle fine zinguée : $0,45\text{ mm}$</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex13-a2" class="math-input w-24 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex13-n2" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>mm</span>
+              </div>
+            </div>
+            <!-- 3 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">3. Masse armature varangue : $1\,250\text{ kg}$</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex13-a3" class="math-input w-24 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex13-n3" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>kg</span>
+              </div>
+            </div>
+            <!-- 4 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">4. Écart perçage au palmer : $0,035\text{ mm}$</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex13-a4" class="math-input w-24 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex13-n4" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>mm</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="checkEx13()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.3
+          </button>
+          <div id="ex13-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.4 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.4 (C2) - Multiplications et divisions par 10, 100, 1000
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Effectuez mentalement les conversions d'atelier suivantes :
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex14-q1" class="block font-semibold text-slate-700 mb-1">1. $1,85\text{ m} \times 10^3 =$ (en mm)</label>
+              <input type="text" inputmode="decimal" id="ex14-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex14-q2" class="block font-semibold text-slate-700 mb-1">2. $350\text{ mm} / 10 =$ (en cm)</label>
+              <input type="text" inputmode="decimal" id="ex14-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex14-q3" class="block font-semibold text-slate-700 mb-1">3. $42\text{ mm} \times 10^{-1} =$ (en cm)</label>
+              <input type="text" inputmode="decimal" id="ex14-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex14-q4" class="block font-semibold text-slate-700 mb-1">4. $650\text{ mm} \times 10^{-3} =$ (en m)</label>
+              <input type="text" inputmode="decimal" id="ex14-q4" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx14()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.4
+          </button>
+          <div id="ex14-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.5 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.5 (C2, C3) - Contrôle d'ordre de grandeur d'atelier
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Sélectionnez l'ordre de grandeur approprié pour chaque élément de métallerie :
+          </p>
+
+          <!-- 1 -->
+          <div class="space-y-2">
+            <p class="text-xs sm:text-sm font-semibold text-slate-800">1. Épaisseur d'une tôle de portail standard :</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button onclick="selectEx15Q1(this, 'A')" class="touch-target p-3 text-center border-2 border-slate-200 rounded-xl text-xs font-semibold hover:border-[#A50F23] transition opt-ex15-1">
+                $10^{-1}\text{ mm}$
+              </button>
+              <button onclick="selectEx15Q1(this, 'B')" class="touch-target p-3 text-center border-2 border-slate-200 rounded-xl text-xs font-semibold hover:border-[#A50F23] transition opt-ex15-1">
+                $10^0\text{ mm}$ (environ 2 mm)
+              </button>
+              <button onclick="selectEx15Q1(this, 'C')" class="touch-target p-3 text-center border-2 border-slate-200 rounded-xl text-xs font-semibold hover:border-[#A50F23] transition opt-ex15-1">
+                $10^2\text{ mm}$
+              </button>
+            </div>
+          </div>
+
+          <!-- 2 -->
+          <div class="space-y-2 pt-2 border-t border-slate-100">
+            <p class="text-xs sm:text-sm font-semibold text-slate-800">2. Longueur d'une barre de profilé acier brute :</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <button onclick="selectEx15Q2(this, 'A')" class="touch-target p-3 text-center border-2 border-slate-200 rounded-xl text-xs font-semibold hover:border-[#A50F23] transition opt-ex15-2">
+                $6 \times 10^1\text{ mm}$
+              </button>
+              <button onclick="selectEx15Q2(this, 'B')" class="touch-target p-3 text-center border-2 border-slate-200 rounded-xl text-xs font-semibold hover:border-[#A50F23] transition opt-ex15-2">
+                $6 \times 10^2\text{ mm}$
+              </button>
+              <button onclick="selectEx15Q2(this, 'C')" class="touch-target p-3 text-center border-2 border-slate-200 rounded-xl text-xs font-semibold hover:border-[#A50F23] transition opt-ex15-2">
+                $6 \times 10^3\text{ mm}$ (soit 6 m)
+              </button>
+            </div>
+          </div>
+
+          <button onclick="checkEx15()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.5
+          </button>
+          <div id="ex15-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+      </div>
+
+      <!-- ==================== NIVEAU 2 : AVANCÉ ==================== -->
+      <div id="level-2-container" class="space-y-6 hidden">
+        <div class="bg-amber-50 border border-amber-200 p-3 sm:p-4 rounded-xl text-xs sm:text-sm text-amber-900">
+          <strong>Niveau 2 - Dépassement :</strong> Situations réelles de chantier (tournage à Sainte-Marie, métallisation zinc à Saint-Denis, bardage au Port, dilatation à Sainte-Clotilde).
+        </div>
+
+        <!-- Exercice 2.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.1 (C2, C3) - Tolérances d'usinage sur tour mécanique
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Axe de gond usiné à Sainte-Marie : diamètre nominal $D = 25\text{ mm}$, tolérance $t = \pm 0,05\text{ mm}$.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <!-- Q1 -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">1. Tolérance $t$ en notation scientifique (mm) :</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex21-a1" class="math-input w-20 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex21-n1" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>mm</span>
+              </div>
+            </div>
+            <!-- Q1 suite -->
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">Tolérance $t$ en notation scientifique (m) :</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex21-a2" class="math-input w-20 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex21-n2" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>m</span>
+              </div>
+            </div>
+            <!-- Q2 -->
+            <div>
+              <label for="ex21-dmin" class="block font-semibold text-slate-700 mb-1">2. Diamètre minimal acceptable $D_{\min}$ (mm) :</label>
+              <input type="text" inputmode="decimal" id="ex21-dmin" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex21-dmax" class="block font-semibold text-slate-700 mb-1">Diamètre maximal acceptable $D_{\max}$ (mm) :</label>
+              <input type="text" inputmode="decimal" id="ex21-dmax" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <!-- Q3 -->
+          <div class="pt-2 border-t border-slate-100">
+            <label for="ex21-rebut" class="block font-semibold text-slate-700 mb-1 text-xs sm:text-sm">
+              3. Pièces mesurées : $D_1=25,03$ ; $D_2=24,92$ ; $D_3=25,05$ ; $D_4=24,97\text{ mm}$. Indiquez le numéro de la pièce au rebut (ex: 2 ou D2) :
+            </label>
+            <input type="text" id="ex21-rebut" class="math-input sm:w-48" placeholder="Votre résultat...">
+          </div>
+          <button onclick="checkEx21()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.1
+          </button>
+          <div id="ex21-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 2.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.2 (C1, C3) - Revêtement anticorrosion en front de mer à Saint-Denis
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Norme minimale : $80\,\mu\text{m}$ (avec $1\,\mu\text{m} = 10^{-6}\text{ m} = 10^{-3}\text{ mm}$).
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex22-q1-dec" class="block font-semibold text-slate-700 mb-1">1. $80\,\mu\text{m}$ en millimètres (écriture décimale) :</label>
+              <input type="text" inputmode="decimal" id="ex22-q1-dec" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">$80\,\mu\text{m}$ en notation scientifique (mm) :</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex22-a1" class="math-input w-20 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex22-n1" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>mm</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-100">
+            <p class="font-semibold text-slate-700 text-xs sm:text-sm mb-1">
+              2. Mesure à la sonde magnétique : $e = 0,095\text{ mm}$. Le traitement anticorrosion est-il conforme ($e \ge 0,08\text{ mm}$) ?
+            </p>
+            <div class="flex gap-3">
+              <label class="flex items-center gap-2 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="ex22-conf" value="OUI" class="w-4 h-4 text-[#A50F23]">
+                <span>OUI (conforme)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-xs sm:text-sm">
+                <input type="radio" name="ex22-conf" value="NON" class="w-4 h-4 text-[#A50F23]">
+                <span>NON (non conforme)</span>
+              </label>
+            </div>
+          </div>
+          <button onclick="checkEx22()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.2
+          </button>
+          <div id="ex22-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 2.3 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.3 (C2, C3) - Calculs cumulés de masse avec puissances de 10
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Pour le bardage métallique d'une usine au Port : commande de $1,5 \times 10^3$ tôles. Masse unitaire $m = 8,4\text{ kg} = 8,4 \times 10^0\text{ kg}$.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex23-q1" class="block font-semibold text-slate-700 mb-1">1. Masse totale $M$ en kilogrammes (kg) :</label>
+              <input type="text" inputmode="decimal" id="ex23-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex23-q2-dec" class="block font-semibold text-slate-700 mb-1">2. Masse totale en tonnes (t) en décimal :</label>
+              <input type="text" inputmode="decimal" id="ex23-q2-dec" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200 sm:col-span-2">
+              <span class="font-semibold block text-slate-800 mb-1">Masse en tonnes (t) en notation scientifique ($1 \le a < 10$) :</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex23-a" class="math-input w-24 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex23-n" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>tonnes</span>
+              </div>
+            </div>
+          </div>
+          <button onclick="checkEx23()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.3
+          </button>
+          <div id="ex23-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 2.4 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.4 (C3, C4) - Vérification de jeu fonctionnel sur portail battant
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Jeu central nominal $J = 6\text{ mm}$ avec tolérance $\pm 1,5\text{ mm}$.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex24-jmin" class="block font-semibold text-slate-700 mb-1">1. Jeu minimal admissible $J_{\min}$ (mm) :</label>
+              <input type="text" inputmode="decimal" id="ex24-jmin" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex24-jmax" class="block font-semibold text-slate-700 mb-1">Jeu maximal admissible $J_{\max}$ (mm) :</label>
+              <input type="text" inputmode="decimal" id="ex24-jmax" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-100 space-y-2">
+            <p class="text-xs sm:text-sm text-slate-700">
+              2. En été austral à Sainte-Clotilde ($55^\circ\text{C}$), chaque vantail s'allonge de $0,8\text{ mm}$ par dilatation. Jeu initial posé à l'ombre = $5,5\text{ mm}$.
+            </p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div class="sm:w-64">
+                <label for="ex24-jeffectif" class="block font-semibold text-slate-700 mb-1 text-xs">Nouveau jeu effectif à $55^\circ\text{C}$ (mm) :</label>
+                <input type="text" inputmode="decimal" id="ex24-jeffectif" class="math-input" placeholder="Votre résultat...">
+              </div>
+              <div class="flex-grow pt-2 sm:pt-4">
+                <span class="block text-xs font-semibold text-slate-700 mb-1">Le jeu reste-t-il fonctionnel sans frottement ($J \ge J_{\min}$) ?</span>
+                <div class="flex gap-4 text-xs">
+                  <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input type="radio" name="ex24-fonctionnel" value="OUI"> <span>OUI</span>
+                  </label>
+                  <label class="flex items-center gap-1.5 cursor-pointer">
+                    <input type="radio" name="ex24-fonctionnel" value="NON"> <span>NON</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button onclick="checkEx24()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.4
+          </button>
+          <div id="ex24-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+      </div>
+
+      <!-- ==================== NIVEAU 3 : EXPERT ==================== -->
+      <div id="level-3-container" class="space-y-6 hidden">
+        <div class="bg-rose-50 border border-rose-200 p-3 sm:p-4 rounded-xl text-xs sm:text-sm text-rose-900">
+          <strong>Niveau 3 - Excellence :</strong> Métrologie avancée & contraintes cycloniques (dilatation d'ossature à Sainte-Marie, banc plasma et traction du vent).
+        </div>
+
+        <!-- Exercice 3.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 3.1 (C3, C4) - Dilatation thermique de charpente sous climat tropical
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Formule : $\Delta L = L_0 \times \alpha \times \Delta T$<br>
+            • $L_0 = 1,8 \times 10^4\text{ mm}$ ($18\text{ m}$) ; $\alpha = 1,2 \times 10^{-5}\;^\circ\text{C}^{-1}$ ; $\Delta T = 40^\circ\text{C}$.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex31-dl-mm" class="block font-semibold text-slate-700 mb-1">1. Allongement $\Delta L$ en millimètres (mm) :</label>
+              <input type="text" inputmode="decimal" id="ex31-dl-mm" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              <span class="font-semibold block text-slate-800 mb-1">2. Allongement $\Delta L$ en mètres (notation scientifique) :</span>
+              <div class="flex items-center gap-1">
+                <input type="text" inputmode="decimal" id="ex31-a" class="math-input w-24 text-center" placeholder="Votre résultat...">
+                <span>$\times 10$</span>
+                <sup class="w-20"><input type="text" inputmode="decimal" id="ex31-n" class="math-input py-0 px-1 text-center" placeholder="Votre résultat..."></sup>
+                <span>m</span>
+              </div>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-100">
+            <p class="text-xs sm:text-sm font-semibold text-slate-700 mb-1">
+              3. Les trous oblongs permettent un coulissement maximal de $10\text{ mm}$. Le jeu est-il suffisant ($\Delta L \le 10\text{ mm}$) ?
+            </p>
+            <div class="flex gap-4 text-xs sm:text-sm">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="ex31-suffisant" value="OUI"> <span>OUI (suffisant)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="ex31-suffisant" value="NON"> <span>NON (insuffisant)</span>
+              </label>
+            </div>
+          </div>
+          <button onclick="checkEx31()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 3.1
+          </button>
+          <div id="ex31-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 3.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 3.2 (C3, C4) - Contrainte mécanique et contrôle au banc plasma
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Platine d'ancrage carrée : côté nominal $c = 200\text{ mm}$, tolérance $\pm 2\times 10^{-1}\text{ mm}$ ($\pm 0,2\text{ mm}$).<br>
+            Surface réelle mesurée : $S = 3,984 \times 10^4\text{ mm}^2$.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex32-smin" class="block font-semibold text-slate-700 mb-1">1. Surface minimale admissible $S_{\min} = 199,8^2$ ($\text{mm}^2$) :</label>
+              <input type="text" inputmode="decimal" id="ex32-smin" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex32-smax" class="block font-semibold text-slate-700 mb-1">Surface maximale admissible $S_{\max} = 200,2^2$ ($\text{mm}^2$) :</label>
+              <input type="text" inputmode="decimal" id="ex32-smax" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <div class="pt-2 border-t border-slate-100 space-y-2">
+            <div>
+              <span class="block text-xs font-semibold text-slate-700 mb-1">2. La platine découpée ($39\,840\text{ mm}^2$) est-elle conforme ?</span>
+              <div class="flex gap-4 text-xs">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="ex32-conf" value="OUI"> <span>OUI</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input type="radio" name="ex32-conf" value="NON"> <span>NON</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label for="ex32-sigma" class="block font-semibold text-slate-700 mb-1 text-xs">
+                3. Force cyclonique $F = 4,8 \times 10^4\text{ N}$. Calculez la contrainte $\sigma = F / S$ en $\text{N/mm}^2$ (arrondi au centième) :
+              </label>
+              <input type="text" inputmode="decimal" id="ex32-sigma" class="math-input sm:w-60" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx32()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 3.2
+          </button>
+          <div id="ex32-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 4 : BILAN & ATTESTATION =========== -->
+    <!-- ============================================================== -->
+    <section id="step-4" class="space-y-6 hidden">
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Bilan de Compétences & Attestation Numérique
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 mb-4">
+          Saisissez votre nom pour générer votre attestation pédagogique de réussite aux automatismes du référentiel CAP Métallier.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 no-print">
+          <input type="text" id="student-name-input" class="math-input sm:w-80" placeholder="Nom et Prénom de l'apprenant..." oninput="updateStudentName()">
+          <button onclick="window.print()" class="touch-target bg-slate-800 hover:bg-black text-white px-6 rounded-lg font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+            <span>Imprimer ou Enregistrer en PDF</span>
+          </button>
+        </div>
+
+        <!-- ZONE OFFICIELLE ATTESTATION NUMÉRIQUE -->
+        <div id="print-certificate-zone" class="border-4 border-[#A50F23] rounded-2xl p-6 sm:p-8 bg-white relative overflow-hidden shadow-md">
+          <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4 mb-4">
+            <img src="logo.png" alt="Logo CMA" class="app-logo" onerror="this.src='https://placehold.co/140x48/A50F23/ffffff?text=CMA+Formation'">
+            <div class="text-right">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#A50F23] block">CMA Formation Sainte-Clotilde</span>
+              <span class="text-[11px] text-slate-500">Chambre de Métiers et de l'Artisanat de La Réunion</span>
+            </div>
+          </div>
+
+          <div class="text-center my-4">
+            <span class="text-[11px] uppercase font-bold text-slate-400 tracking-widest block">Attestation Pédagogique de Réussite</span>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">CAP Métallier - 1ère Année</h3>
+            <p class="text-xs sm:text-sm text-[#A50F23] font-semibold mt-1">Séance A1 S2 M2 : Automatismes, Puissances de 10 & Métrologie d'Atelier</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-4 my-4 border border-slate-200">
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Attestation décernée à : <strong id="cert-student-name" class="text-sm sm:text-base text-slate-950 font-bold underline decoration-[#A50F23] decoration-2">[Nom de l'Apprenant]</strong>
+            </p>
+            <p class="text-[11px] text-slate-500 mt-1">
+              Date : <span id="cert-date" class="font-semibold text-slate-700">--/--/----</span> | Formateur : <strong>Rachel Lamberet-Lezais</strong> | Lieu : <strong>Sainte-Clotilde</strong>
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm my-4">
+            <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+              <span class="text-slate-600 block text-[11px]">Socle CAP Métallier :</span>
+              <span id="cert-socle-status" class="text-sm sm:text-base font-bold text-emerald-700">En cours (0%)</span>
+            </div>
+            <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <span class="text-slate-600 block text-[11px]">Bonus Dépassement & Excellence :</span>
+              <span id="cert-bonus-status" class="text-sm sm:text-base font-bold text-amber-700">0 Points</span>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-200 pt-3 text-[11px] sm:text-xs text-slate-600 space-y-1">
+            <p class="font-bold text-slate-700">Compétences du Référentiel National BO 2024 mises en œuvre :</p>
+            <ul class="list-disc pl-4 space-y-0.5 text-slate-600">
+              <li>C1 (S'approprier) : Identification des puissances de 10, ordres de grandeur et tolérances de fabrication.</li>
+              <li>C2 (Analyser/Raisonner) : Conversion en notation scientifique et calculs opératoires sur puissances de 10.</li>
+              <li>C3 (Réaliser) : Encadrement métrologique d'usinage sur tour et contrôle dimensionnel au banc plasma.</li>
+              <li>C4 (Valider/Communiquer) : Analyse technique de dilatation thermique et contrainte sous dépression cyclonique.</li>
+            </ul>
+          </div>
+
+          <div class="mt-6 flex justify-between items-end pt-4 border-t border-slate-100 text-[10px] text-slate-400">
+            <span>Application Pédagogique SPA Mobile-First - CMA Formation Réunion</span>
+            <span class="font-semibold text-slate-600">Mention : <span id="cert-mention">Socle en cours</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500 no-print">
+    <p>CMA Formation Sainte-Clotilde - CFA de La Réunion | Référentiel National BO 2024 | Qualiopi</p>
+    <p class="text-[11px] text-slate-400 mt-0.5">Auteur / Formateur : Rachel Lamberet-Lezais</p>
+  </footer>
+
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* État de progression globale */
+    const appState = {
+      currentStep: 1,
+      socleCompleted: {
+        ex11: false,
+        ex12: false,
+        ex13: false,
+        ex14: false,
+        ex15: false
+      },
+      bonusCompleted: {
+        ex21: false,
+        ex22: false,
+        ex23: false,
+        ex24: false,
+        ex31: false,
+        ex32: false
+      },
+      bonusPoints: 0,
+      decQ2Selected: null,
+      ex15Q1Selected: null,
+      ex15Q2Selected: null
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      document.getElementById('cert-date').textContent = today.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      updateMetrologySim();
+      convertDecToSci();
+    });
+
+    /* Parsing robuste des nombres (gestion virgule et point) */
+    function parseNum(val) {
+      if (val === null || val === undefined) return null;
+      const clean = String(val).trim().replace(',', '.');
+      if (clean === '') return null;
+      const n = parseFloat(clean);
+      return isNaN(n) ? null : n;
+    }
+
+    function checkClose(user, target, tol = 0.1) {
+      if (user === null) return false;
+      return Math.abs(user - target) <= tol;
+    }
+
+    /* Navigation entre les 4 étapes */
+    function switchStep(step) {
+      appState.currentStep = step;
+      for (let i = 1; i <= 4; i++) {
+        const sec = document.getElementById('step-' + i);
+        const btn = document.getElementById('nav-btn-' + i);
+        if (i === step) {
+          sec.classList.remove('hidden');
+          btn.className = "touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-[#A50F23] text-white shadow-sm flex items-center";
+        } else {
+          sec.classList.add('hidden');
+          btn.className = "touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center";
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    /* Navigation entre les 3 niveaux d'entraînement */
+    function switchLevel(lvl) {
+      document.getElementById('level-1-container').classList.add('hidden');
+      document.getElementById('level-2-container').classList.add('hidden');
+      document.getElementById('level-3-container').classList.add('hidden');
+
+      document.getElementById('lvl-tab-1').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+      document.getElementById('lvl-tab-2').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+      document.getElementById('lvl-tab-3').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+
+      if (lvl === 1) {
+        document.getElementById('level-1-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-1').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white flex items-center gap-1.5 shadow-sm";
+      } else if (lvl === 2) {
+        document.getElementById('level-2-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-2').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-600 text-white flex items-center gap-1.5 shadow-sm";
+      } else if (lvl === 3) {
+        document.getElementById('level-3-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-3').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white flex items-center gap-1.5 shadow-sm";
+      }
+    }
+
+    /* Mise à jour du socle et des points bonus */
+    function updateProgress() {
+      const keys = Object.keys(appState.socleCompleted);
+      const done = keys.filter(k => appState.socleCompleted[k]).length;
+      const pct = Math.round((done / keys.length) * 100);
+
+      document.getElementById('socle-percent').textContent = pct + '%';
+      document.getElementById('lvl1-count-badge').textContent = done + ' / ' + keys.length;
+      document.getElementById('bonus-points').textContent = appState.bonusPoints + ' pts';
+      document.getElementById('general-progress-bar').style.width = pct + '%';
+
+      if (pct === 100) {
+        const l2 = document.getElementById('lvl-tab-2');
+        l2.disabled = false;
+        l2.classList.remove('cursor-not-allowed');
+        l2.innerHTML = "<span>🟡 Niveau 2 : Avancé</span>";
+
+        const badge = document.getElementById('badge-pill');
+        badge.className = "text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-full border border-emerald-300";
+        badge.textContent = "Socle CAP Validé !";
+
+        document.getElementById('cert-socle-status').textContent = "Validé à 100%";
+        document.getElementById('cert-mention').textContent = "Socle CAP Acquis";
+      }
+
+      const b2Done = ['ex21', 'ex22', 'ex23', 'ex24'].every(k => appState.bonusCompleted[k]);
+      if (b2Done) {
+        const l3 = document.getElementById('lvl-tab-3');
+        l3.disabled = false;
+        l3.classList.remove('cursor-not-allowed');
+        l3.innerHTML = "<span>🔴 Niveau 3 : Expert</span>";
+      }
+
+      document.getElementById('cert-bonus-status').textContent = appState.bonusPoints + " Points";
+      if (appState.bonusPoints >= 50) {
+        document.getElementById('cert-mention').textContent = "Excellence Métallier";
+      }
+    }
+
+    function updateStudentName() {
+      const val = document.getElementById('student-name-input').value.trim();
+      const target = document.getElementById('cert-student-name');
+      target.textContent = val || "[Nom de l'Apprenant]";
+    }
+
+    /* Validations Étape 1 */
+    function checkDiscoveryQ1() {
+      const e1 = parseNum(document.getElementById('dec-exp-1').value);
+      const e2 = parseNum(document.getElementById('dec-exp-2').value);
+      const fb = document.getElementById('dec-q1-feedback');
+
+      if (e1 === -2 && e2 === -3) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Exact ! 0,01 mm = 10<sup>-2</sup> mm et 0,001 m = 10<sup>-3</sup> m.</span>';
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Attention aux signes des exposants : 1/100 = 10<sup>-2</sup> et 1/1000 = 10<sup>-3</sup>.</span>';
+      }
+    }
+
+    function selectDecQ2(btn, isCorrect) {
+      document.querySelectorAll('.dec-opt-q2').forEach(b => {
+        b.classList.remove('border-[#A50F23]', 'bg-red-50', 'border-emerald-600', 'bg-emerald-50');
+      });
+      const fb = document.getElementById('dec-q2-feedback');
+      if (isCorrect) {
+        btn.classList.add('border-emerald-600', 'bg-emerald-50');
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Excellente justification ! La notation 8 &times; 10<sup>-5</sup> m ou 80 &mu;m élimine les risques de mauvaise lecture des zéros en atelier.</span>';
+      } else {
+        btn.classList.add('border-[#A50F23]', 'bg-red-50');
+        fb.innerHTML = '<span class="text-rose-600">Réponse inexacte. Pensez à la clarté de lecture sur un plan ou une fiche métrologique.</span>';
+      }
+    }
+
+    function checkDiscoveryQ3() {
+      const a = parseNum(document.getElementById('dec-q3-a').value);
+      const n = parseNum(document.getElementById('dec-q3-n').value);
+      const fb = document.getElementById('dec-q3-feedback');
+
+      if (checkClose(a, 2.5, 0.01) && n === 3) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Parfait ! 2 500 mm = 2,5 &times; 10<sup>3</sup> mm avec 1 &le; 2,5 &lt; 10.</span>';
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Pour la notation scientifique, placez la virgule après le premier chiffre non nul : 2,5 &times; 10<sup>3</sup>.</span>';
+      }
+    }
+
+    /* Simulateur 1 : Métrologie */
+    function updateMetrologySim() {
+      const c = parseFloat(document.getElementById('sim-c').value) || 25.0;
+      const t = Math.abs(parseFloat(document.getElementById('sim-t').value)) || 0.05;
+      const x = parseFloat(document.getElementById('sim-x').value) || 25.0;
+
+      const cMin = c - t;
+      const cMax = c + t;
+      const ecart = x - c;
+      const isConforme = (x >= cMin - 0.0001 && x <= cMax + 0.0001);
+
+      document.getElementById('sim-c-min').textContent = cMin.toFixed(3) + ' mm';
+      document.getElementById('sim-c-max').textContent = cMax.toFixed(3) + ' mm';
+      document.getElementById('sim-ecart').textContent = (ecart >= 0 ? '+' : '') + ecart.toFixed(3) + ' mm';
+
+      const vBox = document.getElementById('sim-verdict-box');
+      const vText = document.getElementById('sim-verdict');
+
+      if (isConforme) {
+        vBox.className = "p-2 bg-emerald-50 rounded-lg border border-emerald-300";
+        vText.className = "font-black text-emerald-700 text-sm sm:text-base";
+        vText.textContent = "CONFORME";
+      } else {
+        vBox.className = "p-2 bg-rose-50 rounded-lg border border-rose-300";
+        vText.className = "font-black text-rose-700 text-sm sm:text-base";
+        vText.textContent = "REBUT / HORS TOLÉRANCE";
+      }
+
+      const svg = document.getElementById('sim-gauge');
+      const w = 460;
+      const padding = 60;
+      const range = Math.max(t * 3, Math.abs(ecart) * 1.5, 0.1);
+      const minX = c - range;
+      const maxX = c + range;
+
+      const scale = (val) => padding + ((val - minX) / (maxX - minX)) * (w - 2 * padding);
+
+      const xMinPos = scale(cMin);
+      const xMaxPos = scale(cMax);
+      const xNomPos = scale(c);
+      const xCurPos = Math.max(padding - 20, Math.min(w - padding + 20, scale(x)));
+
+      const cursorColor = isConforme ? "#10B981" : "#EE3C3D";
+
+      svg.innerHTML = `
+        <rect x="${xMinPos}" y="45" width="${xMaxPos - xMinPos}" height="35" rx="4" fill="#065F46" opacity="0.6"/>
+        <line x1="${padding}" y1="62" x2="${w - padding}" y2="62" stroke="#64748B" stroke-width="3"/>
+        <line x1="${xNomPos}" y1="35" x2="${xNomPos}" y2="90" stroke="#F8FAFC" stroke-width="2" stroke-dasharray="2 2"/>
+        <text x="${xNomPos}" y="28" fill="#F8FAFC" font-size="11" font-weight="bold" text-anchor="middle">C = ${c.toFixed(2)}</text>
+        <line x1="${xMinPos}" y1="40" x2="${xMinPos}" y2="85" stroke="#34D399" stroke-width="2"/>
+        <text x="${xMinPos}" y="102" fill="#34D399" font-size="10" text-anchor="middle">${cMin.toFixed(2)}</text>
+        <line x1="${xMaxPos}" y1="40" x2="${xMaxPos}" y2="85" stroke="#34D399" stroke-width="2"/>
+        <text x="${xMaxPos}" y="102" fill="#34D399" font-size="10" text-anchor="middle">${cMax.toFixed(2)}</text>
+        <polygon points="${xCurPos},42 ${xCurPos - 7},26 ${xCurPos + 7},26" fill="${cursorColor}"/>
+        <line x1="${xCurPos}" y1="42" x2="${xCurPos}" y2="82" stroke="${cursorColor}" stroke-width="3"/>
+        <text x="${xCurPos}" y="20" fill="${cursorColor}" font-size="12" font-weight="black" text-anchor="middle">${x.toFixed(2)} mm</text>
+        <text x="${w / 2}" y="125" fill="#94A3B8" font-size="11" text-anchor="middle">Plage de tolérance admissible [&plusmn;${t.toFixed(2)} mm]</text>
+      `;
+    }
+
+    /* Simulateur 2 : Conversions Bidirectionnelles Décimale <-> Scientifique */
+    function convertDecToSci() {
+      const raw = document.getElementById('conv-dec-input').value;
+      const val = parseNum(raw);
+      const out = document.getElementById('conv-sci-output');
+      const step = document.getElementById('conv-dec-step');
+      const orderBox = document.getElementById('conv-order-mag');
+
+      if (val === null || val <= 0) {
+        out.innerHTML = '<span class="text-slate-400">Saisissez un nombre positif</span>';
+        step.innerHTML = 'En attente d\'un nombre décimal valide...';
+        return;
+      }
+
+      const exp = Math.floor(Math.log10(val));
+      const mantisse = val / Math.pow(10, exp);
+      const mantisseStr = mantisse.toFixed(4).replace(/\.?0+$/, '').replace('.', ',');
+
+      out.innerHTML = `${mantisseStr} &times; 10<sup>${exp}</sup>`;
+
+      if (exp >= 0) {
+        step.innerHTML = `Décalage de virgule : <strong>${exp} rang(s) vers la gauche</strong> pour obtenir une mantisse comprise entre 1 et 10 &rarr; exposant n = +${exp}.`;
+      } else {
+        step.innerHTML = `Décalage de virgule : <strong>${Math.abs(exp)} rang(s) vers la droite</strong> pour obtenir une mantisse comprise entre 1 et 10 &rarr; exposant n = ${exp}.`;
+      }
+
+      orderBox.innerHTML = `10<sup>${exp}</sup>`;
+    }
+
+    function convertSciToDec() {
+      const a = parseNum(document.getElementById('conv-a-input').value);
+      const n = parseInt(document.getElementById('conv-n-input').value);
+      const out = document.getElementById('conv-dec-output');
+      const step = document.getElementById('conv-sci-step');
+
+      if (a === null || isNaN(n) || a <= 0) {
+        out.innerHTML = '<span class="text-slate-400">Entrées incomplètes</span>';
+        step.innerHTML = 'Renseignez a et n...';
+        return;
+      }
+
+      if (a < 1 || a >= 10) {
+        step.innerHTML = '<strong class="text-amber-700">Remarque pédagogique :</strong> Pour une notation scientifique stricte, <em>a</em> doit être entre 1 et 10 (1 &le; a &lt; 10).';
+      } else {
+        step.innerHTML = `Multiplication directe : <strong>${a} &times; 10<sup>${n}</sup></strong>.`;
+      }
+
+      const res = a * Math.pow(10, n);
+      let resStr = res.toFixed(8).replace(/\.?0+$/, '').replace('.', ',');
+      out.textContent = resStr;
+    }
+
+    function applyPreset(val) {
+      document.getElementById('conv-dec-input').value = String(val).replace('.', ',');
+      convertDecToSci();
+      const exp = Math.floor(Math.log10(val));
+      const mant = (val / Math.pow(10, exp)).toFixed(4).replace(/\.?0+$/, '');
+      document.getElementById('conv-a-input').value = mant.replace('.', ',');
+      document.getElementById('conv-n-input').value = exp;
+      convertSciToDec();
+    }
+
+    /* Validations Niveau 1 */
+    function checkEx11() {
+      const q1 = parseNum(document.getElementById('ex11-q1').value);
+      const q2 = parseNum(document.getElementById('ex11-q2').value);
+      const q3 = parseNum(document.getElementById('ex11-q3').value);
+      const q4 = parseNum(document.getElementById('ex11-q4').value);
+
+      const ok = (q1 === 10000) && checkClose(q2, 0.001, 0.0001) && (q3 === 250) && checkClose(q4, 0.08, 0.001);
+      const fb = document.getElementById('ex11-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Bravo ! 10<sup>4</sup> = 10 000 ; 10<sup>-3</sup> = 0,001 ; 2,5 &times; 10<sup>2</sup> = 250 ; 8 &times; 10<sup>-2</sup> = 0,08.</span>';
+        if (!appState.socleCompleted.ex11) {
+          appState.socleCompleted.ex11 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calcul à revoir. Rappel : déplacez la virgule vers la droite pour les exposants positifs et vers la gauche pour les négatifs.</span>';
+      }
+    }
+
+    function checkEx12() {
+      const n1 = parseNum(document.getElementById('ex12-n1').value);
+      const n2 = parseNum(document.getElementById('ex12-n2').value);
+      const a3 = parseNum(document.getElementById('ex12-a3').value);
+      const n3 = parseNum(document.getElementById('ex12-n3').value);
+      const a4 = parseNum(document.getElementById('ex12-a4').value);
+      const n4 = parseNum(document.getElementById('ex12-n4').value);
+
+      const ok = (n1 === 4) && (n2 === -3) && (a3 === 8 && n3 === -2) && (checkClose(a4, 4.5, 0.01) && n4 === 3);
+      const fb = document.getElementById('ex12-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Parfait ! 10 000 = 10<sup>4</sup> ; 0,001 = 10<sup>-3</sup> ; 0,08 = 8 &times; 10<sup>-2</sup> ; 4 500 = 4,5 &times; 10<sup>3</sup>.</span>';
+        if (!appState.socleCompleted.ex12) {
+          appState.socleCompleted.ex12 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez les valeurs : n1=4, n2=-3, 0,08 = 8 &times; 10<sup>-2</sup> et 4 500 = 4,5 &times; 10<sup>3</sup>.</span>';
+      }
+    }
+
+    function checkEx13() {
+      const a1 = parseNum(document.getElementById('ex13-a1').value);
+      const n1 = parseNum(document.getElementById('ex13-n1').value);
+      const a2 = parseNum(document.getElementById('ex13-a2').value);
+      const n2 = parseNum(document.getElementById('ex13-n2').value);
+      const a3 = parseNum(document.getElementById('ex13-a3').value);
+      const n3 = parseNum(document.getElementById('ex13-n3').value);
+      const a4 = parseNum(document.getElementById('ex13-a4').value);
+      const n4 = parseNum(document.getElementById('ex13-n4').value);
+
+      const ok = (checkClose(a1, 7.8, 0.01) && n1 === 3) &&
+                 (checkClose(a2, 4.5, 0.01) && n2 === -1) &&
+                 (checkClose(a3, 1.25, 0.01) && n3 === 3) &&
+                 (checkClose(a4, 3.5, 0.01) && n4 === -2);
+
+      const fb = document.getElementById('ex13-feedback');
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Excellent ! Notations scientifiques parfaitement respectées avec 1 &le; a &lt; 10.</span>';
+        if (!appState.socleCompleted.ex13) {
+          appState.socleCompleted.ex13 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Rappel : la mantisse a doit être comprise entre 1 et 10 strictement (ex : 7,8 &times; 10<sup>3</sup> et non 78 &times; 10<sup>2</sup>).</span>';
+      }
+    }
+
+    function checkEx14() {
+      const q1 = parseNum(document.getElementById('ex14-q1').value);
+      const q2 = parseNum(document.getElementById('ex14-q2').value);
+      const q3 = parseNum(document.getElementById('ex14-q3').value);
+      const q4 = parseNum(document.getElementById('ex14-q4').value);
+
+      const ok = (q1 === 1850) && (q2 === 35) && checkClose(q3, 4.2, 0.01) && checkClose(q4, 0.65, 0.01);
+      const fb = document.getElementById('ex14-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Très bien ! 1,85 m = 1 850 mm ; 350 mm = 35 cm ; 42 mm = 4,2 cm ; 650 mm = 0,65 m.</span>';
+        if (!appState.socleCompleted.ex14) {
+          appState.socleCompleted.ex14 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calcul mental à corriger : vérifiez les décalages d\'unités (m en mm &times; 1000, mm en cm &divide; 10).</span>';
+      }
+    }
+
+    function selectEx15Q1(btn, val) {
+      document.querySelectorAll('.opt-ex15-1').forEach(b => b.classList.remove('border-[#A50F23]', 'bg-red-50', 'border-emerald-600', 'bg-emerald-50'));
+      btn.classList.add(val === 'B' ? 'border-emerald-600' : 'border-[#A50F23]', val === 'B' ? 'bg-emerald-50' : 'bg-red-50');
+      appState.ex15Q1Selected = val;
+    }
+
+    function selectEx15Q2(btn, val) {
+      document.querySelectorAll('.opt-ex15-2').forEach(b => b.classList.remove('border-[#A50F23]', 'bg-red-50', 'border-emerald-600', 'bg-emerald-50'));
+      btn.classList.add(val === 'C' ? 'border-emerald-600' : 'border-[#A50F23]', val === 'C' ? 'bg-emerald-50' : 'bg-red-50');
+      appState.ex15Q2Selected = val;
+    }
+
+    function checkEx15() {
+      const fb = document.getElementById('ex15-feedback');
+      if (appState.ex15Q1Selected === 'B' && appState.ex15Q2Selected === 'C') {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Parfait ! Tôle standard ~ 10<sup>0</sup> mm (environ 2 mm) et barre brute = 6 &times; 10<sup>3</sup> mm (6 mètres).</span>';
+        if (!appState.socleCompleted.ex15) {
+          appState.socleCompleted.ex15 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Revoyez vos ordres de grandeur d\'atelier : une barre acier mesure 6 mètres (6 000 mm).</span>';
+      }
+    }
+
+    /* Validations Niveau 2 */
+    function checkEx21() {
+      const a1 = parseNum(document.getElementById('ex21-a1').value);
+      const n1 = parseNum(document.getElementById('ex21-n1').value);
+      const a2 = parseNum(document.getElementById('ex21-a2').value);
+      const n2 = parseNum(document.getElementById('ex21-n2').value);
+      const dmin = parseNum(document.getElementById('ex21-dmin').value);
+      const dmax = parseNum(document.getElementById('ex21-dmax').value);
+      const rebut = document.getElementById('ex21-rebut').value.trim().toUpperCase();
+
+      const okTolMm = (a1 === 5 && n1 === -2);
+      const okTolM = (a2 === 5 && n2 === -5);
+      const okInterv = checkClose(dmin, 24.95, 0.01) && checkClose(dmax, 25.05, 0.01);
+      const okRebut = (rebut === '2' || rebut === 'D2' || rebut === 'PIÈCE 2' || rebut === 'PIECE 2');
+
+      const fb = document.getElementById('ex21-feedback');
+      if (okTolMm && okTolM && okInterv && okRebut) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Félicitations ! Tolérance = 5 &times; 10<sup>-2</sup> mm = 5 &times; 10<sup>-5</sup> m ; intervalle [24,95 ; 25,05 mm] ; et D2 (24,92 mm) est bien la pièce au rebut.</span>';
+        if (!appState.bonusCompleted.ex21) {
+          appState.bonusCompleted.ex21 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez : 0,05 mm = 5 &times; 10<sup>-2</sup> mm = 5 &times; 10<sup>-5</sup> m. L\'intervalle est 25 &plusmn; 0,05. La pièce D2 (24,92) est trop petite.</span>';
+      }
+    }
+
+    function checkEx22() {
+      const dec = parseNum(document.getElementById('ex22-q1-dec').value);
+      const a1 = parseNum(document.getElementById('ex22-a1').value);
+      const n1 = parseNum(document.getElementById('ex22-n1').value);
+      const rad = document.querySelector('input[name="ex22-conf"]:checked');
+      const conf = rad ? rad.value : null;
+
+      const okDec = checkClose(dec, 0.08, 0.001);
+      const okSci = (a1 === 8 && n1 === -2);
+      const okConf = (conf === 'OUI');
+
+      const fb = document.getElementById('ex22-feedback');
+      if (okDec && okSci && okConf) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Excellent ! 80 &mu;m = 0,08 mm = 8 &times; 10<sup>-2</sup> mm. Avec 0,095 mm &ge; 0,08 mm, le traitement anticorrosion est conforme.</span>';
+        if (!appState.bonusCompleted.ex22) {
+          appState.bonusCompleted.ex22 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Revoyez la conversion : 80 &mu;m = 80 &times; 10<sup>-3</sup> mm = 0,08 mm = 8 &times; 10<sup>-2</sup> mm.</span>';
+      }
+    }
+
+    function checkEx23() {
+      const q1 = parseNum(document.getElementById('ex23-q1').value);
+      const q2Dec = parseNum(document.getElementById('ex23-q2-dec').value);
+      const a = parseNum(document.getElementById('ex23-a').value);
+      const n = parseNum(document.getElementById('ex23-n').value);
+
+      const okQ1 = (q1 === 12600);
+      const okQ2Dec = checkClose(q2Dec, 12.6, 0.05);
+      const okQ2Sci = checkClose(a, 1.26, 0.01) && (n === 1);
+
+      const fb = document.getElementById('ex23-feedback');
+      if (okQ1 && okQ2Dec && okQ2Sci) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Parfait ! M = 12 600 kg = 12,6 tonnes = 1,26 &times; 10<sup>1</sup> tonnes.</span>';
+        if (!appState.bonusCompleted.ex23) {
+          appState.bonusCompleted.ex23 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calcul : (1,5 &times; 10<sup>3</sup>) &times; 8,4 = 12,6 &times; 10<sup>3</sup> kg = 12 600 kg = 12,6 t.</span>';
+      }
+    }
+
+    function checkEx24() {
+      const jmin = parseNum(document.getElementById('ex24-jmin').value);
+      const jmax = parseNum(document.getElementById('ex24-jmax').value);
+      const jeff = parseNum(document.getElementById('ex24-jeffectif').value);
+      const rad = document.querySelector('input[name="ex24-fonctionnel"]:checked');
+      const fonc = rad ? rad.value : null;
+
+      const okInterv = checkClose(jmin, 4.5, 0.05) && checkClose(jmax, 7.5, 0.05);
+      const okJeff = checkClose(jeff, 3.9, 0.1) || checkClose(jeff, 4.7, 0.1);
+      const okFonc = (fonc === 'NON');
+
+      const fb = document.getElementById('ex24-feedback');
+      if (okInterv && okJeff && okFonc) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Analyse métrologique remarquable ! Intervalle [4,5 ; 7,5 mm]. Nouveau jeu = 5,5 − (2 &times; 0,8) = 3,9 mm &lt; 4,5 mm : frottement assuré lors de fortes chaleurs !</span>';
+        if (!appState.bonusCompleted.ex24) {
+          appState.bonusCompleted.ex24 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Attention : chaque vantail s\'allonge de 0,8 mm (donc 2 vantaux = 1,6 mm d\'allongement total). Nouveau jeu = 5,5 − 1,6 = 3,9 mm. Il est inférieur au jeu mini de 4,5 mm.</span>';
+      }
+    }
+
+    /* Validations Niveau 3 */
+    function checkEx31() {
+      const dlMm = parseNum(document.getElementById('ex31-dl-mm').value);
+      const a = parseNum(document.getElementById('ex31-a').value);
+      const n = parseNum(document.getElementById('ex31-n').value);
+      const rad = document.querySelector('input[name="ex31-suffisant"]:checked');
+      const suff = rad ? rad.value : null;
+
+      const okDl = checkClose(dlMm, 8.64, 0.05);
+      const okSci = checkClose(a, 8.64, 0.05) && (n === -3);
+      const okSuff = (suff === 'OUI');
+
+      const fb = document.getElementById('ex31-feedback');
+      if (okDl && okSci && okSuff) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Expertise validée ! &Delta;L = 8,64 mm = 8,64 &times; 10<sup>-3</sup> m. Le jeu de 10 mm des trous oblongs est suffisant pour absorber cette dilatation sous 40 &deg;C d\'écart.</span>';
+        if (!appState.bonusCompleted.ex31) {
+          appState.bonusCompleted.ex31 = true;
+          appState.bonusPoints += 25;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calcul : (1,8 &times; 10<sup>4</sup>) &times; (1,2 &times; 10<sup>-5</sup>) &times; 40 = 1,8 &times; 1,2 &times; 40 &times; 10<sup>-1</sup> = 8,64 mm = 8,64 &times; 10<sup>-3</sup> m.</span>';
+      }
+    }
+
+    function checkEx32() {
+      const smin = parseNum(document.getElementById('ex32-smin').value);
+      const smax = parseNum(document.getElementById('ex32-smax').value);
+      const rad = document.querySelector('input[name="ex32-conf"]:checked');
+      const conf = rad ? rad.value : null;
+      const sigma = parseNum(document.getElementById('ex32-sigma').value);
+
+      const okSmin = checkClose(smin, 39920.04, 1.0);
+      const okSmax = checkClose(smax, 40080.04, 1.0);
+      const okConf = (conf === 'NON');
+      const okSigma = checkClose(sigma, 1.20, 0.05);
+
+      const fb = document.getElementById('ex32-feedback');
+      if (okSmin && okSmax && okConf && okSigma) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Niveau Excellence atteint ! Surface admissible [39 920 ; 40 080 mm<sup>2</sup>]. La platine (39 840 mm<sup>2</sup>) est hors tolérance métrologique bien que la contrainte de 1,20 N/mm<sup>2</sup> reste très inférieure à Re (235 N/mm<sup>2</sup>).</span>';
+        if (!appState.bonusCompleted.ex32) {
+          appState.bonusCompleted.ex32 = true;
+          appState.bonusPoints += 25;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifications : S<sub>min</sub> = 199,8<sup>2</sup> = 39 920,04 mm<sup>2</sup> ; S<sub>max</sub> = 200,2<sup>2</sup> = 40 080,04 mm<sup>2</sup> ; &sigma; = 48 000 / 39 840 &approx; 1,20 N/mm<sup>2</sup>.</span>';
+      }
+    }
+  </script>
+</body>
+</html>
