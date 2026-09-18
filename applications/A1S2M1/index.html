@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMA Formation - CAP Métallier : Fréquences & Diagrammes en Bâtons</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- MathJax CDN pour les formules mathématiques statiques -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
+  <style>
+    :root {
+      --cma-bordeaux: #A50F23;
+      --cma-corail: #EE3C3D;
+      --cma-bg: #F8FAFC;
+      --cma-text: #1E293B;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--cma-bg);
+      color: var(--cma-text);
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* En-tête officiel CMA Formation et ruban répété */
+    .app-header {
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 20px;
+      background: #FFFFFF;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .cma-wave-border {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 14px;
+      margin: 0;
+      border: 0;
+      background-image: url("ruban_vague.png");
+      background-repeat: repeat-x;
+      background-size: 102.941176px 102.941176px;
+      background-position: left -46.941176px;
+    }
+
+    .app-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .icon-bullet {
+      height: 18px;
+      width: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
+
+    /* Commandes tactiles ergonomiques Mobile-First */
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .math-input {
+      font-size: 16px;
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      border: 2px solid #CBD5E1;
+      border-radius: 0.5rem;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #FFFFFF;
+    }
+
+    .math-input:focus {
+      outline: none;
+      border-color: var(--cma-bordeaux);
+      box-shadow: 0 0 0 3px rgba(165, 15, 35, 0.15);
+    }
+
+    /* Cacher la barre de défilement horizontal tout en gardant le swipe */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Styles dédiés à l'impression de l'attestation */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-certificate-zone, #print-certificate-zone * {
+        visibility: visible;
+      }
+      #print-certificate-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 24px;
+        background: white;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- ==================== HEADER OFFICIEL CMA ==================== -->
+  <header class="app-header">
+    <div class="max-w-4xl mx-auto px-4 pt-3 pb-1 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="Logo CMA Formation" class="app-logo" onerror="this.src='https://placehold.co/140x48/A50F23/ffffff?text=CMA+Formation'">
+        <div>
+          <span class="block text-[11px] uppercase tracking-wider text-slate-500 font-bold">CMA Formation Sainte-Clotilde</span>
+          <h1 class="text-base sm:text-lg font-bold text-[#A50F23] leading-tight">CAP Métallier - Mathématiques</h1>
+        </div>
+      </div>
+      <div class="text-right text-xs bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-200">
+        <p class="font-bold text-slate-800">Séance A1 S2 M1</p>
+        <p class="text-slate-600 text-[11px]">Fréquences & Diagrammes en Bâtons</p>
+      </div>
+    </div>
+    <div class="cma-wave-border"></div>
+  </header>
+
+  <!-- Barre de progression générale (8 px) -->
+  <div class="w-full bg-slate-200 h-2">
+    <div id="general-progress-bar" class="bg-[#EE3C3D] h-2 transition-all duration-500" style="width: 0%;"></div>
+  </div>
+
+  <!-- ==================== CONTENU PRINCIPAL ==================== -->
+  <main class="max-w-4xl mx-auto w-full px-3 sm:px-6 py-4 flex-grow">
+
+    <!-- Navigation horizontale des 4 étapes -->
+    <nav class="flex space-x-2 overflow-x-auto pb-2 mb-4 no-scrollbar border-b border-slate-200" aria-label="Étapes de la séance">
+      <button onclick="switchStep(1)" id="nav-btn-1" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-[#A50F23] text-white shadow-sm flex items-center">
+        <span>Étape 1 : Découverte</span>
+      </button>
+      <button onclick="switchStep(2)" id="nav-btn-2" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 2 : Cours & Simulateur</span>
+      </button>
+      <button onclick="switchStep(3)" id="nav-btn-3" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 3 : Entraînement</span>
+      </button>
+      <button onclick="switchStep(4)" id="nav-btn-4" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 4 : Bilan & Attestation</span>
+      </button>
+    </nav>
+
+    <!-- Bandeau de suivi Socle & Bonus -->
+    <div class="bg-white rounded-xl p-3 sm:p-4 mb-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+        <span class="text-xs sm:text-sm font-semibold text-slate-700">Progression Socle CAP (Niv. 1) : <span id="socle-percent" class="text-[#A50F23] font-bold">0%</span></span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span class="text-xs sm:text-sm font-semibold text-slate-700">Bonus Dépassement : <span id="bonus-points" class="text-amber-600 font-bold">0 pts</span></span>
+        <span id="badge-pill" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-500 font-medium rounded-full border border-slate-200">En cours</span>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 1 : DÉCOUVERTE ==================== -->
+    <!-- ============================================================== -->
+    <section id="step-1" class="space-y-6">
+      
+      <!-- Situation professionnelle -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Mise en situation : Métal Réunion Océan Indien (ZI Chaudron)
+        </h2>
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 sm:p-4 rounded-r-lg text-xs sm:text-sm text-slate-800 space-y-2">
+          <p>
+            L'entreprise artisanale <strong>« Métal Réunion Océan Indien »</strong>, située dans la Zone Industrielle du Chaudron à Sainte-Clotilde, fabrique des ouvrages métalliques sur mesure pour le secteur résidentiel et tertiaire du bassin nord de l'île (Saint-Denis, Sainte-Marie, Sainte-Suzanne).
+          </p>
+          <p>
+            À l'approche de la saison cyclonique, le gérant dresse le bilan des <strong>50 commandes</strong> enregistrées au cours du trimestre : grilles de défense antivol, portails acier, pergolas bioclimatiques en acier galvanisé, et garde-corps de varangues.
+          </p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-base sm:text-lg">18</span>
+            <span class="text-slate-600">Grilles antivol</span>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-base sm:text-lg">14</span>
+            <span class="text-slate-600">Portails acier</span>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-base sm:text-lg">11</span>
+            <span class="text-slate-600">Pergolas bioclim.</span>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-base sm:text-lg">7</span>
+            <span class="text-slate-600">Garde-corps varangue</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 1 : Somme des effectifs -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          1. Vérification de l'effectif total N
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Vérifiez que la somme des effectifs partiels est bien égale à l'effectif total $N = 50$ commandes :<br>
+          $\text{Somme} = 18 + 14 + 11 + 7 = \dots$
+        </p>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <input type="text" inputmode="decimal" id="dec-q1" class="math-input sm:w-56" placeholder="Votre résultat...">
+          <button onclick="checkDiscoveryQ1()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition">
+            Vérifier la somme
+          </button>
+        </div>
+        <div id="dec-q1-feedback" class="text-xs sm:text-sm"></div>
+      </div>
+
+      <!-- Questions 2 & 3 : Tableau statistique complet sans exemple prérempli -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          2 & 3. Tableau d'atelier : Fréquences et Hauteurs de bâtons
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Complétez le tableau ci-dessous. Échelle retenue pour le diagramme : <strong>1 cm représente 2 commandes</strong> (soit 0,5 cm pour 1 commande).
+        </p>
+
+        <!-- Conteneur avec scroll horizontal pour préserver l'affichage mobile 360px -->
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-xs sm:text-sm text-left border-collapse min-w-[520px]">
+            <thead class="bg-slate-100 text-slate-700 font-semibold">
+              <tr>
+                <th class="p-2.5 border-b">Type d'ouvrage</th>
+                <th class="p-2.5 border-b text-center w-24">Effectif ($n_i$)</th>
+                <th class="p-2.5 border-b text-center">Fréq. décimale</th>
+                <th class="p-2.5 border-b text-center">Fréq. en %</th>
+                <th class="p-2.5 border-b text-center">Hauteur (cm)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr>
+                <td class="p-2.5 font-medium">Grilles antivol</td>
+                <td class="p-2.5 text-center font-bold">18</td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-f1" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-p1" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-h1" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium">Portails acier</td>
+                <td class="p-2.5 text-center font-bold">14</td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-f2" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-p2" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-h2" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium">Pergolas bioclim.</td>
+                <td class="p-2.5 text-center font-bold">11</td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-f3" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-p3" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-h3" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium">Garde-corps varangue</td>
+                <td class="p-2.5 text-center font-bold">7</td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-f4" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-p4" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-h4" class="math-input text-center py-1" placeholder="Votre résultat..."></td>
+              </tr>
+              <tr class="bg-slate-50 font-bold">
+                <td class="p-2.5">TOTAL</td>
+                <td class="p-2.5 text-center text-[#A50F23]">50</td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-ftot" class="math-input text-center py-1 font-bold" placeholder="Votre résultat..."></td>
+                <td class="p-2.5"><input type="text" inputmode="decimal" id="dec-ptot" class="math-input text-center py-1 font-bold" placeholder="Votre résultat..."></td>
+                <td class="p-2.5 text-center text-slate-400 font-normal">-</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button onclick="checkDiscoveryTable()" class="touch-target w-full sm:w-auto bg-[#A50F23] hover:bg-[#850C1B] text-white px-6 rounded-lg font-semibold text-xs sm:text-sm transition">
+          Valider le tableau statistique
+        </button>
+        <div id="dec-table-feedback" class="text-xs sm:text-sm"></div>
+      </div>
+
+      <!-- Question 4 : Analyse d'activité -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          4. Analyse de l'activité d'atelier
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Quel type d'ouvrage représente la part d'activité la plus importante dans cet atelier ? Saisissez la valeur de son pourcentage :
+        </p>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <input type="text" inputmode="decimal" id="dec-q4" class="math-input sm:w-56" placeholder="Votre résultat...">
+          <button onclick="checkDiscoveryQ4()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition">
+            Valider la part d'activité
+          </button>
+        </div>
+        <div id="dec-q4-feedback" class="text-xs sm:text-sm"></div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="switchStep(2)" class="touch-target bg-slate-800 hover:bg-black text-white px-6 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2">
+          <span>Passer à l'Étape 2 : Cours & Simulateur</span>
+          <span>&rarr;</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 2 : COURS & SIMULATEUR ============= -->
+    <!-- ============================================================== -->
+    <section id="step-2" class="space-y-6 hidden">
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          À Retenir : L'Essentiel du Cours
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm text-slate-700">
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">1. Effectif total ($N$)</h3>
+            <p>Somme de tous les effectifs partiels :</p>
+            <div class="text-center font-mono font-bold bg-white p-2 rounded border border-slate-200">
+              $N = n_1 + n_2 + \dots + n_k$
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">2. Fréquence d'une modalité ($f_i$)</h3>
+            <p>Quotient de l'effectif partiel $n_i$ par l'effectif total $N$ :</p>
+            <div class="text-center font-mono font-bold bg-white p-2 rounded border border-slate-200">
+              $f_i = \dfrac{n_i}{N}$
+            </div>
+            <p class="text-[11px] text-slate-500">Toujours comprise entre 0 et 1 ($0 \le f_i \le 1$). La somme des fréquences décimales est égale à 1.</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">3. Fréquence en pourcentage ($f_i\,\%$)</h3>
+            <p>Multiplication de la fréquence décimale par 100 :</p>
+            <div class="text-center font-mono font-bold bg-white p-2 rounded border border-slate-200">
+              $f_i\,\% = \left(\dfrac{n_i}{N}\right) \times 100 = f_i \times 100$
+            </div>
+            <p class="text-[11px] text-slate-500">La somme de toutes les fréquences en pourcentage est égale à 100 %.</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">4. Diagramme en bâtons</h3>
+            <p>Représentation pour caractères qualitatifs ou discrets :</p>
+            <ul class="list-disc pl-4 text-xs space-y-1 text-slate-600">
+              <li><strong>En abscisse (horizontal) :</strong> types d'ouvrages ou modalités.</li>
+              <li><strong>En ordonnée (vertical) :</strong> effectifs ($n_i$) ou fréquences ($f_i$).</li>
+              <li><strong>Règle de construction :</strong> hauteur du bâton strictement proportionnelle à l'effectif.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Simulateur interactif dynamique SVG -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Simulateur d'Atelier : Diagramme en Bâtons en Temps Réel
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Modifiez les commandes d'ouvrages à Sainte-Clotilde pour observer le calcul instantané de l'effectif total, des fréquences et le tracé graphique dynamique.
+        </p>
+
+        <!-- Commandes numériques tactiles -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200">
+          <div>
+            <label for="sim-n1" class="block text-xs font-semibold text-slate-700">Grilles antivol</label>
+            <input type="number" id="sim-n1" value="18" min="0" max="60" oninput="updateSimulator()" class="math-input text-center font-bold text-[#A50F23] mt-1">
+          </div>
+          <div>
+            <label for="sim-n2" class="block text-xs font-semibold text-slate-700">Portails acier</label>
+            <input type="number" id="sim-n2" value="14" min="0" max="60" oninput="updateSimulator()" class="math-input text-center font-bold text-[#A50F23] mt-1">
+          </div>
+          <div>
+            <label for="sim-n3" class="block text-xs font-semibold text-slate-700">Pergolas bioclim.</label>
+            <input type="number" id="sim-n3" value="11" min="0" max="60" oninput="updateSimulator()" class="math-input text-center font-bold text-[#A50F23] mt-1">
+          </div>
+          <div>
+            <label for="sim-n4" class="block text-xs font-semibold text-slate-700">Garde-corps</label>
+            <input type="number" id="sim-n4" value="7" min="0" max="60" oninput="updateSimulator()" class="math-input text-center font-bold text-[#A50F23] mt-1">
+          </div>
+        </div>
+
+        <!-- Indicateurs calculés -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+          <div class="p-2 bg-rose-50 rounded-lg border border-rose-100">
+            <span class="text-slate-600 block">Total N</span>
+            <span id="sim-res-total" class="text-sm sm:text-base font-bold text-[#A50F23]">50</span>
+          </div>
+          <div class="p-2 bg-blue-50 rounded-lg border border-blue-100">
+            <span class="text-slate-600 block">Grilles %</span>
+            <span id="sim-res-p1" class="text-sm sm:text-base font-bold text-blue-700">36.0 %</span>
+          </div>
+          <div class="p-2 bg-emerald-50 rounded-lg border border-emerald-100">
+            <span class="text-slate-600 block">Portails %</span>
+            <span id="sim-res-p2" class="text-sm sm:text-base font-bold text-emerald-700">28.0 %</span>
+          </div>
+          <div class="p-2 bg-purple-50 rounded-lg border border-purple-100">
+            <span class="text-slate-600 block">Pergolas & GC %</span>
+            <span id="sim-res-p34" class="text-sm sm:text-base font-bold text-purple-700">36.0 %</span>
+          </div>
+        </div>
+
+        <!-- Canvas SVG interactif fluide -->
+        <div class="w-full bg-slate-900 rounded-xl p-3 sm:p-4 shadow-inner">
+          <svg id="sim-chart" viewBox="0 0 440 230" class="w-full h-auto overflow-visible">
+            <!-- Rendu dynamique JS -->
+          </svg>
+        </div>
+      </div>
+
+      <div class="flex justify-between pt-2">
+        <button onclick="switchStep(1)" class="touch-target bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition">
+          &larr; Étape 1 : Découverte
+        </button>
+        <button onclick="switchStep(3)" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-6 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition">
+          Passer à l'Étape 3 : Entraînement &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 3 : ENTRAÎNEMENT GAMIFIÉ ========== -->
+    <!-- ============================================================== -->
+    <section id="step-3" class="space-y-6 hidden">
+      
+      <!-- Onglets des 3 niveaux -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+        <button onclick="switchLevel(1)" id="lvl-tab-1" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white flex items-center gap-1.5 shadow-sm">
+          <span>🟢 Niveau 1 : Socle CAP</span>
+        </button>
+        <button onclick="switchLevel(2)" id="lvl-tab-2" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-500 flex items-center gap-1.5 cursor-not-allowed" disabled>
+          <span>🔒 Niveau 2 : Avancé</span>
+        </button>
+        <button onclick="switchLevel(3)" id="lvl-tab-3" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-500 flex items-center gap-1.5 cursor-not-allowed" disabled>
+          <span>🔒 Niveau 3 : Expert</span>
+        </button>
+      </div>
+
+      <!-- ==================== NIVEAU 1 : SOCLE CAP ==================== -->
+      <div id="level-1-container" class="space-y-6">
+        <div class="bg-emerald-50 border border-emerald-200 p-3 sm:p-4 rounded-xl flex items-center justify-between text-xs sm:text-sm text-emerald-900">
+          <span><strong>Socle CAP (Niveau 1) :</strong> Réalisez ces 5 exercices pour valider le socle à 100 %, débloquer votre Attestation et accéder aux bonus.</span>
+          <span id="lvl1-count-badge" class="font-bold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full">0 / 5</span>
+        </div>
+
+        <!-- Exercice 1.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.1 (C1, C2) - Ferronnerie de 20 ouvriers
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Un atelier de ferronnerie compte <strong>20 ouvriers</strong> : 8 soudeurs TIG, 6 meuleurs-débiteurs, 4 chaudronniers et 2 peintres.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex11-q1" class="block font-semibold text-slate-700 mb-1">1. Effectif total $N$ des ouvriers :</label>
+              <input type="text" inputmode="decimal" id="ex11-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex11-q2" class="block font-semibold text-slate-700 mb-1">2. Fréquence décimale des soudeurs TIG ($f = 8/20$) :</label>
+              <input type="text" inputmode="decimal" id="ex11-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex11-q3" class="block font-semibold text-slate-700 mb-1">3. Fréquence en % des meuleurs-débiteurs ($6/20$) :</label>
+              <input type="text" inputmode="decimal" id="ex11-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex11-q4" class="block font-semibold text-slate-700 mb-1">4. Total de l'ensemble des fréquences en % :</label>
+              <input type="text" inputmode="decimal" id="ex11-q4" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx11()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.1
+          </button>
+          <div id="ex11-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.2 (C2) - Serrures de sécurité à Saint-Denis
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Sur <strong>40 serrures</strong> métalliques de sécurité vendues à Saint-Denis, on recense : 16 serrures 3 points, 14 serrures 5 points et 10 serrures monopoints.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex12-q1" class="block font-semibold text-slate-700 mb-1">Fréquence % des 3 points (16/40) :</label>
+              <input type="text" inputmode="decimal" id="ex12-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex12-q2" class="block font-semibold text-slate-700 mb-1">Fréquence % des 5 points (14/40) :</label>
+              <input type="text" inputmode="decimal" id="ex12-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex12-q3" class="block font-semibold text-slate-700 mb-1">Part totale multipoints réunies (3 et 5 pts) :</label>
+              <input type="text" inputmode="decimal" id="ex12-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx12()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.2
+          </button>
+          <div id="ex12-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.3 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.3 (C2) - Échelle d'un diagramme en bâtons
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Pour tracer un diagramme d'atelier, on choisit l'échelle : <strong>1 cm représente 5 pièces métalliques</strong>.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex13-q1" class="block font-semibold text-slate-700 mb-1">1. Hauteur bâton pour 15 pièces (cm) :</label>
+              <input type="text" inputmode="decimal" id="ex13-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex13-q2" class="block font-semibold text-slate-700 mb-1">2. Hauteur bâton pour 35 pièces (cm) :</label>
+              <input type="text" inputmode="decimal" id="ex13-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex13-q3" class="block font-semibold text-slate-700 mb-1">3. Effectif si le bâton mesure 6 cm :</label>
+              <input type="text" inputmode="decimal" id="ex13-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx13()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.3
+          </button>
+          <div id="ex13-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.4 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.4 (C1, C2) - Contrôle qualité de 50 barreaux peints
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Contrôle d'un lot de 50 barreaux après thermolaquage : 42 conformes, 6 coulures de peinture et 2 rayures.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex14-q1" class="block font-semibold text-slate-700 mb-1">Fréquence décimale conformes (42/50) :</label>
+              <input type="text" inputmode="decimal" id="ex14-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex14-q2" class="block font-semibold text-slate-700 mb-1">Fréquence % coulures (6/50) :</label>
+              <input type="text" inputmode="decimal" id="ex14-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex14-q3" class="block font-semibold text-slate-700 mb-1">% de barreaux sans aucun défaut :</label>
+              <input type="text" inputmode="decimal" id="ex14-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx14()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.4
+          </button>
+          <div id="ex14-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.5 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.5 (C2, C3) - Rapprochement effectif / fréquence
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Dans un stock de <strong>80 profilés tubulaires</strong> :
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex15-q1" class="block font-semibold text-slate-700 mb-1">1. Effectif tubes carrés 40x40 (30% du stock) :</label>
+              <input type="text" inputmode="decimal" id="ex15-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex15-q2" class="block font-semibold text-slate-700 mb-1">2. Effectif tubes rectangulaires (40% du stock) :</label>
+              <input type="text" inputmode="decimal" id="ex15-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx15()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.5
+          </button>
+          <div id="ex15-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+      </div>
+
+      <!-- ==================== NIVEAU 2 : AVANCÉ ==================== -->
+      <div id="level-2-container" class="space-y-6 hidden">
+        <div class="bg-amber-50 border border-amber-200 p-3 sm:p-4 rounded-xl text-xs sm:text-sm text-amber-900">
+          <strong>Niveau 2 - Dépassement :</strong> Situations concrètes de chantier (passerelle du Port, automatisation tableur, pannes en climat tropical).
+        </div>
+
+        <!-- Exercice 2.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.1 (C2, C3) - Disques de meuleuse au Port ($N=120$)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Sur le chantier d'une passerelle au Port, <strong>120 disques</strong> ont été consommés : 54 disques Ø 125 mm, 42 disques Ø 230 mm et 24 disques de tronçonnage pendulaire Ø 355 mm.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex21-q1" class="block font-semibold text-slate-700 mb-1">Fréq. décimale Ø 125 (54/120) :</label>
+              <input type="text" inputmode="decimal" id="ex21-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex21-q2" class="block font-semibold text-slate-700 mb-1">Fréquence % Ø 230 (42/120) :</label>
+              <input type="text" inputmode="decimal" id="ex21-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex21-q3" class="block font-semibold text-slate-700 mb-1">Fréquence % Ø 355 (24/120) :</label>
+              <input type="text" inputmode="decimal" id="ex21-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <p class="text-[11px] text-slate-600 pt-1">Échelle : 1 cm représente 6 disques abrasifs.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
+            <div>
+              <label for="ex21-h1" class="block font-semibold text-slate-700 mb-1">Hauteur bâton Ø 125 (cm) :</label>
+              <input type="text" inputmode="decimal" id="ex21-h1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex21-h2" class="block font-semibold text-slate-700 mb-1">Hauteur bâton Ø 230 (cm) :</label>
+              <input type="text" inputmode="decimal" id="ex21-h2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex21-h3" class="block font-semibold text-slate-700 mb-1">Hauteur bâton Ø 355 (cm) :</label>
+              <input type="text" inputmode="decimal" id="ex21-h3" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx21()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.1
+          </button>
+          <div id="ex21-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 2.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.2 (C1, C3) - Automatisation sur Tableur
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Livraisons saisies de B2 à B5 : S235 (35), S355 (25), Inox 304L (15), Inox 316L marin (25).
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex22-q1" class="block font-semibold text-slate-700 mb-1">1. Formule en B6 pour calculer le total N :</label>
+              <input type="text" id="ex22-q1" class="math-input font-mono" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex22-q2" class="block font-semibold text-slate-700 mb-1">2. Formule en C2 étirable vers le bas :</label>
+              <input type="text" id="ex22-q2" class="math-input font-mono" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <div>
+            <label for="ex22-q3" class="block font-semibold text-slate-700 mb-1 text-xs sm:text-sm">3. Pourcentage total des aciers inox (304L + 316L) :</label>
+            <input type="text" inputmode="decimal" id="ex22-q3" class="math-input sm:w-60" placeholder="Votre résultat...">
+          </div>
+          <button onclick="checkEx22()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.2
+          </button>
+          <div id="ex22-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 2.3 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.3 (C3, C4) - Audit de maintenance des postes MIG-MAG
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Défaillances annuelles en milieu tropical : Amorçage (18), Surchauffe (15), Galets (12), Gaine torche (5).
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex23-q1" class="block font-semibold text-slate-700 mb-1">1. Effectif total des pannes :</label>
+              <input type="text" inputmode="decimal" id="ex23-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex23-q2" class="block font-semibold text-slate-700 mb-1">Fréq. % amorçage défectueux :</label>
+              <input type="text" inputmode="decimal" id="ex23-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex23-q3" class="block font-semibold text-slate-700 mb-1">Fréq. % surchauffe thermique :</label>
+              <input type="text" inputmode="decimal" id="ex23-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <button onclick="checkEx23()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.3
+          </button>
+          <div id="ex23-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+      </div>
+
+      <!-- ==================== NIVEAU 3 : EXPERT ==================== -->
+      <div id="level-3-container" class="space-y-6 hidden">
+        <div class="bg-rose-50 border border-rose-200 p-3 sm:p-4 rounded-xl text-xs sm:text-sm text-rose-900">
+          <strong>Niveau 3 - Excellence :</strong> Analyse complexe & gestion de production (comparatif inter-ateliers, charge horaire trimestrielle).
+        </div>
+
+        <!-- Exercice 3.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 3.1 (C3, C4) - Comparatif : Sainte-Clotilde ($N_1=80$) vs Saint-Pierre ($N_2=120$)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            • <strong>Atelier A (Sainte-Clotilde, N=80) :</strong> 32 pergolas, 24 portails, 16 garde-corps, 8 antivols.<br>
+            • <strong>Atelier B (Saint-Pierre, N=120) :</strong> 36 pergolas, 42 portails, 30 garde-corps, 12 antivols.
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex31-q1" class="block font-semibold text-slate-700 mb-1">Fréquence % pergolas à Sainte-Clotilde (32/80) :</label>
+              <input type="text" inputmode="decimal" id="ex31-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex31-q2" class="block font-semibold text-slate-700 mb-1">Fréquence % pergolas à Saint-Pierre (36/120) :</label>
+              <input type="text" inputmode="decimal" id="ex31-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <div>
+            <label for="ex31-q3" class="block font-semibold text-slate-700 mb-1 text-xs sm:text-sm">Atelier proportionnellement le plus spécialisé en pergolas (A ou B) :</label>
+            <input type="text" id="ex31-q3" class="math-input sm:w-36 uppercase font-bold" placeholder="Votre résultat...">
+          </div>
+          <button onclick="checkEx31()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 3.1
+          </button>
+          <div id="ex31-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 3.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 3.2 (C3, C4) - Plan de charge et logistique ($N=100$)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Temps de soudage/assemblage : Antivol = 4 h (36%) ; Portail = 12 h (28%) ; Pergola = 18 h (22%) ; Garde-corps = 8 h (14%).
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex32-q1" class="block font-semibold text-slate-700 mb-1">Heures pour 36 antivols ($36 \times 4$) :</label>
+              <input type="text" inputmode="decimal" id="ex32-q1" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex32-q2" class="block font-semibold text-slate-700 mb-1">Heures pour 22 pergolas ($22 \times 18$) :</label>
+              <input type="text" inputmode="decimal" id="ex32-q2" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex32-q3" class="block font-semibold text-slate-700 mb-1">Temps total atelier pour 100 ouvrages :</label>
+              <input type="text" inputmode="decimal" id="ex32-q3" class="math-input" placeholder="Votre résultat...">
+            </div>
+          </div>
+          <div>
+            <label for="ex32-q4" class="block font-semibold text-slate-700 mb-1 text-xs sm:text-sm">Part en % du temps total passée sur les pergolas (à 0,1%) :</label>
+            <input type="text" inputmode="decimal" id="ex32-q4" class="math-input sm:w-60" placeholder="Votre résultat...">
+          </div>
+          <button onclick="checkEx32()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 3.2
+          </button>
+          <div id="ex32-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 4 : BILAN & ATTESTATION =========== -->
+    <!-- ============================================================== -->
+    <section id="step-4" class="space-y-6 hidden">
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Bilan de Compétences & Attestation Pédagogique
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 mb-4">
+          Saisissez votre nom et prénom pour éditer votre attestation officielle de fin de séance. Elle valide les compétences professionnelles du référentiel CAP Métallier.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 no-print">
+          <input type="text" id="student-name-input" class="math-input sm:w-80" placeholder="Nom et Prénom de l'apprenant..." oninput="updateStudentName()">
+          <button onclick="window.print()" class="touch-target bg-slate-800 hover:bg-black text-white px-6 rounded-lg font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+            <span>Imprimer ou Enregistrer en PDF</span>
+          </button>
+        </div>
+
+        <!-- ZONE D'ATTESTATION OFFICIELLE IMPRIMABLE -->
+        <div id="print-certificate-zone" class="border-4 border-[#A50F23] rounded-2xl p-6 sm:p-8 bg-white relative overflow-hidden shadow-md">
+          <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4 mb-4">
+            <img src="logo.png" alt="Logo CMA" class="app-logo" onerror="this.src='https://placehold.co/140x48/A50F23/ffffff?text=CMA+Formation'">
+            <div class="text-right">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#A50F23] block">CMA Formation Sainte-Clotilde</span>
+              <span class="text-[11px] text-slate-500">Chambre de Métiers et de l'Artisanat de La Réunion</span>
+            </div>
+          </div>
+
+          <div class="text-center my-4">
+            <span class="text-[11px] uppercase font-bold text-slate-400 tracking-widest block">Attestation Pédagogique de Réussite</span>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">CAP Métallier - 1ère Année</h3>
+            <p class="text-xs sm:text-sm text-[#A50F23] font-semibold mt-1">Séance A1 S2 M1 : Statistique à une variable, Fréquences et Diagrammes en bâtons</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-4 my-4 border border-slate-200">
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Attestation décernée à : <strong id="cert-student-name" class="text-sm sm:text-base text-slate-950 font-bold underline decoration-[#A50F23] decoration-2">[Nom de l'Apprenant]</strong>
+            </p>
+            <p class="text-[11px] text-slate-500 mt-1">
+              Date : <span id="cert-date" class="font-semibold text-slate-700">--/--/----</span> | Formateur : <strong>Rachel Lamberet-Lezais</strong> | Lieu : <strong>Sainte-Clotilde</strong>
+            </p>
+          </div>
+
+          <!-- État d'acquisition -->
+          <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm my-4">
+            <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+              <span class="text-slate-600 block text-[11px]">Socle CAP Métallier :</span>
+              <span id="cert-socle-status" class="text-sm sm:text-base font-bold text-emerald-700">En cours (0%)</span>
+            </div>
+            <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <span class="text-slate-600 block text-[11px]">Bonus Dépassement / Excellence :</span>
+              <span id="cert-bonus-status" class="text-sm sm:text-base font-bold text-amber-700">0 Points</span>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-200 pt-3 text-[11px] sm:text-xs text-slate-600 space-y-1">
+            <p class="font-bold text-slate-700">Compétences mathématiques mises en œuvre :</p>
+            <ul class="list-disc pl-4 space-y-0.5 text-slate-600">
+              <li>C1 (S'approprier) : Dépouillement de bons de commandes et identification des effectifs partiels.</li>
+              <li>C2 (Analyser/Raisonner) : Calcul de fréquences relatives décimales et pourcentages.</li>
+              <li>C3 (Réaliser) : Représentation proportionnelle par diagramme en bâtons et formules tableur.</li>
+              <li>C4 (Valider/Communiquer) : Analyse critique de plan de charge de soudage et pannes sous climat tropical.</li>
+            </ul>
+          </div>
+
+          <div class="mt-6 flex justify-between items-end pt-4 border-t border-slate-100 text-[10px] text-slate-400">
+            <span>Certificat généré sur l'application pédagogique SPA - CMA Formation Sainte-Clotilde</span>
+            <span class="font-semibold text-slate-600">Mention : <span id="cert-mention">Socle en cours</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500 no-print">
+    <p>CMA Formation Sainte-Clotilde - CFA de La Réunion | Référentiel National BO 2024 | Qualiopi</p>
+    <p class="text-[11px] text-slate-400 mt-0.5">Auteur / Formateur : Rachel Lamberet-Lezais</p>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    /* État global de l'apprenant */
+    const appState = {
+      currentStep: 1,
+      socleCompleted: {
+        ex11: false,
+        ex12: false,
+        ex13: false,
+        ex14: false,
+        ex15: false
+      },
+      bonusCompleted: {
+        ex21: false,
+        ex22: false,
+        ex23: false,
+        ex31: false,
+        ex32: false
+      },
+      bonusPoints: 0
+    };
+
+    /* Initialisation */
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      document.getElementById('cert-date').textContent = today.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      updateSimulator();
+    });
+
+    /* Parsing robuste des nombres avec support virgule/point */
+    function parseNum(val) {
+      if (!val) return null;
+      const clean = String(val).trim().replace(',', '.');
+      const n = parseFloat(clean);
+      return isNaN(n) ? null : n;
+    }
+
+    /* Comparaison avec tolérance bienveillante */
+    function checkClose(user, target, tol = 0.1) {
+      if (user === null) return false;
+      return Math.abs(user - target) <= tol;
+    }
+
+    /* Changement d'étape */
+    function switchStep(step) {
+      appState.currentStep = step;
+      for (let i = 1; i <= 4; i++) {
+        const sec = document.getElementById('step-' + i);
+        const btn = document.getElementById('nav-btn-' + i);
+        if (i === step) {
+          sec.classList.remove('hidden');
+          btn.className = "touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-[#A50F23] text-white shadow-sm flex items-center";
+        } else {
+          sec.classList.add('hidden');
+          btn.className = "touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center";
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    /* Changement de niveau d'entraînement */
+    function switchLevel(lvl) {
+      document.getElementById('level-1-container').classList.add('hidden');
+      document.getElementById('level-2-container').classList.add('hidden');
+      document.getElementById('level-3-container').classList.add('hidden');
+
+      document.getElementById('lvl-tab-1').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+      document.getElementById('lvl-tab-2').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+      document.getElementById('lvl-tab-3').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+
+      if (lvl === 1) {
+        document.getElementById('level-1-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-1').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white flex items-center gap-1.5 shadow-sm";
+      } else if (lvl === 2) {
+        document.getElementById('level-2-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-2').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-600 text-white flex items-center gap-1.5 shadow-sm";
+      } else if (lvl === 3) {
+        document.getElementById('level-3-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-3').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white flex items-center gap-1.5 shadow-sm";
+      }
+    }
+
+    /* Mise à jour du score et déblocages */
+    function updateProgress() {
+      const keys = Object.keys(appState.socleCompleted);
+      const done = keys.filter(k => appState.socleCompleted[k]).length;
+      const pct = Math.round((done / keys.length) * 100);
+
+      document.getElementById('socle-percent').textContent = pct + '%';
+      document.getElementById('lvl1-count-badge').textContent = done + ' / ' + keys.length;
+      document.getElementById('bonus-points').textContent = appState.bonusPoints + ' pts';
+      document.getElementById('general-progress-bar').style.width = pct + '%';
+
+      if (pct === 100) {
+        // Déblocage niveau 2
+        const l2 = document.getElementById('lvl-tab-2');
+        l2.disabled = false;
+        l2.classList.remove('cursor-not-allowed');
+        l2.innerHTML = "<span>🟡 Niveau 2 : Avancé</span>";
+
+        const badge = document.getElementById('badge-pill');
+        badge.className = "text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-full border border-emerald-300";
+        badge.textContent = "Socle CAP Validé !";
+
+        document.getElementById('cert-socle-status').textContent = "Validé à 100%";
+        document.getElementById('cert-mention').textContent = "Socle CAP Acquis";
+      }
+
+      // Déblocage niveau 3
+      const b2Done = ['ex21', 'ex22', 'ex23'].every(k => appState.bonusCompleted[k]);
+      if (b2Done) {
+        const l3 = document.getElementById('lvl-tab-3');
+        l3.disabled = false;
+        l3.classList.remove('cursor-not-allowed');
+        l3.innerHTML = "<span>🔴 Niveau 3 : Expert</span>";
+      }
+
+      document.getElementById('cert-bonus-status').textContent = appState.bonusPoints + " Points";
+      if (appState.bonusPoints >= 50) {
+        document.getElementById('cert-mention').textContent = "Excellence Métallier";
+      }
+    }
+
+    function updateStudentName() {
+      const val = document.getElementById('student-name-input').value.trim();
+      document.getElementById('cert-student-name').textContent = val || "[Nom de l'Apprenant]";
+    }
+
+    /* Validation Étape 1 */
+    function checkDiscoveryQ1() {
+      const val = parseNum(document.getElementById('dec-q1').value);
+      const fb = document.getElementById('dec-q1-feedback');
+      if (val === 50) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Exact ! 18 + 14 + 11 + 7 = 50 commandes. L\'effectif total N est vérifié.</span>';
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calcul incorrect. Faites la somme des 4 effectifs : 18 + 14 + 11 + 7.</span>';
+      }
+    }
+
+    function checkDiscoveryTable() {
+      const f1 = parseNum(document.getElementById('dec-f1').value);
+      const p1 = parseNum(document.getElementById('dec-p1').value);
+      const h1 = parseNum(document.getElementById('dec-h1').value);
+
+      const f2 = parseNum(document.getElementById('dec-f2').value);
+      const p2 = parseNum(document.getElementById('dec-p2').value);
+      const h2 = parseNum(document.getElementById('dec-h2').value);
+
+      const f3 = parseNum(document.getElementById('dec-f3').value);
+      const p3 = parseNum(document.getElementById('dec-p3').value);
+      const h3 = parseNum(document.getElementById('dec-h3').value);
+
+      const f4 = parseNum(document.getElementById('dec-f4').value);
+      const p4 = parseNum(document.getElementById('dec-p4').value);
+      const h4 = parseNum(document.getElementById('dec-h4').value);
+
+      const ftot = parseNum(document.getElementById('dec-ftot').value);
+      const ptot = parseNum(document.getElementById('dec-ptot').value);
+
+      const ok = checkClose(f1, 0.36) && checkClose(p1, 36) && checkClose(h1, 9) &&
+                 checkClose(f2, 0.28) && checkClose(p2, 28) && checkClose(h2, 7) &&
+                 checkClose(f3, 0.22) && checkClose(p3, 22) && checkClose(h3, 5.5) &&
+                 checkClose(f4, 0.14) && checkClose(p4, 14) && checkClose(h4, 3.5) &&
+                 checkClose(ftot, 1) && checkClose(ptot, 100);
+
+      const fb = document.getElementById('dec-table-feedback');
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Bravo ! Tout le tableau statistique d\'atelier est rigoureusement exact.</span>';
+      } else {
+        fb.innerHTML = '<span class="text-amber-700">Certaines cellules sont à corriger. Rappel : f = n / 50, % = f &times; 100, et Hauteur = n / 2.</span>';
+      }
+    }
+
+    function checkDiscoveryQ4() {
+      const p = parseNum(document.getElementById('dec-q4').value);
+      const fb = document.getElementById('dec-q4-feedback');
+      if (checkClose(p, 36)) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Excellent ! Les grilles antivol constituent la part la plus importante avec 36 % de l\'activité.</span>';
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Indiquez la fréquence en pourcentage de l\'ouvrage ayant le plus fort effectif (18 commandes).</span>';
+      }
+    }
+
+    /* Simulateur interactif */
+    function updateSimulator() {
+      const n1 = Math.max(0, parseInt(document.getElementById('sim-n1').value) || 0);
+      const n2 = Math.max(0, parseInt(document.getElementById('sim-n2').value) || 0);
+      const n3 = Math.max(0, parseInt(document.getElementById('sim-n3').value) || 0);
+      const n4 = Math.max(0, parseInt(document.getElementById('sim-n4').value) || 0);
+
+      const total = n1 + n2 + n3 + n4;
+      document.getElementById('sim-res-total').textContent = total;
+
+      const p1 = total > 0 ? ((n1 / total) * 100).toFixed(1) : 0;
+      const p2 = total > 0 ? ((n2 / total) * 100).toFixed(1) : 0;
+      const p34 = total > 0 ? (((n3 + n4) / total) * 100).toFixed(1) : 0;
+
+      document.getElementById('sim-res-p1').textContent = p1 + ' %';
+      document.getElementById('sim-res-p2').textContent = p2 + ' %';
+      document.getElementById('sim-res-p34').textContent = p34 + ' %';
+
+      const svg = document.getElementById('sim-chart');
+      const maxScale = Math.max(25, n1, n2, n3, n4) + 5;
+      const items = [
+        { label: 'Grilles', val: n1, color: '#EE3C3D' },
+        { label: 'Portails', val: n2, color: '#3B82F6' },
+        { label: 'Pergolas', val: n3, color: '#10B981' },
+        { label: 'Varangues', val: n4, color: '#8B5CF6' }
+      ];
+
+      let svgHtml = `
+        <line x1="50" y1="20" x2="50" y2="185" stroke="#475569" stroke-width="2"/>
+        <line x1="50" y1="185" x2="420" y2="185" stroke="#475569" stroke-width="2"/>
+        <text x="15" y="100" fill="#94A3B8" font-size="10" font-weight="bold" transform="rotate(-90 15,100)">Effectif (n)</text>
+      `;
+
+      for (let g = 0; g <= maxScale; g += 10) {
+        const y = 185 - (g / maxScale) * 155;
+        svgHtml += `
+          <line x1="45" y1="${y}" x2="420" y2="${y}" stroke="#334155" stroke-dasharray="3 3" stroke-width="1"/>
+          <text x="40" y="${y + 4}" fill="#94A3B8" font-size="10" text-anchor="end">${g}</text>
+        `;
+      }
+
+      items.forEach((item, idx) => {
+        const x = 95 + idx * 85;
+        const barH = (item.val / maxScale) * 155;
+        const y = 185 - barH;
+        svgHtml += `
+          <rect x="${x - 14}" y="${y}" width="28" height="${barH}" rx="4" fill="${item.color}"/>
+          <text x="${x}" y="${Math.max(14, y - 5)}" fill="#F8FAFC" font-size="11" font-weight="bold" text-anchor="middle">${item.val}</text>
+          <text x="${x}" y="202" fill="#CBD5E1" font-size="11" text-anchor="middle">${item.label}</text>
+        `;
+      });
+
+      svg.innerHTML = svgHtml;
+    }
+
+    /* Validations Exercices Niveau 1 */
+    function checkEx11() {
+      const q1 = parseNum(document.getElementById('ex11-q1').value);
+      const q2 = parseNum(document.getElementById('ex11-q2').value);
+      const q3 = parseNum(document.getElementById('ex11-q3').value);
+      const q4 = parseNum(document.getElementById('ex11-q4').value);
+
+      const ok = (q1 === 20) && checkClose(q2, 0.4) && checkClose(q3, 30) && checkClose(q4, 100);
+      const fb = document.getElementById('ex11-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Parfait ! N = 20 ouvriers, f(TIG) = 0,40, meuleurs = 30 % et somme = 100 %.</span>';
+        if (!appState.socleCompleted.ex11) {
+          appState.socleCompleted.ex11 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calcul à vérifier. Effectuez 8/20 pour la fréquence décimale et 6/20 pour le pourcentage des meuleurs.</span>';
+      }
+    }
+
+    function checkEx12() {
+      const q1 = parseNum(document.getElementById('ex12-q1').value);
+      const q2 = parseNum(document.getElementById('ex12-q2').value);
+      const q3 = parseNum(document.getElementById('ex12-q3').value);
+
+      const ok = checkClose(q1, 40) && checkClose(q2, 35) && checkClose(q3, 75);
+      const fb = document.getElementById('ex12-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Bravo ! 16/40 = 40 %, 14/40 = 35 %, et la part totale multipoints est de 75 %.</span>';
+        if (!appState.socleCompleted.ex12) {
+          appState.socleCompleted.ex12 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Revoyez vos calculs : 16/40 &times; 100 et 14/40 &times; 100, puis additionnez les deux pourcentages.</span>';
+      }
+    }
+
+    function checkEx13() {
+      const q1 = parseNum(document.getElementById('ex13-q1').value);
+      const q2 = parseNum(document.getElementById('ex13-q2').value);
+      const q3 = parseNum(document.getElementById('ex13-q3').value);
+
+      const ok = checkClose(q1, 3) && checkClose(q2, 7) && checkClose(q3, 30);
+      const fb = document.getElementById('ex13-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Excellent ! 15/5 = 3 cm, 35/5 = 7 cm et 6 &times; 5 = 30 pièces métalliques.</span>';
+        if (!appState.socleCompleted.ex13) {
+          appState.socleCompleted.ex13 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Échelle : divisez par 5 pour obtenir les centimètres, et multipliez les cm par 5 pour trouver le nombre de pièces.</span>';
+      }
+    }
+
+    function checkEx14() {
+      const q1 = parseNum(document.getElementById('ex14-q1').value);
+      const q2 = parseNum(document.getElementById('ex14-q2').value);
+      const q3 = parseNum(document.getElementById('ex14-q3').value);
+
+      const ok = checkClose(q1, 0.84) && checkClose(q2, 12) && checkClose(q3, 84);
+      const fb = document.getElementById('ex14-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Très bien ! 42/50 = 0,84, 6/50 = 12 % et 84 % des barreaux sont conformes sans défaut.</span>';
+        if (!appState.socleCompleted.ex14) {
+          appState.socleCompleted.ex14 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calcul à rectifier : 42 divisé par 50 pour la fréquence décimale des conformes.</span>';
+      }
+    }
+
+    function checkEx15() {
+      const q1 = parseNum(document.getElementById('ex15-q1').value);
+      const q2 = parseNum(document.getElementById('ex15-q2').value);
+
+      const ok = (q1 === 24) && (q2 === 32);
+      const fb = document.getElementById('ex15-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Exact ! 80 &times; 0,30 = 24 tubes carrés et 80 &times; 0,40 = 32 tubes rectangulaires.</span>';
+        if (!appState.socleCompleted.ex15) {
+          appState.socleCompleted.ex15 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Appliquez la formule : Effectif = N &times; Fréquence décimale (80 &times; 0,30 et 80 &times; 0,40).</span>';
+      }
+    }
+
+    /* Validations Exercices Niveau 2 */
+    function checkEx21() {
+      const q1 = parseNum(document.getElementById('ex21-q1').value);
+      const q2 = parseNum(document.getElementById('ex21-q2').value);
+      const q3 = parseNum(document.getElementById('ex21-q3').value);
+
+      const h1 = parseNum(document.getElementById('ex21-h1').value);
+      const h2 = parseNum(document.getElementById('ex21-h2').value);
+      const h3 = parseNum(document.getElementById('ex21-h3').value);
+
+      const ok = checkClose(q1, 0.45) && checkClose(q2, 35) && checkClose(q3, 20) &&
+                 checkClose(h1, 9) && checkClose(h2, 7) && checkClose(h3, 4);
+
+      const fb = document.getElementById('ex21-feedback');
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Félicitations ! Fréquences et hauteurs de bâtons calculées avec succès (échelle 1 cm pour 6 disques).</span>';
+        if (!appState.bonusCompleted.ex21) {
+          appState.bonusCompleted.ex21 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez : 54/120 = 0,45 ; 42/120 = 35 % ; 24/120 = 20 %. Pour les hauteurs, divisez chaque effectif par 6.</span>';
+      }
+    }
+
+    function checkEx22() {
+      const q1 = document.getElementById('ex22-q1').value.trim().toUpperCase().replace(/\s+/g, '');
+      const q2 = document.getElementById('ex22-q2').value.trim().toUpperCase().replace(/\s+/g, '');
+      const q3 = parseNum(document.getElementById('ex22-q3').value);
+
+      const vQ1 = (q1 === '=SOMME(B2:B5)' || q1 === 'SOMME(B2:B5)');
+      const vQ2 = (q2 === '=B2/$B$6' || q2 === '=B2/B$6' || q2 === 'B2/$B$6' || q2 === '=B2/100' || q2 === '=B2/$B$6*100');
+      const vQ3 = checkClose(q3, 40);
+
+      const fb = document.getElementById('ex22-feedback');
+      if (vQ1 && vQ2 && vQ3) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Bravo ! Utilisation exacte de =SOMME(B2:B5), de la référence absolue =$B$6 et 40 % d\'aciers inoxydables.</span>';
+        if (!appState.bonusCompleted.ex22) {
+          appState.bonusCompleted.ex22 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez la formule tableur : =SOMME(B2:B5) pour la somme et =B2/$B$6 avec le dollar pour figer la cellule B6.</span>';
+      }
+    }
+
+    function checkEx23() {
+      const q1 = parseNum(document.getElementById('ex23-q1').value);
+      const q2 = parseNum(document.getElementById('ex23-q2').value);
+      const q3 = parseNum(document.getElementById('ex23-q3').value);
+
+      const ok = (q1 === 50) && checkClose(q2, 36) && checkClose(q3, 30);
+      const fb = document.getElementById('ex23-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Parfait ! N = 50 défaillances. L\'amorçage défectueux (36 %) et la surchauffe (30 %) sont les points clés de maintenance.</span>';
+        if (!appState.bonusCompleted.ex23) {
+          appState.bonusCompleted.ex23 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Somme des pannes N = 18 + 15 + 12 + 5 = 50. Calculez ensuite 18/50 et 15/50 en pourcentages.</span>';
+      }
+    }
+
+    /* Validations Exercices Niveau 3 */
+    function checkEx31() {
+      const q1 = parseNum(document.getElementById('ex31-q1').value);
+      const q2 = parseNum(document.getElementById('ex31-q2').value);
+      const q3 = document.getElementById('ex31-q3').value.trim().toUpperCase();
+
+      const ok = checkClose(q1, 40) && checkClose(q2, 30) && (q3 === 'A' || q3 === 'ATELIER A');
+      const fb = document.getElementById('ex31-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Analyse brillante ! Sainte-Clotilde a 40 % de son activité sur les pergolas contre 30 % pour Saint-Pierre. L\'Atelier A est donc proportionnellement plus spécialisé.</span>';
+        if (!appState.bonusCompleted.ex31) {
+          appState.bonusCompleted.ex31 = true;
+          appState.bonusPoints += 25;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Comparez : Atelier A = 32/80 = 40 % ; Atelier B = 36/120 = 30 %. Indiquez quel atelier détient la part la plus élevée (A ou B).</span>';
+      }
+    }
+
+    function checkEx32() {
+      const q1 = parseNum(document.getElementById('ex32-q1').value);
+      const q2 = parseNum(document.getElementById('ex32-q2').value);
+      const q3 = parseNum(document.getElementById('ex32-q3').value);
+      const q4 = parseNum(document.getElementById('ex32-q4').value);
+
+      const ok = (q1 === 144) && (q2 === 396) && (q3 === 988) && checkClose(q4, 40.1, 0.4);
+      const fb = document.getElementById('ex32-feedback');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Excellence confirmée ! Alors que les pergolas ne représentent que 22 % du nombre de commandes, elles mobilisent plus de 40 % du temps d\'atelier (396 h sur 988 h).</span>';
+        if (!appState.bonusCompleted.ex32) {
+          appState.bonusCompleted.ex32 = true;
+          appState.bonusPoints += 25;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Calculs : 36 &times; 4 = 144 h ; 22 &times; 18 = 396 h ; Portails = 336 h ; Garde-corps = 112 h. Somme = 988 h. Part des pergolas = 396 / 988 &times; 100 &approx; 40,1 %.</span>';
+      }
+    }
+  </script>
+</body>
+</html>
