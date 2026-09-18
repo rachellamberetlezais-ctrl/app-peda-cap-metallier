@@ -17,6 +17,21 @@
   try { applications = Catalogue.prepare(window.APPLICATIONS); }
   catch (err) { catalogueError = true; console.error(err); }
 
+
+  // Masquage des cartes uniquement, selon l'horloge du navigateur.
+  function isPublished(app, now) {
+    return app.publication === undefined || Date.parse(app.publication) <= now;
+  }
+  let publicationTimer;
+  function schedulePublication(apps, refresh) {
+    clearTimeout(publicationTimer);
+    const now = Date.now();
+    const upcoming = apps.map(app => Date.parse(app.publication)).filter(date => date > now);
+    if (upcoming.length) {
+      publicationTimer = setTimeout(refresh, Math.min(Math.min(...upcoming) - now, 2147483647));
+    }
+  }
+
   function element(tag, className, text) {
     const node = document.createElement(tag);
     node.className = className;
@@ -25,6 +40,8 @@
   }
   function render(focus = true) {
     if (!unlocked) return;
+    schedulePublication(applications, () => render(false));
+    const now = Date.now();
     const key = { '#mathematiques': 'M', '#physique-chimie': 'P' }[location.hash];
     subjects.hidden = Boolean(key);
     discipline.hidden = !key;
@@ -33,7 +50,7 @@
       return;
     }
     document.getElementById('discipline-title').textContent = titles[key];
-    const selected = applications.filter(app => app.discipline === key);
+    const selected = applications.filter(app => app.discipline === key && isPublished(app, now));
     document.getElementById('discipline-description').textContent = selected.length
       ? 'Choisis une activité pour commencer.' : 'Ton espace est prêt à accueillir les prochaines activités.';
     catalogue.replaceChildren();
