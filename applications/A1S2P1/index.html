@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMA Formation - CAP Métallier : Sécurité & EPI en Atelier</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- MathJax v3 Configuration -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+  </script>
+
+  <style>
+    :root {
+      --cma-bordeaux: #A50F23;
+      --cma-corail: #EE3C3D;
+      --cma-bg: #F8FAFC;
+      --cma-text: #1E293B;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--cma-bg);
+      color: var(--cma-text);
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* En-tête officiel CMA Formation et ruban inférieur */
+    .app-header {
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 20px;
+      background: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .cma-wave-border {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 14px;
+      margin: 0;
+      border: 0;
+      background-image: url("ruban_vague.png");
+      background-repeat: repeat-x;
+      background-size: 102.941176px 102.941176px;
+      background-position: left -46.941176px;
+    }
+
+    .app-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .icon-bullet {
+      height: 18px;
+      width: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-right: 8px;
+    }
+
+    /* Commandes tactiles ergonomiques Mobile-First */
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .math-input {
+      font-size: 16px;
+      min-height: 44px;
+      padding: 0.5rem 0.75rem;
+      border: 2px solid #CBD5E1;
+      border-radius: 0.5rem;
+      width: 100%;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #FFFFFF;
+    }
+
+    .math-input:focus {
+      outline: none;
+      border-color: var(--cma-bordeaux);
+      box-shadow: 0 0 0 3px rgba(165, 15, 35, 0.15);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Styles d'impression pour l'attestation pédagogique */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-certificate-zone, #print-certificate-zone * {
+        visibility: visible;
+      }
+      #print-certificate-zone {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        background: white;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- ==================== HEADER OFFICIEL CMA ==================== -->
+  <header class="app-header">
+    <div class="max-w-4xl mx-auto px-4 pt-3 pb-1 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="Logo CMA Formation" class="app-logo" onerror="this.src='https://placehold.co/140x48/A50F23/ffffff?text=CMA+Formation'">
+        <div>
+          <span class="block text-[11px] uppercase tracking-wider text-slate-500 font-bold">CMA Formation Sainte-Clotilde</span>
+          <h1 class="text-base sm:text-lg font-bold text-[#A50F23] leading-tight">CAP Métallier - Physique-Chimie</h1>
+        </div>
+      </div>
+      <div class="text-right text-xs bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-200">
+        <p class="font-bold text-slate-800">Séance A1 S2 P1</p>
+        <p class="text-slate-600 text-[11px]">Sécurité en Atelier : Équipements de Protection Individuelle (EPI)</p>
+      </div>
+    </div>
+    <div class="cma-wave-border"></div>
+  </header>
+
+  <!-- Barre de progression générale compacte (8 px) -->
+  <div class="w-full bg-slate-200 h-2">
+    <div id="general-progress-bar" class="bg-[#EE3C3D] h-2 transition-all duration-500" style="width: 0%;"></div>
+  </div>
+
+  <!-- ==================== MAIN CONTAINER ==================== -->
+  <main class="max-w-4xl mx-auto w-full px-3 sm:px-6 py-4 flex-grow">
+
+    <!-- Navigation horizontale des 4 étapes -->
+    <nav class="flex space-x-2 overflow-x-auto pb-2 mb-4 no-scrollbar border-b border-slate-200" aria-label="Étapes de la séance">
+      <button onclick="switchStep(1)" id="nav-btn-1" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-[#A50F23] text-white shadow-sm flex items-center">
+        <span>Étape 1 : Découverte & Audit</span>
+      </button>
+      <button onclick="switchStep(2)" id="nav-btn-2" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 2 : Cours & Simulateurs</span>
+      </button>
+      <button onclick="switchStep(3)" id="nav-btn-3" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 3 : Entraînement Gamifié</span>
+      </button>
+      <button onclick="switchStep(4)" id="nav-btn-4" class="touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center">
+        <span>Étape 4 : Bilan & Attestation</span>
+      </button>
+    </nav>
+
+    <!-- Suivi Socle CAP et Points Bonus -->
+    <div class="bg-white rounded-xl p-3 sm:p-4 mb-5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+        <span class="text-xs sm:text-sm font-semibold text-slate-700">Progression Socle CAP (Niv. 1) : <span id="socle-percent" class="text-[#A50F23] font-bold">0%</span></span>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <span class="text-xs sm:text-sm font-semibold text-slate-700">Bonus Sécurité & Expertise : <span id="bonus-points" class="text-amber-600 font-bold">0 pts</span></span>
+        <span id="badge-pill" class="text-xs px-2.5 py-1 bg-slate-100 text-slate-500 font-medium rounded-full border border-slate-200">En cours</span>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 1 : DÉCOUVERTE & AUDIT ============ -->
+    <!-- ============================================================== -->
+    <section id="step-1" class="space-y-6">
+
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Contexte Professionnel : Atelier de Chaudronnerie-Métallerie à Sainte-Clotilde
+        </h2>
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-3 sm:p-4 rounded-r-lg text-xs sm:text-sm text-slate-800 space-y-2">
+          <p>
+            Dans l'entreprise artisanale <strong>« Océan Métal Réunion »</strong> située dans la Z.I. du Chaudron à Sainte-Clotilde, les métalliers préparent les châssis en acier et inox d'une passerelle piétonne pour le port de Sainte-Marie.
+          </p>
+          <p>
+            L'atelier comprend 4 postes de travail actifs : débitage/meulage à la disqueuse 230 mm, assemblage par soudage MIG-MAG, décapage chimique acide des cordons d'inox et manutention de profilés lourds. Le chef d'atelier vous confie la responsabilité d'établir l'audit des risques professionnels et de composer la dotation complète des Équipements de Protection Individuelle (EPI) pour chaque poste, en tenant compte des fortes chaleurs sous le climat tropical réunionnais.
+          </p>
+        </div>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm">Poste 1 : Meulage 230 mm</span>
+            <span class="text-slate-600 block mt-1">Ébavurage, étincelles à $1\,400^\circ\text{C}$, niveau sonore mesuré à 104 dB.</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm">Poste 2 : Soudage MIG-MAG</span>
+            <span class="text-slate-600 block mt-1">Arc électrique intense, rayons UV/IR nocifs, vapeurs d'oxydes métalliques.</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm">Poste 3 : Décapage Acide</span>
+            <span class="text-slate-600 block mt-1">Pâte fluorhydrique (HF) et nitrique ($HNO_3$), risque de nécrose et de brûlures profondes.</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <span class="block font-bold text-[#A50F23] text-sm">Poste 4 : Manutention Barres</span>
+            <span class="text-slate-600 block mt-1">Cornières brutes de 6 mètres, arêtes vives coupantes, risque d'écrasement des pieds.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audit Interactif des 4 Postes -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h3 class="text-base font-bold text-slate-800 flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Activité de Découverte : Audit des Postes de Travail & Choix des EPI Spécifiques
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Complétez la dotation obligatoire pour chaque poste de travail afin de garantir la sécurité de l'équipe de fabrication :
+        </p>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-200">
+          <table class="w-full text-xs sm:text-sm text-left border-collapse min-w-[620px]">
+            <thead class="bg-slate-100 text-slate-700 font-semibold">
+              <tr>
+                <th class="p-2.5 border-b">Poste de Travail</th>
+                <th class="p-2.5 border-b">Nature des Risques</th>
+                <th class="p-2.5 border-b">Organes à Protéger</th>
+                <th class="p-2.5 border-b">EPI Spécifiques Requis</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr>
+                <td class="p-2.5 font-medium text-slate-900">Poste 1 : Meulage / Ébavurage</td>
+                <td class="p-2.5 text-slate-600">Projections, Bruit intense (104 dB)</td>
+                <td class="p-2.5 text-slate-600">Yeux, Ouïe, Mains</td>
+                <td class="p-2.5">
+                  <select id="audit-p1" class="math-input py-1 px-2 text-xs">
+                    <option value="">Sélectionnez les EPI requis...</option>
+                    <option value="visiere_casque_cuir">Visière polycarbonate + Casque antibruit SNR + Gants cuir épais</option>
+                    <option value="lunettes_seules">Lunettes simples sans protection auditive</option>
+                    <option value="gants_latex">Gants en latex jetable + Masque tissu</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium text-slate-900">Poste 2 : Soudage MIG-MAG</td>
+                <td class="p-2.5 text-slate-600">Rayons UV/IR, Fumées toxiques, Chaleur</td>
+                <td class="p-2.5 text-slate-600">Yeux, Poumons, Corps entier</td>
+                <td class="p-2.5">
+                  <select id="audit-p2" class="math-input py-1 px-2 text-xs">
+                    <option value="">Sélectionnez les EPI requis...</option>
+                    <option value="cagoule_tablier_masque">Cagoule optoélectronique DIN + Tablier cuir + Masque FFP3/PAPR + Gants soudeur</option>
+                    <option value="lunettes_teinte_5">Lunettes de meulage teinte 5 sans cagoule</option>
+                    <option value="tablier_seul">Tablier cuir seul sans protection respiratoire</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium text-slate-900">Poste 3 : Décapage Acide Inox</td>
+                <td class="p-2.5 text-slate-600">Corrosion chimique sévère (HF/HNO3), Brûlures</td>
+                <td class="p-2.5 text-slate-600">Peau, Yeux, Voies respiratoires</td>
+                <td class="p-2.5">
+                  <select id="audit-p3" class="math-input py-1 px-2 text-xs">
+                    <option value="">Sélectionnez les EPI requis...</option>
+                    <option value="chimique_complet">Gants étanches nitrile/néoprène EN 374 + Masque vapeurs acides + Visière étanche</option>
+                    <option value="gants_cuir">Gants de soudeur en cuir de bovin</option>
+                    <option value="masque_poussiere">Masque anti-poussière classique FFP1</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-2.5 font-medium text-slate-900">Poste 4 : Manutention Barres</td>
+                <td class="p-2.5 text-slate-600">Coupures vives, Chute de masse, Écrasement</td>
+                <td class="p-2.5 text-slate-600">Mains, Pieds</td>
+                <td class="p-2.5">
+                  <select id="audit-p4" class="math-input py-1 px-2 text-xs">
+                    <option value="">Sélectionnez les EPI requis...</option>
+                    <option value="manutention_securite">Gants anti-coupure EN 388 niveau D/E + Chaussures de sécurité S3 coquées</option>
+                    <option value="baskets">Baskets d'atelier souples sans embout acier</option>
+                    <option value="sans_gants">Manutention à mains nues pour meilleure prise</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button onclick="checkAuditDiscovery()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition">
+          Valider l'audit des 4 postes
+        </button>
+        <div id="audit-feedback" class="text-xs sm:text-sm"></div>
+      </div>
+
+      <div class="flex justify-end pt-2">
+        <button onclick="switchStep(2)" class="touch-target bg-slate-800 hover:bg-black text-white px-6 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition flex items-center gap-2">
+          <span>Passer à l'Étape 2 : Cours & Simulateurs</span>
+          <span>&rarr;</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 2 : COURS & SIMULATEURS =========== -->
+    <!-- ============================================================== -->
+    <section id="step-2" class="space-y-6 hidden">
+
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          À Retenir : L'Essentiel du Cours - Sécurité & Normes EPI
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm text-slate-700">
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">1. Définition et Hiérarchie des Préventions</h3>
+            <p>
+              Un <strong>Équipement de Protection Individuelle (EPI)</strong> est un dispositif destiné à être porté par l'opérateur pour le préserver des risques menaçant sa santé ou sa sécurité.
+            </p>
+            <p class="text-[11px] text-slate-500">
+              Règle légale INRS : La protection collective (EPC : dosseret aspirant, écran inactinique, capotage antibruit) est <strong>toujours prioritaire</strong> sur l'EPI.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">2. Risques Optiques et Rayonnements de l'Arc</h3>
+            <p>
+              L'arc électrique émet des rayonnements invisibles destructeurs :
+            </p>
+            <ul class="list-disc pl-4 space-y-1">
+              <li><strong>Ultraviolets (UV) :</strong> Brûlure de la cornée appelée « coup d'arc » (kératite aiguë invalidante).</li>
+              <li><strong>Infrarouges (IR) :</strong> Lésions de la rétine et échauffement interne du globe oculaire.</li>
+            </ul>
+            <p class="text-[11px] text-slate-600">Norme <strong>NF EN 175 / EN 379</strong> : Cagoule à teinte variable DIN 9 à 13 adaptée à l'ampérage.</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">3. Risques Thermiques, Projections & Fumées</h3>
+            <p>
+              Métal en fusion à plus de $1\,400^\circ\text{C}$ et étincelles incandescentes.
+            </p>
+            <p>• Protection corporelle : Tablier et manchettes en cuir fendu (norme <strong>EN ISO 11611</strong>).</p>
+            <p>• Mains : Gants soudeur cuir souple avec crispin long (norme <strong>EN 12477</strong> type A ou B).</p>
+            <p>• Voies respiratoires : Masque FFP3 ou système à ventilation assistée PAPR filtrant les particules métalliques ($Fe_2O_3$, $Cr$, $Mn$).</p>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <h3 class="font-bold text-[#A50F23]">4. Risques Bruit et Agressions Chimiques</h3>
+            <p>
+              • Meuleuses et tronçonneuses ($> 85\text{ dB}$). Casque antibruit ou bouchons moulés (norme <strong>EN 352</strong>) selon l'indice d'atténuation SNR.
+            </p>
+            <p>
+              • Décapage acide inox ($HF$ et $HNO_3$). Gants étanches en nitrile ou néoprène (norme <strong>EN ISO 374-1</strong>) et écran facial intégral.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SIMULATEUR 1 : Échelon d'obscurcissement cagoule optoélectronique -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Simulateur 1 : Sélecteur Normatif d'Obscurcissement DIN (Norme EN 379)
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Ajustez le potentiomètre d'ampérage du poste à souder MIG-MAG pour visualiser en temps réel la teinte DIN recommandée sur la cellule optoélectronique de la cagoule.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between items-center text-xs sm:text-sm font-semibold mb-1">
+                <label for="sim-amp-slider" class="text-slate-800">Courant de soudage ($I$) :</label>
+                <span id="sim-amp-val" class="font-bold text-[#A50F23] text-base">180 A</span>
+              </div>
+              <input type="range" id="sim-amp-slider" min="20" max="400" step="5" value="180" oninput="updateDinSim()" class="w-full h-2 bg-slate-300 rounded-lg cursor-pointer accent-[#A50F23]">
+              <div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+                <span>20 A</span>
+                <span>80 A</span>
+                <span>175 A</span>
+                <span>300 A</span>
+                <span>400 A</span>
+              </div>
+            </div>
+
+            <div class="p-3 bg-white rounded-lg border border-slate-200 space-y-1">
+              <span class="text-xs text-slate-500 block">Échelon normatif recommandé :</span>
+              <div class="flex items-baseline gap-2">
+                <span id="sim-din-badge" class="text-2xl font-black text-[#A50F23]">DIN 12</span>
+                <span id="sim-din-range" class="text-xs text-slate-600">(Prévu pour $175 \le I < 300\text{ A}$)</span>
+              </div>
+              <p id="sim-din-advice" class="text-[11px] text-slate-600 pt-1">Protection optimale contre l'arc violent et maintien d'un bon confort visuel du bain de fusion.</p>
+            </div>
+          </div>
+
+          <!-- Rendu Visuel de la Lentille LCD -->
+          <div class="flex flex-col items-center justify-center p-4 bg-slate-900 rounded-xl border border-slate-700">
+            <span class="text-xs text-slate-300 font-mono mb-2">Simulation de la cellule optoélectronique</span>
+            <div id="sim-lens" class="w-48 h-32 rounded-lg border-4 border-slate-600 flex flex-col items-center justify-center transition-all duration-300 shadow-inner relative overflow-hidden" style="background-color: rgba(16, 40, 20, 0.92);">
+              <div class="absolute inset-0 bg-emerald-950 opacity-40 mix-blend-overlay"></div>
+              <span id="lens-din-display" class="font-mono text-xl font-black text-emerald-400 z-10">TEINTE DIN 12</span>
+              <span id="lens-status-display" class="text-[10px] text-emerald-200 font-medium z-10 mt-1">Filtrage UV/IR Actif (99,99%)</span>
+            </div>
+            <span class="text-[10px] text-slate-400 mt-2 text-center">Cristaux liquides obscurcis automatiquement à l'amorçage</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMULATEUR 2 : Atténuation Acoustique SNR d'Atelier -->
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Simulateur 2 : Calculateur d'Atténuation Acoustique SNR (Norme EN 352)
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600">
+          Vérifiez si l'équipement antibruit sélectionné permet d'abaisser le bruit ambiant sous le seuil légal de risque de $80\text{ dB(A)}$. Formule : $L_{\text{effectif}} = L_1 - \text{SNR}$.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs sm:text-sm">
+          <div>
+            <label for="sim-noise-input" class="block font-semibold text-slate-700 mb-1">Bruit mesuré $L_1$ (dB) :</label>
+            <input type="number" id="sim-noise-input" value="102" min="70" max="130" step="1" oninput="updateNoiseSim()" class="math-input text-center font-bold text-[#A50F23]">
+            <span class="text-[10px] text-slate-500 mt-1 block">Exemple : 3 meuleuses = 102 dB</span>
+          </div>
+          <div>
+            <label for="sim-snr-select" class="block font-semibold text-slate-700 mb-1">Protecteur antibruit :</label>
+            <select id="sim-snr-select" onchange="updateNoiseSim()" class="math-input text-xs font-semibold">
+              <option value="24">Casque Standard Réunion (SNR = 24 dB)</option>
+              <option value="32" selected>Casque Pro Industrie (SNR = 32 dB)</option>
+              <option value="18">Bouchons simples mousse (SNR = 18 dB)</option>
+              <option value="35">Double protection Casque+Bouchons (SNR = 35 dB)</option>
+            </select>
+            <span class="text-[10px] text-slate-500 mt-1 block">Atténuation nominale certifiée</span>
+          </div>
+          <div class="flex flex-col justify-between">
+            <span class="block font-semibold text-slate-700">Niveau perçu à l'oreille :</span>
+            <div id="sim-noise-result-box" class="p-2.5 rounded-lg border text-center transition">
+              <span id="sim-noise-val" class="text-xl font-black block">70 dB(A)</span>
+              <span id="sim-noise-verdict" class="text-[11px] font-bold block">CONFORME (Inférieur à 80 dB)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-100 rounded-xl border border-slate-200 text-xs text-slate-700 flex flex-wrap items-center justify-between gap-2">
+          <span><strong>Seuil d'alerte réglementaire :</strong> 80 dB(A) | <strong>Seuil de danger irréversible :</strong> 85 dB(A)</span>
+          <span class="text-[11px] text-slate-500">Protection auditive obligatoire dès 85 dB(A)</span>
+        </div>
+      </div>
+
+      <div class="flex justify-between pt-2">
+        <button onclick="switchStep(1)" class="touch-target bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition">
+          &larr; Étape 1 : Découverte
+        </button>
+        <button onclick="switchStep(3)" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-6 py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition">
+          Passer à l'Étape 3 : Entraînement &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 3 : ENTRAÎNEMENT GAMIFIÉ ========== -->
+    <!-- ============================================================== -->
+    <section id="step-3" class="space-y-6 hidden">
+
+      <!-- Onglets des 3 niveaux -->
+      <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
+        <button onclick="switchLevel(1)" id="lvl-tab-1" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white flex items-center gap-1.5 shadow-sm">
+          <span>🟢 Parcours 1 : Socle CAP</span>
+        </button>
+        <button onclick="switchLevel(2)" id="lvl-tab-2" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-500 flex items-center gap-1.5 cursor-not-allowed" disabled>
+          <span>🔒 Parcours 2 : Avancé</span>
+        </button>
+        <button onclick="switchLevel(3)" id="lvl-tab-3" class="touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-500 flex items-center gap-1.5 cursor-not-allowed" disabled>
+          <span>🔒 Parcours 3 : Expert</span>
+        </button>
+      </div>
+
+      <!-- ==================== PARCOURS 1 : SOCLE CAP ==================== -->
+      <div id="level-1-container" class="space-y-6">
+        <div class="bg-emerald-50 border border-emerald-200 p-3 sm:p-4 rounded-xl flex items-center justify-between text-xs sm:text-sm text-emerald-900">
+          <span><strong>Parcours 1 - Socle CAP :</strong> Validez les 3 exercices fondamentaux pour atteindre 100%, débloquer le badge officiel et accéder à l'Attestation Numérique.</span>
+          <span id="lvl1-count-badge" class="font-bold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full">0 / 3</span>
+        </div>
+
+        <!-- Exercice 1.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.1 (C1, C2) - Les 5 EPI indispensables du métallier en atelier
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Associez chaque partie du corps à son équipement de protection conventionnel et identifiez le risque principal évité :
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">1. Yeux et Visage :</span>
+              <div>
+                <label for="ex11-epi-1" class="block text-[11px] text-slate-600 mb-0.5">EPI Conventionnel :</label>
+                <select id="ex11-epi-1" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir l'EPI...</option>
+                  <option value="lunettes_visiere">Lunettes de sécurité / Visière / Cagoule</option>
+                  <option value="casquette">Simple casquette de travail</option>
+                  <option value="echarpe">Foulard de protection</option>
+                </select>
+              </div>
+              <div>
+                <label for="ex11-risk-1" class="block text-[11px] text-slate-600 mb-0.5">Risque principal évité :</label>
+                <select id="ex11-risk-1" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir le risque évité...</option>
+                  <option value="projections_uv">Projections de copeaux, étincelles et rayonnements UV/IR</option>
+                  <option value="chaleur_pieds">Échauffement de la plante des pieds</option>
+                  <option value="perte_audition">Surdité professionnelle</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">2. Mains et Poignets :</span>
+              <div>
+                <label for="ex11-epi-2" class="block text-[11px] text-slate-600 mb-0.5">EPI Conventionnel :</label>
+                <select id="ex11-epi-2" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir l'EPI...</option>
+                  <option value="gants_cuir">Gants de manutention ou de soudeur en cuir</option>
+                  <option value="mitaines">Mitaines de sport en laine</option>
+                  <option value="creme">Crème hydratante protectrice</option>
+                </select>
+              </div>
+              <div>
+                <label for="ex11-risk-2" class="block text-[11px] text-slate-600 mb-0.5">Risque principal évité :</label>
+                <select id="ex11-risk-2" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir le risque évité...</option>
+                  <option value="coupures_brulures">Coupures par arêtes vives et brûlures par pièces chaudes</option>
+                  <option value="poussiere_yeux">Irritation de la rétine</option>
+                  <option value="acouphenes">Acouphènes d'atelier</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">3. Pieds et Chevilles :</span>
+              <div>
+                <label for="ex11-epi-3" class="block text-[11px] text-slate-600 mb-0.5">EPI Conventionnel :</label>
+                <select id="ex11-epi-3" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir l'EPI...</option>
+                  <option value="chaussures_s3">Chaussures de sécurité montantes coquées S3</option>
+                  <option value="bottes_caoutchouc">Bottes en caoutchouc simples sans embout</option>
+                  <option value="chaussures_toile">Chaussures de ville en toile</option>
+                </select>
+              </div>
+              <div>
+                <label for="ex11-risk-3" class="block text-[11px] text-slate-600 mb-0.5">Risque principal évité :</label>
+                <select id="ex11-risk-3" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir le risque évité...</option>
+                  <option value="ecrasement_perforation">Écrasement par chute de profilés et perforation de semelle</option>
+                  <option value="coup_arc">Coup d'arc électrique</option>
+                  <option value="intoxication">Intoxication par oxydes d'azote</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">4. Système Auditif :</span>
+              <div>
+                <label for="ex11-epi-4" class="block text-[11px] text-slate-600 mb-0.5">EPI Conventionnel :</label>
+                <select id="ex11-epi-4" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir l'EPI...</option>
+                  <option value="casque_bouchons">Casque antibruit ou bouchons moulés EN 352</option>
+                  <option value="ecouteurs_musique">Écouteurs de musique avec réduction passive</option>
+                  <option value="coton">Tampons de coton hydrophile</option>
+                </select>
+              </div>
+              <div>
+                <label for="ex11-risk-4" class="block text-[11px] text-slate-600 mb-0.5">Risque principal évité :</label>
+                <select id="ex11-risk-4" class="math-input py-1 px-2 text-xs">
+                  <option value="">Choisir le risque évité...</option>
+                  <option value="surdite">Surdité professionnelle irréversible et acouphènes</option>
+                  <option value="brulure_chimique">Brûlure par acide nitrique</option>
+                  <option value="coupure_doigts">Entaille des phalanges</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="checkEx11()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.1
+          </button>
+          <div id="ex11-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.2 (C1, C2) - Pictogrammes d'obligation EPI en atelier
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Sur les portes d'un atelier à Sainte-Clotilde, plusieurs panneaux ronds bleus indiquent une obligation stricte. Identifiez la signification normative de chaque symbole :
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm">
+            <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-center space-y-2">
+              <div class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs mx-auto shadow">
+                👓
+              </div>
+              <span class="font-bold text-slate-800 block">Panneau : Paire de lunettes</span>
+              <select id="ex12-picto-1" class="math-input py-1 px-2 text-xs">
+                <option value="">Signification obligatoire...</option>
+                <option value="lunettes_obligatoires">Protection oculaire obligatoire</option>
+                <option value="test_vue">Test de la vue recommandé</option>
+                <option value="port_solaire">Port de lunettes de soleil toléré</option>
+              </select>
+            </div>
+
+            <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-center space-y-2">
+              <div class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs mx-auto shadow">
+                🎧
+              </div>
+              <span class="font-bold text-slate-800 block">Panneau : Casque antibruit</span>
+              <select id="ex12-picto-2" class="math-input py-1 px-2 text-xs">
+                <option value="">Signification obligatoire...</option>
+                <option value="bruit_obligatoire">Protection auditive obligatoire</option>
+                <option value="ecoute_radio">Écoute de consignes radio</option>
+                <option value="zone_silence">Zone silence / Chuchotement</option>
+              </select>
+            </div>
+
+            <div class="p-3 bg-blue-50 rounded-xl border border-blue-200 text-center space-y-2">
+              <div class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs mx-auto shadow">
+                🥾
+              </div>
+              <span class="font-bold text-slate-800 block">Panneau : Chaussures montantes</span>
+              <select id="ex12-picto-3" class="math-input py-1 px-2 text-xs">
+                <option value="">Signification obligatoire...</option>
+                <option value="chaussures_obligatoires">Chaussures de sécurité obligatoires</option>
+                <option value="bottes_pluie">Bottes étanches pour temps de pluie</option>
+                <option value="marche_rapide">Circulation piétonne autorisée</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="checkEx12()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.2
+          </button>
+          <div id="ex12-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 1.3 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 1.3 (C2) - Règles d'or de l'habillage en atelier de métallerie
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Pourquoi est-il formellement interdit de porter des vêtements synthétiques (nylon, polyester) lors des opérations de meulage et soudage ? Expliquez ce qui se produit en cas de contact avec une étincelle ou un gratton :
+          </p>
+
+          <div class="space-y-2">
+            <textarea id="ex13-text" rows="3" class="math-input text-xs sm:text-sm" placeholder="Votre résultat... (expliquez le comportement du tissu synthétique face à la chaleur et ses conséquences sur la peau)"></textarea>
+            <div class="flex flex-wrap gap-2 text-[11px] text-slate-500">
+              <span>Mots-clés attendus : fusion, brûlure, peau, coton, colle.</span>
+            </div>
+          </div>
+
+          <button onclick="checkEx13()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 1.3
+          </button>
+          <div id="ex13-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+      </div>
+
+      <!-- ==================== PARCOURS 2 : AVANCÉ ==================== -->
+      <div id="level-2-container" class="space-y-6 hidden">
+        <div class="bg-amber-50 border border-amber-200 p-3 sm:p-4 rounded-xl text-xs sm:text-sm text-amber-900">
+          <strong>Parcours 2 - Dépassement :</strong> Situations techniques d'atelier (réglage cagoule EN 379 à $I = 180\text{ A}$, gants selon procédé TIG / oxycoupage, protection respiratoire à $32^\circ\text{C}$ en été austral).
+        </div>
+
+        <!-- Exercice 2.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.1 (C2, C3) - Réglage de l'échelon d'obscurcissement d'une cagoule optoélectronique
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Un métallier soude un cadre de varangue au procédé MIG-MAG sous gaz Argon+$CO_2$ avec un courant de soudage réglé à $I = 180\text{ A}$.
+          </p>
+
+          <!-- Tableau normatif EN 379 -->
+          <div class="overflow-x-auto rounded-xl border border-slate-200">
+            <table class="w-full text-xs text-left border-collapse min-w-[360px]">
+              <thead class="bg-slate-100 text-slate-700 font-semibold">
+                <tr>
+                  <th class="p-2 border-b">Intensité du courant ($I$)</th>
+                  <th class="p-2 border-b text-center">Teinte normée EN 379</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100 font-mono">
+                <tr><td class="p-2">$I < 40\text{ A}$</td><td class="p-2 text-center font-bold">DIN 9</td></tr>
+                <tr><td class="p-2">$40 \le I < 80\text{ A}$</td><td class="p-2 text-center font-bold">DIN 10</td></tr>
+                <tr><td class="p-2">$80 \le I < 175\text{ A}$</td><td class="p-2 text-center font-bold">DIN 11</td></tr>
+                <tr class="bg-amber-50"><td class="p-2 font-bold text-[#A50F23]">$175 \le I < 300\text{ A}$</td><td class="p-2 text-center font-bold text-[#A50F23]">DIN 12</td></tr>
+                <tr><td class="p-2">$I \ge 300\text{ A}$</td><td class="p-2 text-center font-bold">DIN 13</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+            <div>
+              <label for="ex21-din-input" class="block font-semibold text-slate-700 mb-1">
+                1. Saisir l'échelon d'obscurcissement exact (valeur numérique DIN) :
+              </label>
+              <input type="text" inputmode="decimal" id="ex21-din-input" class="math-input" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label for="ex21-risk-select" class="block font-semibold text-slate-700 mb-1">
+                2. Risque encouru si réglage insuffisant (ex : DIN 8) :
+              </label>
+              <select id="ex21-risk-select" class="math-input text-xs">
+                <option value="">Sélectionnez le risque médical...</option>
+                <option value="coup_arc_retine">Brûlure de la cornée (« coup d'arc ») et lésions rétiniennes par rayonnement</option>
+                <option value="perte_auditive">Perte de l'audition par résonance</option>
+                <option value="coupure">Coupure des doigts par le fil d'apport</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="checkEx21()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.1
+          </button>
+          <div id="ex21-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 2.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.2 (C2, C3) - Choix des gants de protection selon le procédé
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            L'artisan doit réaliser deux opérations distinctes : souder un garde-corps fin en Inox au procédé TIG ($I = 60\text{ A}$), puis découper une platine d'ancrage épaisse de $15\text{ mm}$ au chalumeau oxyacétylénique.<br>
+            • <strong>Gant A :</strong> Cuir de chèvre souple type B (haute dextérité, protection thermique moyenne).<br>
+            • <strong>Gant B :</strong> Croûte de bovin doublée molleton type A avec crispin de 15 cm (faible dextérité, très haute résistance thermique).
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">Opération 1 : Soudage fin TIG Inox</span>
+              <select id="ex22-tig-gant" class="math-input py-1 px-2 text-xs">
+                <option value="">Sélectionner le gant...</option>
+                <option value="GANT_A">Gant A (Cuir de chèvre - Type B)</option>
+                <option value="GANT_B">Gant B (Croûte de bovin - Type A)</option>
+              </select>
+              <span class="text-[11px] text-slate-500 block">Justification : dextérité indispensable pour faire avancer le métal d'apport au millimètre.</span>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">Opération 2 : Découpe chalumeau 15 mm</span>
+              <select id="ex22-oxy-gant" class="math-input py-1 px-2 text-xs">
+                <option value="">Sélectionner le gant...</option>
+                <option value="GANT_B">Gant B (Croûte de bovin - Type A)</option>
+                <option value="GANT_A">Gant A (Cuir de chèvre - Type B)</option>
+              </select>
+              <span class="text-[11px] text-slate-500 block">Justification : protection thermique maximale face au rayonnement intense et aux projections de scories.</span>
+            </div>
+          </div>
+
+          <button onclick="checkEx22()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.2
+          </button>
+          <div id="ex22-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 2.3 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 2.3 (C3, C4) - Protection respiratoire et captage en climat tropical chaud
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Dans l'atelier de Sainte-Clotilde, la température intérieure atteint $32^\circ\text{C}$ en été austral. Un apprenti retire son masque FFP3 car la sueur et la chaleur rendent la respiration pénible.
+          </p>
+
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <label for="ex23-sol-epi" class="block font-semibold text-slate-800 mb-1">
+                1. Solution alternative EPI garantissant le confort thermique et la filtration :
+              </label>
+              <select id="ex23-sol-epi" class="math-input text-xs">
+                <option value="">Sélectionnez la solution EPI adaptée...</option>
+                <option value="papr">Cagoule à ventilation assistée (PAPR) créant un flux d'air frais filtré</option>
+                <option value="tissu">Masque chirurgical léger sans étanchéité</option>
+                <option value="rien">Supprimer toute protection respiratoire</option>
+              </select>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <label for="ex23-sol-epc" class="block font-semibold text-slate-800 mb-1">
+                2. Solution alternative de Protection Collective (EPC) prioritaire :
+              </label>
+              <select id="ex23-sol-epc" class="math-input text-xs">
+                <option value="">Sélectionnez la solution EPC prioritaire...</option>
+                <option value="captage_source">Captage à la source (torche aspirante ou bras d'aspiration localisé)</option>
+                <option value="ventilateur_sol">Simple ventilateur de sol dispersant les fumées dans l'atelier</option>
+                <option value="ouvrir_fenetre">Ouvrir uniquement le portail de l'atelier</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="checkEx23()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 2.3
+          </button>
+          <div id="ex23-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+      </div>
+
+      <!-- ==================== PARCOURS 3 : EXPERT ==================== -->
+      <div id="level-3-container" class="space-y-6 hidden">
+        <div class="bg-rose-50 border border-rose-200 p-3 sm:p-4 rounded-xl text-xs sm:text-sm text-rose-900">
+          <strong>Parcours 3 - Excellence & HSE :</strong> Analyse de risques chimiques complexes (décapage acide $HF$ et $HNO_3$) et calculs d'atténuation acoustique normée à Saint-Denis.
+        </div>
+
+        <!-- Exercice 3.1 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 3.1 (C3, C4) - Audit de sécurité pour le décapage acide de garde-corps Inox
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Pour résister à la corrosion marine de Sainte-Marie, les soudures en inox 316L sont décapées avec un gel contenant de l'acide nitrique ($HNO_3$ à 20%) et de l'acide fluorhydrique ($HF$ à 5%).
+          </p>
+
+          <div class="space-y-3 text-xs sm:text-sm">
+            <!-- Q1 -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+              <label for="ex31-tox-select" class="block font-semibold text-slate-800">
+                1. Toxicité spécifique majeure de l'acide fluorhydrique ($HF$) :
+              </label>
+              <select id="ex31-tox-select" class="math-input text-xs">
+                <option value="">Identifier l'action toxique du HF...</option>
+                <option value="calcium_osseux">Pénétration transcutanée profonde, captation du calcium sanguin (hypocalcémie) et nécrose osseuse</option>
+                <option value="simple_rougeur">Simple irritation bénigne de surface</option>
+                <option value="coloration">Coloration temporaire non douloureuse de la peau</option>
+              </select>
+            </div>
+
+            <!-- Q2 -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+              <label for="ex31-pack-select" class="block font-semibold text-slate-800">
+                2. Composition intégrale du « pack EPI chimique » normé :
+              </label>
+              <select id="ex31-pack-select" class="math-input text-xs">
+                <option value="">Sélectionner le pack normé...</option>
+                <option value="pack_complet">Gants étanches nitrile/néoprène EN 374 + Écran facial polycarbonate + Masque filtre vapeurs acides (ABEK-P3) + Tablier PVC</option>
+                <option value="gants_cuir">Gants de soudeur en cuir et lunettes solaires</option>
+                <option value="tablier_seul">Tablier en coton et gants en latex médical</option>
+              </select>
+            </div>
+
+            <!-- Q3 -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+              <label for="ex31-antidote-input" class="block font-semibold text-slate-800">
+                3. Produit médical d'urgence spécifique obligatoire dans la trousse de secours (antidote au fluor) :
+              </label>
+              <input type="text" id="ex31-antidote-input" class="math-input" placeholder="Votre résultat... (ex : gel de gluconate de...)">
+              <span class="text-[11px] text-slate-500">Mots-clés acceptés : gluconate, calcium, gel de calcium.</span>
+            </div>
+          </div>
+
+          <button onclick="checkEx31()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 3.1
+          </button>
+          <div id="ex31-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+        <!-- Exercice 3.2 -->
+        <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-base font-bold text-[#A50F23] flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+            Exercice 3.2 (C3, C4) - Calcul d'atténuation acoustique globale d'un atelier de meulage
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700">
+            Sur un chantier de structure métallique à Saint-Denis, 3 meuleuses génèrent un niveau sonore combiné de $L_1 = 102\text{ dB(A)}$ au niveau de l'oreille.<br>
+            La réglementation impose que le niveau résiduel effectif soit <strong>strictement inférieur à 80 dB(A)</strong> ($L_{\text{effectif}} < 80\text{ dB(A)}$).
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <!-- Modèle Standard -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">Modèle Standard Réunion ($\text{SNR} = 24\text{ dB}$)</span>
+              <div>
+                <label for="ex32-leff-1" class="block text-[11px] text-slate-600 mb-0.5">Calcul $L_{\text{effectif}} = 102 - 24$ (en dB) :</label>
+                <input type="text" inputmode="decimal" id="ex32-leff-1" class="math-input" placeholder="Votre résultat...">
+              </div>
+            </div>
+
+            <!-- Modèle Pro -->
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+              <span class="font-bold text-slate-800 block">Modèle Pro Industrie ($\text{SNR} = 32\text{ dB}$)</span>
+              <div>
+                <label for="ex32-leff-2" class="block text-[11px] text-slate-600 mb-0.5">Calcul $L_{\text{effectif}} = 102 - 32$ (en dB) :</label>
+                <input type="text" inputmode="decimal" id="ex32-leff-2" class="math-input" placeholder="Votre résultat...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2 Décision d'achat -->
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs sm:text-sm">
+            <span class="font-semibold text-slate-800 block">2. Décision technique et conformité réglementaire :</span>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="ex32-modele-choix" value="STANDARD" class="w-4 h-4 text-[#A50F23]">
+                <span>Modèle Standard uniquement (78 dB &lt; 80 dB)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="ex32-modele-choix" value="PRO" class="w-4 h-4 text-[#A50F23]">
+                <span>Modèle Pro Industrie (70 dB, marge de sécurité optimale)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="ex32-modele-choix" value="LES_DEUX" class="w-4 h-4 text-[#A50F23]">
+                <span>Les deux modèles sont strictement équivalents</span>
+              </label>
+            </div>
+          </div>
+
+          <button onclick="checkEx32()" class="touch-target bg-[#A50F23] hover:bg-[#850C1B] text-white px-5 rounded-lg font-semibold text-xs sm:text-sm transition mt-2">
+            Valider l'Exercice 3.2
+          </button>
+          <div id="ex32-feedback" class="text-xs sm:text-sm"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ============================================================== -->
+    <!-- ==================== ÉTAPE 4 : BILAN & ATTESTATION =========== -->
+    <!-- ============================================================== -->
+    <section id="step-4" class="space-y-6 hidden">
+      <div class="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
+        <h2 class="text-lg sm:text-xl font-bold text-[#A50F23] flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet" onerror="this.style.display='none'">
+          Bilan de Compétences & Attestation Numérique de Sécurité
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 mb-4">
+          Saisissez votre nom pour générer et imprimer votre attestation pédagogique de réussite sur la sécurité en atelier et le choix des EPI du référentiel CAP Métallier.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-6 no-print">
+          <input type="text" id="student-name-input" class="math-input sm:w-80" placeholder="Nom et Prénom de l'apprenant..." oninput="updateStudentName()">
+          <button onclick="window.print()" class="touch-target bg-slate-800 hover:bg-black text-white px-6 rounded-lg font-semibold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+            <span>Imprimer ou Enregistrer en PDF</span>
+          </button>
+        </div>
+
+        <!-- ZONE OFFICIELLE ATTESTATION NUMÉRIQUE -->
+        <div id="print-certificate-zone" class="border-4 border-[#A50F23] rounded-2xl p-6 sm:p-8 bg-white relative overflow-hidden shadow-md">
+          <div class="flex items-center justify-between border-b-2 border-slate-100 pb-4 mb-4">
+            <img src="logo.png" alt="Logo CMA" class="app-logo" onerror="this.src='https://placehold.co/140x48/A50F23/ffffff?text=CMA+Formation'">
+            <div class="text-right">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#A50F23] block">CMA Formation Sainte-Clotilde</span>
+              <span class="text-[11px] text-slate-500">Chambre de Métiers et de l'Artisanat de La Réunion</span>
+            </div>
+          </div>
+
+          <div class="text-center my-4">
+            <span class="text-[11px] uppercase font-bold text-slate-400 tracking-widest block">Attestation Pédagogique de Réussite</span>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">CAP Métallier - 1ère Année</h3>
+            <p class="text-xs sm:text-sm text-[#A50F23] font-semibold mt-1">Séance A1 S2 P1 : Sécurité en Atelier & Choix des Équipements de Protection Individuelle</p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-4 my-4 border border-slate-200">
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              Attestation décernée à : <strong id="cert-student-name" class="text-sm sm:text-base text-slate-950 font-bold underline decoration-[#A50F23] decoration-2">[Nom de l'Apprenant]</strong>
+            </p>
+            <p class="text-[11px] text-slate-500 mt-1">
+              Date : <span id="cert-date" class="font-semibold text-slate-700">--/--/----</span> | Formateur : <strong>Rachel Lamberet-Lezais</strong> | Établissement : <strong>CMA Sainte-Clotilde</strong>
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 text-xs sm:text-sm my-4">
+            <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+              <span class="text-slate-600 block text-[11px]">Socle CAP Métallier :</span>
+              <span id="cert-socle-status" class="text-sm sm:text-base font-bold text-emerald-700">En cours (0%)</span>
+            </div>
+            <div class="p-3 bg-amber-50 rounded-lg border border-amber-200">
+              <span class="text-slate-600 block text-[11px]">Bonus Sécurité & Expertise HSE :</span>
+              <span id="cert-bonus-status" class="text-sm sm:text-base font-bold text-amber-700">0 Points</span>
+            </div>
+          </div>
+
+          <div class="border-t border-slate-200 pt-3 text-[11px] sm:text-xs text-slate-600 space-y-1">
+            <p class="font-bold text-slate-700">Compétences du Référentiel National BO 2024 validées :</p>
+            <ul class="list-disc pl-4 space-y-0.5 text-slate-600">
+              <li>C1 (S'approprier) : Identification des risques spécifiques (bruit, UV/IR, fumées, corrosion HF/HNO3) et pictogrammes d'obligation.</li>
+              <li>C2 (Analyser) : Sélection normative des EPI (EN 175/379, EN ISO 11611, EN 12477, EN 352, EN ISO 374-1).</li>
+              <li>C3 (Réaliser) : Réglage d'échelon optoélectronique et calculs d'atténuation acoustique SNR d'atelier.</li>
+              <li>C4 (Valider) : Analyse de risque en ambiance thermique chaude et protocole d'urgence neutralisant.</li>
+            </ul>
+          </div>
+
+          <div class="mt-6 flex justify-between items-end pt-4 border-t border-slate-100 text-[10px] text-slate-400">
+            <span>Application Pédagogique SPA Mobile-First - CMA Formation Réunion</span>
+            <span class="font-semibold text-slate-600">Mention : <span id="cert-mention">Socle en cours</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500 no-print">
+    <p>CMA Formation Sainte-Clotilde - CFA de La Réunion | Référentiel National BO 2024 | Qualiopi</p>
+    <p class="text-[11px] text-slate-400 mt-0.5">Auteur / Formateur : Rachel Lamberet-Lezais</p>
+  </footer>
+
+  <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+  <script>
+    /* État de progression globale */
+    const appState = {
+      currentStep: 1,
+      socleCompleted: {
+        ex11: false,
+        ex12: false,
+        ex13: false
+      },
+      bonusCompleted: {
+        ex21: false,
+        ex22: false,
+        ex23: false,
+        ex31: false,
+        ex32: false
+      },
+      bonusPoints: 0
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      document.getElementById('cert-date').textContent = today.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      updateDinSim();
+      updateNoiseSim();
+    });
+
+    /* Parsing robuste des nombres (gestion virgule et point) */
+    function parseNum(val) {
+      if (val === null || val === undefined) return null;
+      const clean = String(val).trim().replace(',', '.');
+      if (clean === '') return null;
+      const n = parseFloat(clean);
+      return isNaN(n) ? null : n;
+    }
+
+    function checkClose(user, target, tol = 0.1) {
+      if (user === null) return false;
+      return Math.abs(user - target) <= tol;
+    }
+
+    /* Navigation entre les 4 étapes */
+    function switchStep(step) {
+      appState.currentStep = step;
+      for (let i = 1; i <= 4; i++) {
+        const sec = document.getElementById('step-' + i);
+        const btn = document.getElementById('nav-btn-' + i);
+        if (i === step) {
+          sec.classList.remove('hidden');
+          btn.className = "touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-[#A50F23] text-white shadow-sm flex items-center";
+        } else {
+          sec.classList.add('hidden');
+          btn.className = "touch-target px-4 py-2 rounded-full font-semibold text-xs sm:text-sm whitespace-nowrap transition bg-white text-slate-700 hover:bg-slate-100 flex items-center";
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise();
+      }
+    }
+
+    /* Navigation entre les 3 niveaux d'entraînement */
+    function switchLevel(lvl) {
+      document.getElementById('level-1-container').classList.add('hidden');
+      document.getElementById('level-2-container').classList.add('hidden');
+      document.getElementById('level-3-container').classList.add('hidden');
+
+      document.getElementById('lvl-tab-1').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+      document.getElementById('lvl-tab-2').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+      document.getElementById('lvl-tab-3').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-200 text-slate-700 flex items-center gap-1.5";
+
+      if (lvl === 1) {
+        document.getElementById('level-1-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-1').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white flex items-center gap-1.5 shadow-sm";
+      } else if (lvl === 2) {
+        document.getElementById('level-2-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-2').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-amber-600 text-white flex items-center gap-1.5 shadow-sm";
+      } else if (lvl === 3) {
+        document.getElementById('level-3-container').classList.remove('hidden');
+        document.getElementById('lvl-tab-3').className = "touch-target px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white flex items-center gap-1.5 shadow-sm";
+      }
+    }
+
+    /* Mise à jour du socle et des points bonus */
+    function updateProgress() {
+      const keys = Object.keys(appState.socleCompleted);
+      const done = keys.filter(k => appState.socleCompleted[k]).length;
+      const pct = Math.round((done / keys.length) * 100);
+
+      document.getElementById('socle-percent').textContent = pct + '%';
+      document.getElementById('lvl1-count-badge').textContent = done + ' / ' + keys.length;
+      document.getElementById('bonus-points').textContent = appState.bonusPoints + ' pts';
+      document.getElementById('general-progress-bar').style.width = pct + '%';
+
+      if (pct === 100) {
+        const l2 = document.getElementById('lvl-tab-2');
+        l2.disabled = false;
+        l2.classList.remove('cursor-not-allowed');
+        l2.innerHTML = "<span>🟡 Parcours 2 : Avancé</span>";
+
+        const badge = document.getElementById('badge-pill');
+        badge.className = "text-xs px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold rounded-full border border-emerald-300";
+        badge.textContent = "Socle Sécurité Validé !";
+
+        document.getElementById('cert-socle-status').textContent = "Validé à 100%";
+        document.getElementById('cert-mention').textContent = "Socle Sécurité Validé";
+      }
+
+      const b2Done = ['ex21', 'ex22', 'ex23'].every(k => appState.bonusCompleted[k]);
+      if (b2Done) {
+        const l3 = document.getElementById('lvl-tab-3');
+        l3.disabled = false;
+        l3.classList.remove('cursor-not-allowed');
+        l3.innerHTML = "<span>🔴 Parcours 3 : Expert</span>";
+      }
+
+      document.getElementById('cert-bonus-status').textContent = appState.bonusPoints + " Points";
+      if (appState.bonusPoints >= 60) {
+        document.getElementById('cert-mention').textContent = "Excellence Sécurité & HSE";
+      }
+    }
+
+    function updateStudentName() {
+      const val = document.getElementById('student-name-input').value.trim();
+      const target = document.getElementById('cert-student-name');
+      target.textContent = val || "[Nom de l'Apprenant]";
+    }
+
+    /* Validation Étape 1 : Audit des 4 Postes */
+    function checkAuditDiscovery() {
+      const p1 = document.getElementById('audit-p1').value;
+      const p2 = document.getElementById('audit-p2').value;
+      const p3 = document.getElementById('audit-p3').value;
+      const p4 = document.getElementById('audit-p4').value;
+      const fb = document.getElementById('audit-feedback');
+
+      const ok = (p1 === 'visiere_casque_cuir') &&
+                 (p2 === 'cagoule_tablier_masque') &&
+                 (p3 === 'chimique_complet') &&
+                 (p4 === 'manutention_securite');
+
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Audit d\'atelier validé avec succès ! Chaque poste dispose désormais d\'une dotation EPI conforme aux normes en vigueur à Sainte-Clotilde.</span>';
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Certaines dotations sont incomplètes ou inadaptées au niveau de risque du poste. Vérifiez notamment le risque de corrosion acide et les 104 dB de la disqueuse.</span>';
+      }
+    }
+
+    /* Simulateur 1 : Din cagoule */
+    function updateDinSim() {
+      const amp = parseInt(document.getElementById('sim-amp-slider').value, 10);
+      document.getElementById('sim-amp-val').textContent = amp + " A";
+
+      let din = 9;
+      let rangeTxt = "";
+      let bg = "rgba(20, 60, 30, 0.65)";
+
+      if (amp < 40) {
+        din = 9;
+        rangeTxt = "(Prévu pour I < 40 A)";
+        bg = "rgba(30, 70, 35, 0.65)";
+      } else if (amp < 80) {
+        din = 10;
+        rangeTxt = "(Prévu pour 40 ≤ I < 80 A)";
+        bg = "rgba(24, 55, 28, 0.75)";
+      } else if (amp < 175) {
+        din = 11;
+        rangeTxt = "(Prévu pour 80 ≤ I < 175 A)";
+        bg = "rgba(18, 45, 22, 0.85)";
+      } else if (amp < 300) {
+        din = 12;
+        rangeTxt = "(Prévu pour 175 ≤ I < 300 A)";
+        bg = "rgba(12, 35, 16, 0.93)";
+      } else {
+        din = 13;
+        rangeTxt = "(Prévu pour I ≥ 300 A)";
+        bg = "rgba(5, 20, 8, 0.98)";
+      }
+
+      document.getElementById('sim-din-badge').textContent = "DIN " + din;
+      document.getElementById('sim-din-range').textContent = rangeTxt;
+
+      const lens = document.getElementById('sim-lens');
+      lens.style.backgroundColor = bg;
+      document.getElementById('lens-din-display').textContent = "TEINTE DIN " + din;
+    }
+
+    /* Simulateur 2 : Atténuation acoustique SNR */
+    function updateNoiseSim() {
+      const l1 = parseFloat(document.getElementById('sim-noise-input').value) || 102;
+      const snr = parseFloat(document.getElementById('sim-snr-select').value) || 32;
+
+      const leff = Math.max(0, l1 - snr);
+      const resBox = document.getElementById('sim-noise-result-box');
+      const valText = document.getElementById('sim-noise-val');
+      const verText = document.getElementById('sim-noise-verdict');
+
+      valText.textContent = leff.toFixed(0) + " dB(A)";
+
+      if (leff < 80) {
+        resBox.className = "p-2.5 rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-800 text-center";
+        verText.textContent = "CONFORME (Inférieur au seuil de 80 dB)";
+      } else {
+        resBox.className = "p-2.5 rounded-lg border border-rose-300 bg-rose-50 text-rose-800 text-center";
+        verText.textContent = "DANGER / NON CONFORME (≥ 80 dB(A))";
+      }
+    }
+
+    /* Validations Parcours 1 */
+    function checkEx11() {
+      const e1 = document.getElementById('ex11-epi-1').value;
+      const r1 = document.getElementById('ex11-risk-1').value;
+      const e2 = document.getElementById('ex11-epi-2').value;
+      const r2 = document.getElementById('ex11-risk-2').value;
+      const e3 = document.getElementById('ex11-epi-3').value;
+      const r3 = document.getElementById('ex11-risk-3').value;
+      const e4 = document.getElementById('ex11-epi-4').value;
+      const r4 = document.getElementById('ex11-risk-4').value;
+
+      const ok = (e1 === 'lunettes_visiere' && r1 === 'projections_uv') &&
+                 (e2 === 'gants_cuir' && r2 === 'coupures_brulures') &&
+                 (e3 === 'chaussures_s3' && r3 === 'ecrasement_perforation') &&
+                 (e4 === 'casque_bouchons' && r4 === 'surdite');
+
+      const fb = document.getElementById('ex11-feedback');
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Bravo ! Association parfaite des 5 EPI majeurs avec leurs risques d\'atelier respectifs.</span>';
+        if (!appState.socleCompleted.ex11) {
+          appState.socleCompleted.ex11 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Certaines correspondances sont inexactes. Vérifiez notamment la protection des yeux (projections/UV) et celle des pieds (écrasement S3).</span>';
+      }
+    }
+
+    function checkEx12() {
+      const p1 = document.getElementById('ex12-picto-1').value;
+      const p2 = document.getElementById('ex12-picto-2').value;
+      const p3 = document.getElementById('ex12-picto-3').value;
+
+      const ok = (p1 === 'lunettes_obligatoires') &&
+                 (p2 === 'bruit_obligatoire') &&
+                 (p3 === 'chaussures_obligatoires');
+
+      const fb = document.getElementById('ex12-feedback');
+      if (ok) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Parfait ! Les 3 pictogrammes ronds bleus d\'obligation sont parfaitement identifiés.</span>';
+        if (!appState.socleCompleted.ex12) {
+          appState.socleCompleted.ex12 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez la signification des panneaux d\'obligation normatifs.</span>';
+      }
+    }
+
+    function checkEx13() {
+      const txt = document.getElementById('ex13-text').value.toLowerCase();
+      const fb = document.getElementById('ex13-feedback');
+
+      const hasFusion = txt.includes('fond') || txt.includes('fus') || txt.includes('colle') || txt.includes('adhère') || txt.includes('adhere');
+      const hasBrulure = txt.includes('brûl') || txt.includes('brul') || txt.includes('peau') || txt.includes('grave') || txt.includes('chair');
+
+      if (hasFusion && hasBrulure) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Excellente explication professionnelle ! Le synthétique fond immédiatement sous la chaleur d\'une étincelle et colle à la chair, provoquant des brûlures profondes. Le coton ou cuir ignifugé est obligatoire.</span>';
+        if (!appState.socleCompleted.ex13) {
+          appState.socleCompleted.ex13 = true;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Précisez ce qui arrive à la matière synthétique (elle fond et colle à la peau) et la gravité de la brûlure cutanée qui en résulte.</span>';
+      }
+    }
+
+    /* Validations Parcours 2 */
+    function checkEx21() {
+      const din = parseNum(document.getElementById('ex21-din-input').value);
+      const risk = document.getElementById('ex21-risk-select').value;
+      const fb = document.getElementById('ex21-feedback');
+
+      const okDin = (din === 12);
+      const okRisk = (risk === 'coup_arc_retine');
+
+      if (okDin && okRisk) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Félicitations ! Pour 180 A (compris entre 175 A et 300 A), la teinte est impérativement DIN 12. Un échelon inférieur expose au coup d\'arc et aux lésions rétiniennes.</span>';
+        if (!appState.bonusCompleted.ex21) {
+          appState.bonusCompleted.ex21 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez dans le tableau pour 180 A : l\'intervalle 175 ≤ I < 300 donne DIN 12.</span>';
+      }
+    }
+
+    function checkEx22() {
+      const gTig = document.getElementById('ex22-tig-gant').value;
+      const gOxy = document.getElementById('ex22-oxy-gant').value;
+      const fb = document.getElementById('ex22-feedback');
+
+      if (gTig === 'GANT_A' && gOxy === 'GANT_B') {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Choix technique exact ! Gant A en cuir de chèvre très souple (Type B) pour la précision au TIG fin, et Gant B en croûte de bovin doublé (Type A) pour résister à la chaleur de l\'oxycoupage.</span>';
+        if (!appState.bonusCompleted.ex22) {
+          appState.bonusCompleted.ex22 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Erreur d\'affectation : le procédé TIG requiert une très grande dextérité (cuir de chèvre souple).</span>';
+      }
+    }
+
+    function checkEx23() {
+      const epi = document.getElementById('ex23-sol-epi').value;
+      const epc = document.getElementById('ex23-sol-epc').value;
+      const fb = document.getElementById('ex23-feedback');
+
+      if (epi === 'papr' && epc === 'captage_source') {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Analyse HSE parfaite ! En été austral réunionnais, la cagoule PAPR à ventilation assistée apporte confort thermique et pureté de l\'air, tandis que la torche aspirante capte les fumées à la source avant dispersion.</span>';
+        if (!appState.bonusCompleted.ex23) {
+          appState.bonusCompleted.ex23 = true;
+          appState.bonusPoints += 15;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Rappel : en climat chaud, le PAPR ventile le visage et la torche aspirante élimine les polluants à la source.</span>';
+      }
+    }
+
+    /* Validations Parcours 3 */
+    function checkEx31() {
+      const tox = document.getElementById('ex31-tox-select').value;
+      const pack = document.getElementById('ex31-pack-select').value;
+      const ant = document.getElementById('ex31-antidote-input').value.toLowerCase();
+      const fb = document.getElementById('ex31-feedback');
+
+      const okTox = (tox === 'calcium_osseux');
+      const okPack = (pack === 'pack_complet');
+      const okAnt = ant.includes('calcium') || ant.includes('gluconate');
+
+      if (okTox && okPack && okAnt) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Expertise chimique validée ! Le HF pénètre les tissus et détruit le calcium biologique (hypocalcémie mortelle). Le gel de gluconate de calcium est l\'antidote obligatoire d\'urgence.</span>';
+        if (!appState.bonusCompleted.ex31) {
+          appState.bonusCompleted.ex31 = true;
+          appState.bonusPoints += 20;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez les 3 points : toxicité du HF par captation du calcium, le pack normé complet EN 374, et le nom du gel au calcium (gel de gluconate de calcium).</span>';
+      }
+    }
+
+    function checkEx32() {
+      const leff1 = parseNum(document.getElementById('ex32-leff-1').value);
+      const leff2 = parseNum(document.getElementById('ex32-leff-2').value);
+      const radio = document.querySelector('input[name="ex32-modele-choix"]:checked');
+      const choix = radio ? radio.value : '';
+      const fb = document.getElementById('ex32-feedback');
+
+      const okLeff1 = checkClose(leff1, 78, 0.5);
+      const okLeff2 = checkClose(leff2, 70, 0.5);
+      const okChoix = (choix === 'PRO');
+
+      if (okLeff1 && okLeff2 && okChoix) {
+        fb.innerHTML = '<span class="text-emerald-600 font-bold">Niveau Excellence atteint ! Calculs : 102 − 24 = 78 dB(A) et 102 − 32 = 70 dB(A). Bien que 78 dB soit inférieur à 80 dB, le modèle Pro Industrie (70 dB) offre la marge de sécurité indispensable en atelier bruyant.</span>';
+        if (!appState.bonusCompleted.ex32) {
+          appState.bonusCompleted.ex32 = true;
+          appState.bonusPoints += 20;
+          updateProgress();
+        }
+      } else {
+        fb.innerHTML = '<span class="text-rose-600">Vérifiez vos calculs de soustraction : 102 − 24 et 102 − 32, et sélectionnez le protecteur garantissant la meilleure protection.</span>';
+      }
+    }
+  </script>
+</body>
+</html>
