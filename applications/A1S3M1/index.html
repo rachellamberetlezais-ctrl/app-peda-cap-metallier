@@ -1,0 +1,1852 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAP Métallier - Proportionnalité & Masse Linéique | CMA Formation</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Configuration MathJax v3 -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --cma-bordeaux: #A50F23;
+      --cma-corail: #EE3C3D;
+      --cma-bg: #F8FAFC;
+      --cma-text: #1E293B;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--cma-bg);
+      color: var(--cma-text);
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Header & Frise officielle */
+    .app-header {
+      position: relative;
+      overflow: hidden;
+      padding-bottom: 20px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .app-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .cma-wave-border {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 14px;
+      margin: 0;
+      border: 0;
+      background-image: url("ruban_vague.png");
+      background-repeat: repeat-x;
+      background-size: 102.941176px 102.941176px;
+      background-position: left -46.941176px;
+    }
+
+    .icon-bullet {
+      height: 18px;
+      width: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-right: 6px;
+    }
+
+    /* Mobile First Tap Targets & Inputs */
+    .btn-touch {
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .calc-input {
+      font-size: 16px !important; /* Empêche le zoom auto iOS */
+      min-height: 44px;
+    }
+
+    /* Masquage des flèches spinners par défaut sur inputs numériques */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    /* Badges & Cartes */
+    .card-pro {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Styles d'impression pour l'attestation */
+    @media print {
+      body {
+        background-color: #ffffff;
+        color: #000000;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+      #attestation-printable {
+        border: 2px solid #A50F23;
+        box-shadow: none;
+        page-break-inside: avoid;
+        margin: 0 auto;
+        padding: 24px;
+        width: 100%;
+        max-width: 800px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- ==================== HEADER PRINCIPAL ==================== -->
+  <header class="app-header shadow-sm no-print">
+    <div class="max-w-4xl mx-auto px-4 pt-3 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="Logo CMA Formation" class="app-logo">
+        <div>
+          <div class="text-xs font-bold text-[#A50F23] tracking-wide uppercase">CMA Formation Sainte-Clotilde</div>
+          <h1 class="text-base sm:text-lg font-bold text-slate-800 leading-tight">CAP Métallier • Mathématiques</h1>
+        </div>
+      </div>
+      <div class="text-right hidden sm:block">
+        <span class="inline-block bg-red-100 text-[#A50F23] text-xs font-semibold px-2.5 py-1 rounded-full">
+          Séance S3 M1
+        </span>
+      </div>
+    </div>
+    
+    <!-- Barre de progression générale (8px) -->
+    <div class="max-w-4xl mx-auto px-4 mt-3">
+      <div class="flex justify-between items-center text-xs text-slate-500 mb-1 font-medium">
+        <span>Progression globale du parcours</span>
+        <span id="global-progress-label">0%</span>
+      </div>
+      <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+        <div id="global-progress-bar" class="bg-[#A50F23] h-2 rounded-full transition-all duration-300" style="width: 5%;"></div>
+      </div>
+    </div>
+
+    <!-- Frise vague officielle en bas du header -->
+    <div class="cma-wave-border"></div>
+  </header>
+
+  <!-- ==================== NAVIGATION DES 4 ÉTAPES ==================== -->
+  <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200 py-2 no-print shadow-xs">
+    <div class="max-w-4xl mx-auto px-3 overflow-x-auto no-scrollbar">
+      <div class="flex gap-2 min-w-max pb-1">
+        <button onclick="goToStep(1)" id="nav-btn-1" class="btn-touch px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-[#A50F23] text-white shadow-sm">
+          <span>1. Découverte</span>
+        </button>
+        <button onclick="goToStep(2)" id="nav-btn-2" class="btn-touch px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <span>2. Cours & Simulateur</span>
+        </button>
+        <button onclick="goToStep(3)" id="nav-btn-3" class="btn-touch px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <span>3. Entraînement</span>
+        </button>
+        <button onclick="goToStep(4)" id="nav-btn-4" class="btn-touch px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200">
+          <span>4. Bilan & Attestation</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ==================== CONTENU PRINCIPAL ==================== -->
+  <main class="max-w-4xl mx-auto px-3 sm:px-4 py-4 flex-1 w-full">
+
+    <!-- ======================================================== -->
+    <!-- ÉTAPE 1 : DÉCOUVERTE -->
+    <!-- ======================================================== -->
+    <section id="step-1" class="space-y-4">
+      <!-- Contexte Professionnel -->
+      <div class="card-pro p-4 sm:p-5 border-l-4 border-l-[#A50F23]">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center mb-2">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet">
+          Contexte Professionnel : Chantier Pergola à Bellepierre
+        </h2>
+        <p class="text-sm text-slate-700 leading-relaxed mb-3">
+          L'entreprise <strong>« Métal Réunion Océan Indien »</strong>, basée à <strong>Sainte-Clotilde</strong>, réalise la structure d'une pergola métallique renforcée pour une terrasse d'habitation située sur les hauteurs de <strong>Bellepierre (Saint-Denis)</strong>.
+        </p>
+        <div class="bg-red-50 p-3 rounded-lg border border-red-200 text-xs sm:text-sm text-slate-800">
+          <p class="font-semibold text-[#A50F23] mb-1">Mission d'atelier :</p>
+          Pour commander la matière première chez le distributeur local et organiser le transport routier en toute sécurité, le chef d'atelier vous charge de déterminer la <strong>masse totale d'acier</strong> nécessaire à partir des métrés linéaires des profilés tubulaires carrés $40 \times 40 \times 2\text{ mm}$ (masse linéique : $2{,}40\text{ kg/m}$) et des poutrelles IPN 100 ($8{,}30\text{ kg/m}$).
+        </div>
+      </div>
+
+      <!-- Activité d'investigation -->
+      <div class="card-pro p-4 sm:p-5">
+        <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet">
+          1. Activité de découverte : Étude de la relation Longueur − Masse
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-600 mb-3">
+          Sur le catalogue d'un quincaillier industriel de Sainte-Clotilde, un tube carré acier $40 \times 40 \times 2\text{ mm}$ a une masse linéique annoncée de $2{,}40\text{ kg/m}$. L'apprenti découpe plusieurs sections d'essai et relève leurs masses sur la balance :
+        </p>
+        <ul class="text-xs sm:text-sm text-slate-700 list-disc list-inside space-y-1 mb-4 bg-slate-50 p-3 rounded-lg border">
+          <li>Pour $1\text{ m}$ de tube : $\text{masse} = 2{,}40\text{ kg}$</li>
+          <li>Pour $2\text{ m}$ de tube : $\text{masse} = 4{,}80\text{ kg}$</li>
+          <li>Pour $5\text{ m}$ de tube : $\text{masse} = 12{,}00\text{ kg}$</li>
+        </ul>
+
+        <!-- Q1 : Tableau d'atelier -->
+        <div class="mb-5">
+          <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-2">
+            Question 1 : Complétez le tableau d'atelier reliant la longueur $L$ (en m) à la masse $m$ (en kg) :
+          </label>
+          <div class="overflow-x-auto">
+            <table class="w-full text-center border-collapse border border-slate-300 text-xs sm:text-sm">
+              <thead class="bg-slate-100 font-semibold text-slate-700">
+                <tr>
+                  <th class="border border-slate-300 p-2 text-left">Grandeur étudiée</th>
+                  <th class="border border-slate-300 p-2">Section 1</th>
+                  <th class="border border-slate-300 p-2">Section 2</th>
+                  <th class="border border-slate-300 p-2 bg-amber-50">Section 3</th>
+                  <th class="border border-slate-300 p-2">Section 4</th>
+                  <th class="border border-slate-300 p-2 bg-amber-50">Section 5</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="border border-slate-300 p-2 font-medium text-left">Longueur $L$ (en m)</td>
+                  <td class="border border-slate-300 p-2 font-bold">1</td>
+                  <td class="border border-slate-300 p-2 font-bold">2</td>
+                  <td class="border border-slate-300 p-2 font-bold bg-amber-50">3</td>
+                  <td class="border border-slate-300 p-2 font-bold">5</td>
+                  <td class="border border-slate-300 p-2 font-bold bg-amber-50">8</td>
+                </tr>
+                <tr>
+                  <td class="border border-slate-300 p-2 font-medium text-left">Masse $m$ (en kg)</td>
+                  <td class="border border-slate-300 p-2">2,40</td>
+                  <td class="border border-slate-300 p-2">4,80</td>
+                  <td class="border border-slate-300 p-2 bg-amber-50">
+                    <input type="text" inputmode="decimal" id="step1-m3" class="calc-input w-20 text-center border-2 border-slate-300 rounded px-1 py-1 font-semibold focus:border-[#A50F23]" placeholder="Votre résultat...">
+                  </td>
+                  <td class="border border-slate-300 p-2">12,00</td>
+                  <td class="border border-slate-300 p-2 bg-amber-50">
+                    <input type="text" inputmode="decimal" id="step1-m8" class="calc-input w-20 text-center border-2 border-slate-300 rounded px-1 py-1 font-semibold focus:border-[#A50F23]" placeholder="Votre résultat...">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Q2 : Quotients successifs -->
+        <div class="mb-5">
+          <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-2">
+            Question 2 : Calculez le quotient $\dfrac{m}{L}$ pour n'importe quelle colonne (ex : Section 1 ou 2) :
+          </label>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs sm:text-sm font-medium">Quotient $\dfrac{m}{L} =$</span>
+            <input type="text" inputmode="decimal" id="step1-quotient" class="calc-input w-36 border-2 border-slate-300 rounded-lg px-3 py-1 font-semibold focus:border-[#A50F23]" placeholder="Votre résultat...">
+            <span class="text-xs sm:text-sm text-slate-500">kg/m</span>
+          </div>
+        </div>
+
+        <!-- Q3 : Interprétation -->
+        <div class="mb-5">
+          <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-2">
+            Question 3 : Ce quotient est-il constant et que représente-t-il concrètement pour le profilé ?
+          </label>
+          <div class="space-y-2 text-xs sm:text-sm">
+            <label class="flex items-start gap-2 p-2 rounded border bg-slate-50 cursor-pointer">
+              <input type="radio" name="step1-q3" value="non" class="mt-1">
+              <span>Non, il varie en fonction du nombre de barres débitées.</span>
+            </label>
+            <label class="flex items-start gap-2 p-2 rounded border bg-slate-50 cursor-pointer">
+              <input type="radio" name="step1-q3" value="oui_masse_lineique" class="mt-1">
+              <span>Oui, le quotient est constant et correspond à la <strong>masse linéique</strong> de l'acier (en kg par mètre).</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q4 : Barre de 6 m -->
+        <div class="mb-5">
+          <label class="block text-xs sm:text-sm font-bold text-slate-800 mb-2">
+            Question 4 : Calculez la masse d'une barre standard entière de $6\text{ m}$ à l'aide de ce coefficient :
+          </label>
+          <div class="flex flex-wrap items-center gap-2">
+            <input type="text" inputmode="decimal" id="step1-barre6m" class="calc-input w-36 border-2 border-slate-300 rounded-lg px-3 py-1 font-semibold focus:border-[#A50F23]" placeholder="Votre résultat...">
+            <span class="text-xs sm:text-sm text-slate-500">kg</span>
+          </div>
+        </div>
+
+        <button onclick="verifierEtape1()" class="btn-touch w-full sm:w-auto px-6 py-2.5 bg-[#A50F23] hover:bg-[#830b1b] text-white font-bold rounded-lg shadow transition">
+          Vérifier mes réponses de découverte
+        </button>
+
+        <div id="feedback-step1" class="mt-3 text-xs sm:text-sm hidden p-3 rounded-lg"></div>
+      </div>
+
+      <div class="flex justify-end">
+        <button onclick="goToStep(2)" class="btn-touch px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded-lg text-xs sm:text-sm flex items-center gap-2 shadow">
+          <span>Passer au Cours & Simulateur</span>
+          <span>&rarr;</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ÉTAPE 2 : COURS ET SIMULATEUR INTERACTIF -->
+    <!-- ======================================================== -->
+    <section id="step-2" class="space-y-4 hidden">
+      <!-- Synthèse du cours -->
+      <div class="card-pro p-4 sm:p-5 border-l-4 border-l-[#A50F23]">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet">
+          À Retenir • L'Essentiel du Cours : Proportionnalité & Masse Linéique
+        </h2>
+        
+        <div class="space-y-3 text-xs sm:text-sm text-slate-700">
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <h3 class="font-bold text-[#A50F23] text-sm flex items-center mb-1">
+              <img src="fleche_rouge.png" alt="" class="icon-bullet"> 1. Définition : Suites proportionnelles
+            </h3>
+            <p>
+              Deux suites de nombres $(x_1, x_2, x_3)$ et $(y_1, y_2, y_3)$ sont proportionnelles si l'on passe de chaque terme de la première au terme correspondant de la seconde en multipliant toujours par un même nombre non nul $k$, appelé <strong>coefficient de proportionnalité</strong>.
+            </p>
+            <p class="mt-1 font-medium text-slate-800">
+              $$k = \frac{y_1}{x_1} = \frac{y_2}{x_2} = \frac{y_3}{x_3} = \text{constante}$$
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <h3 class="font-bold text-[#A50F23] text-sm flex items-center mb-1">
+              <img src="fleche_rouge.png" alt="" class="icon-bullet"> 2. Application Métallerie : La Masse Linéique
+            </h3>
+            <p>
+              La masse $m$ (en kg) d'un profilé d'acier est directement proportionnelle à sa longueur $L$ (en m) selon la relation :
+            </p>
+            <div class="my-2 p-2 bg-red-50 text-[#A50F23] font-bold rounded text-center text-sm sm:text-base border border-red-200">
+              $m = k \times L \quad \iff \quad L = \frac{m}{k} \quad \iff \quad k = \frac{m}{L}$
+            </div>
+            <p class="text-xs text-slate-600">où $k$ est la masse linéique du profilé exprimée en $\text{kg/m}$.</p>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <h3 class="font-bold text-[#A50F23] text-sm flex items-center mb-1">
+              <img src="fleche_rouge.png" alt="" class="icon-bullet"> 3. Quatrième Proportionnelle (Produit en croix)
+            </h3>
+            <p>
+              Si trois valeurs $a$, $b$, $c$ sont connues pour une inconnue $x$ dans un tableau de proportionnalité :
+            </p>
+            <p class="mt-1 font-medium text-center">
+              $$a \times x = b \times c \quad \implies \quad x = \frac{b \times c}{a}$$
+            </p>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <h3 class="font-bold text-[#A50F23] text-sm flex items-center mb-1">
+              <img src="fleche_rouge.png" alt="" class="icon-bullet"> 4. Automatisation Tableur (Excel / Calc)
+            </h3>
+            <p>
+              Pour calculer automatiquement la masse en cellule <code>B3</code> connaissant la longueur en <code>B2</code> et le coefficient en <code>$B$1</code>, on écrit la formule avec référence absolue :
+            </p>
+            <code class="block mt-1 p-2 bg-slate-800 text-green-400 font-mono rounded text-xs">
+              =B2*$B$1
+            </code>
+            <p class="text-xs text-slate-500 mt-1">Le symbole <code>$</code> fige la colonne et la ligne lors de l'étirement vers les autres colonnes ou lignes.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SIMULATEUR INTERACTIF D'ATELIER -->
+      <div class="card-pro p-4 sm:p-5 border-2 border-red-200 bg-gradient-to-b from-white to-red-50/30">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center mb-3">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet">
+          Simulateur d'Atelier Métallier : Calcul Instantané de Masse
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 mb-4">
+          Sélectionnez un profilé couramment utilisé sur les chantiers de La Réunion ou réglez librement la masse linéique pour simuler vos débits d'atelier en temps réel :
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <!-- Sélection profilé -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Profilé d'acier :</label>
+            <select id="sim-profile-select" onchange="updateSimProfile()" class="w-full calc-input border border-slate-300 rounded-lg px-3 bg-white font-medium text-slate-800 focus:border-[#A50F23]">
+              <option value="2.40">Tube carré 40x40x2 mm (2,40 kg/m)</option>
+              <option value="4.28">Tube carré 50x50x3 mm (4,28 kg/m)</option>
+              <option value="5.22">Tube carré 60x60x3 mm (5,22 kg/m)</option>
+              <option value="1.36">Cornière 30x30x3 mm (1,36 kg/m)</option>
+              <option value="5.42">Cornière 60x60x6 mm (5,42 kg/m)</option>
+              <option value="1.57">Fer plat 40x5 mm (1,57 kg/m)</option>
+              <option value="1.85">Tube rond garde-corps (1,85 kg/m)</option>
+              <option value="8.30">Poutrelle IPN 100 (8,30 kg/m)</option>
+              <option value="10.40">Poutrelle IPN 120 (10,40 kg/m)</option>
+              <option value="custom">-- Valeur personnalisée --</option>
+            </select>
+          </div>
+
+          <!-- Masse linéique k -->
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1">Masse linéique $k$ (kg/m) :</label>
+            <input type="number" step="0.01" id="sim-k-input" value="2.40" oninput="runSimulation()" class="w-full calc-input border border-slate-300 rounded-lg px-3 bg-white font-semibold text-slate-800 focus:border-[#A50F23]">
+          </div>
+        </div>
+
+        <!-- Curseur et saisie longueur -->
+        <div class="mb-4 bg-white p-3.5 rounded-xl border border-slate-200">
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-bold text-slate-700 uppercase tracking-wide">Longueur linéaire $L$ débitée :</label>
+            <span class="text-sm font-bold text-[#A50F23]"><span id="sim-len-display">6.00</span> m</span>
+          </div>
+          <input type="range" id="sim-len-range" min="0.5" max="30" step="0.25" value="6.0" oninput="syncSimLength(this.value)" class="w-full accent-[#A50F23] cursor-pointer mb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-500">Ajustement direct :</span>
+            <input type="number" step="0.1" id="sim-len-input" value="6.0" oninput="syncSimLengthFromInput(this.value)" class="calc-input w-28 text-center border border-slate-300 rounded-lg px-2 font-semibold text-slate-800">
+            <span class="text-xs text-slate-600 font-medium">mètres</span>
+          </div>
+        </div>
+
+        <!-- Panneau de résultat dynamique -->
+        <div class="p-4 rounded-xl bg-slate-900 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div>
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Résultat de calcul atelier :</span>
+            <div class="text-2xl sm:text-3xl font-extrabold text-[#EE3C3D]">
+              <span id="sim-result-mass">14.40</span> <span class="text-base font-normal text-slate-300">kg</span>
+            </div>
+            <div class="text-xs text-slate-400 mt-0.5">
+              Équivalent en tonnes : <strong id="sim-result-tonnes" class="text-white">0.014 t</strong>
+            </div>
+          </div>
+          <div class="text-xs sm:text-right bg-slate-800 p-2.5 rounded-lg border border-slate-700 w-full sm:w-auto">
+            <div class="text-slate-400">Détail du produit :</div>
+            <div class="font-mono text-green-400 font-bold text-sm" id="sim-calc-detail">
+              m = 2,40 kg/m × 6,00 m = 14,40 kg
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center pt-2">
+        <button onclick="goToStep(1)" class="btn-touch px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs sm:text-sm">
+          &larr; Étape 1
+        </button>
+        <button onclick="goToStep(3)" class="btn-touch px-5 py-2.5 bg-[#A50F23] hover:bg-[#830b1b] text-white font-bold rounded-lg text-xs sm:text-sm shadow">
+          Accéder à l'Entraînement &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ÉTAPE 3 : ENTRAÎNEMENT GAMIFIÉ (TOUS LES EXERCICES) -->
+    <!-- ======================================================== -->
+    <section id="step-3" class="space-y-4 hidden">
+      
+      <!-- Bandeau récapitulatif des niveaux & déblocages -->
+      <div class="card-pro p-3.5 bg-gradient-to-r from-red-50 to-slate-50 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Progression Socle CAP :</span>
+          <span id="badge-socle-status" class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+            Niveau 1 en cours (0/5)
+          </span>
+        </div>
+        <div class="flex items-center gap-2 text-xs">
+          <span class="font-bold text-slate-600">Points Bonus :</span>
+          <span id="bonus-points-counter" class="font-bold px-2 py-0.5 rounded-full bg-slate-200 text-slate-800">0 pts</span>
+        </div>
+      </div>
+
+      <!-- Sélecteur d'onglets de Niveaux d'entraînement -->
+      <div class="flex border-b border-slate-200 gap-2 pb-1 overflow-x-auto no-scrollbar">
+        <button onclick="switchLevelTab(1)" id="tab-lvl-1" class="btn-touch px-3 py-2 font-bold text-xs sm:text-sm rounded-t-lg border-b-2 border-[#A50F23] text-[#A50F23] bg-white">
+          🟢 Niveau 1 • Socle CAP
+        </button>
+        <button onclick="switchLevelTab(2)" id="tab-lvl-2" class="btn-touch px-3 py-2 font-bold text-xs sm:text-sm rounded-t-lg border-b-2 border-transparent text-slate-400 bg-slate-50 cursor-not-allowed" disabled>
+          🔒 🟡 Niveau 2 • Avancé
+        </button>
+        <button onclick="switchLevelTab(3)" id="tab-lvl-3" class="btn-touch px-3 py-2 font-bold text-xs sm:text-sm rounded-t-lg border-b-2 border-transparent text-slate-400 bg-slate-50 cursor-not-allowed" disabled>
+          🔒 🔴 Niveau 3 • Expert
+        </button>
+      </div>
+
+      <!-- ==================== NIVEAU 1 ==================== -->
+      <div id="panel-lvl-1" class="space-y-4">
+        
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-xs sm:text-sm text-emerald-900">
+          <strong>🟢 Objectif Socle CAP :</strong> Réussir les 5 exercices ci-dessous pour valider à 100 % le socle de compétences et débloquer immédiatement l'Attestation Numérique ainsi que le Niveau 2 !
+        </div>
+
+        <!-- EXERCICE 1.1 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex1-1">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 1.1 (C1, C2) • Vérification d'un tableau de proportionnalité
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            Un fournisseur de tubes ronds livre trois sections différentes. Vérifiez par le calcul des quotients si la masse est proportionnelle à la longueur :
+          </p>
+          <div class="overflow-x-auto mb-3">
+            <table class="w-full text-center border-collapse border border-slate-300 text-xs sm:text-sm">
+              <thead class="bg-slate-100 font-semibold text-slate-700">
+                <tr>
+                  <th class="border border-slate-300 p-2 text-left">Grandeur étudiée</th>
+                  <th class="border border-slate-300 p-2">Section A</th>
+                  <th class="border border-slate-300 p-2">Section B</th>
+                  <th class="border border-slate-300 p-2">Section C</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="border border-slate-300 p-2 font-medium text-left">Longueur $L$ (en m)</td>
+                  <td class="border border-slate-300 p-2">2</td>
+                  <td class="border border-slate-300 p-2">5</td>
+                  <td class="border border-slate-300 p-2">7</td>
+                </tr>
+                <tr>
+                  <td class="border border-slate-300 p-2 font-medium text-left">Masse $m$ (en kg)</td>
+                  <td class="border border-slate-300 p-2">3,60</td>
+                  <td class="border border-slate-300 p-2">9,00</td>
+                  <td class="border border-slate-300 p-2">12,60</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                1. Calculez la valeur commune des quotients $\dfrac{m}{L}$ (en kg/m) :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex1-1-k" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg/m</span>
+              </div>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                Les grandeurs sont-elles proportionnelles ?
+              </label>
+              <select id="ex1-1-prop" class="calc-input border border-slate-300 rounded px-2 bg-white font-medium">
+                <option value="">-- Sélectionnez --</option>
+                <option value="oui">Oui, car tous les quotients m/L sont égaux</option>
+                <option value="non">Non, car les quotients sont différents</option>
+              </select>
+            </div>
+            <button onclick="verifierEx1_1()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 1.1
+            </button>
+            <div id="fb-ex1-1" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+        <!-- EXERCICE 1.2 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex1-2">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 1.2 (C2) • Calcul direct par coefficient de proportionnalité
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            Une cornière d'acier égale $30 \times 30 \times 3\text{ mm}$ a une masse linéique de $k = 1{,}36\text{ kg/m}$.
+          </p>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                1. Calculez la masse d'un morceau de cornière de $4\text{ mètres}$ de longueur :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex1-2-q1" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg</span>
+              </div>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                2. Calculez la masse d'une barre complète de $6\text{ mètres}$ de longueur :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex1-2-q2" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg</span>
+              </div>
+            </div>
+            <button onclick="verifierEx1_2()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 1.2
+            </button>
+            <div id="fb-ex1-2" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+        <!-- EXERCICE 1.3 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex1-3">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 1.3 (C2) • Détermination de longueur à partir de la masse
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            Un fer plat en acier $40 \times 5\text{ mm}$ pèse $1{,}57\text{ kg}$ par mètre ($k = 1{,}57\text{ kg/m}$).
+          </p>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                1. Une chute de fer plat trouvée à l'atelier pèse $4{,}71\text{ kg}$. Déterminez sa longueur exacte $L$ en mètres :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex1-3-q1" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">mètres</span>
+              </div>
+            </div>
+            <button onclick="verifierEx1_3()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 1.3
+            </button>
+            <div id="fb-ex1-3" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+        <!-- EXERCICE 1.4 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex1-4">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 1.4 (C1, C2) • Tableau de commande de tubes carrés
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            Complétez le tableau de proportionnalité pour un tube carré de masse linéique $k = 2{,}10\text{ kg/m}$ :
+          </p>
+          <div class="overflow-x-auto mb-3">
+            <table class="w-full text-center border-collapse border border-slate-300 text-xs sm:text-sm">
+              <thead class="bg-slate-100 font-semibold text-slate-700">
+                <tr>
+                  <th class="border border-slate-300 p-2 text-left">Grandeur</th>
+                  <th class="border border-slate-300 p-2">Col. 1</th>
+                  <th class="border border-slate-300 p-2">Col. 2</th>
+                  <th class="border border-slate-300 p-2">Col. 3</th>
+                  <th class="border border-slate-300 p-2">Col. 4</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="border border-slate-300 p-2 font-medium text-left">Longueur $L$ (m)</td>
+                  <td class="border border-slate-300 p-2 font-bold">2</td>
+                  <td class="border border-slate-300 p-2 bg-amber-50">
+                    <input type="text" inputmode="decimal" id="ex1-4-l2" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                  </td>
+                  <td class="border border-slate-300 p-2 font-bold">34</td>
+                  <td class="border border-slate-300 p-2 bg-amber-50">
+                    <input type="text" inputmode="decimal" id="ex1-4-l4" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="border border-slate-300 p-2 font-medium text-left">Masse $m$ (kg)</td>
+                  <td class="border border-slate-300 p-2 bg-amber-50">
+                    <input type="text" inputmode="decimal" id="ex1-4-m1" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                  </td>
+                  <td class="border border-slate-300 p-2 font-bold">21,0</td>
+                  <td class="border border-slate-300 p-2 bg-amber-50">
+                    <input type="text" inputmode="decimal" id="ex1-4-m3" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                  </td>
+                  <td class="border border-slate-300 p-2 font-bold">168,0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button onclick="verifierEx1_4()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+            Valider le tableau 1.4
+          </button>
+          <div id="fb-ex1-4" class="text-xs sm:text-sm hidden p-2.5 rounded mt-2"></div>
+        </div>
+
+        <!-- EXERCICE 1.5 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex1-5">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 1.5 (C2, C3) • Règle de trois / Produit en croix d'atelier
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            Un métallier sait que $3\text{ mètres}$ de tube rectangulaire pèsent $8{,}40\text{ kg}$.
+          </p>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                1. À l'aide du produit en croix, calculez la masse correspondant à $7\text{ mètres}$ de ce même tube :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex1-5-q1" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg</span>
+              </div>
+            </div>
+            <button onclick="verifierEx1_5()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 1.5
+            </button>
+            <div id="fb-ex1-5" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== NIVEAU 2 ==================== -->
+      <div id="panel-lvl-2" class="space-y-4 hidden">
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs sm:text-sm text-amber-900">
+          <strong>🟡 Niveau 2 • Dépassement :</strong> Autonomie & Situations Réelles d'Atelier à La Réunion. Obtenez jusqu'à 40 points bonus !
+        </div>
+
+        <!-- EXERCICE 2.1 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex2-1">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 2.1 (C2, C3) • Portail coulissant à Sainte-Marie
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            Pour le cadre extérieur d'un portail coulissant de $4{,}50\text{ m}$ de large sur $1{,}80\text{ m}$ de haut, un métallier utilise du tube carré $50 \times 50 \times 3\text{ mm}$ ($k = 4{,}28\text{ kg/m}$).
+          </p>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                1. Calculez le périmètre total $P$ du cadre rectangulaire en mètres :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex2-1-q1" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">m</span>
+              </div>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                2. Calculez la masse d'acier totale $m$ du cadre extérieur :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex2-1-q2" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg</span>
+              </div>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                3. On ajoute 2 renforts verticaux intérieurs de $1{,}80\text{ m}$ chacun dans le même tube. Quelle est la nouvelle masse totale de l'ossature ?
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex2-1-q3" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg</span>
+              </div>
+            </div>
+            <button onclick="verifierEx2_1()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 2.1
+            </button>
+            <div id="fb-ex2-1" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+        <!-- EXERCICE 2.2 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex2-2">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 2.2 (C1, C3) • Détection de non-proportionnalité (Tarifs Le Port)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-2">
+            Un artisan compare les tarifs de galvanisation à chaud au Port :
+          </p>
+          <ul class="text-xs sm:text-sm text-slate-600 list-disc list-inside space-y-1 mb-3">
+            <li>Commande A : $50\text{ kg}$ traités pour $125\text{ €}$</li>
+            <li>Commande B : $100\text{ kg}$ traités pour $210\text{ €}$</li>
+            <li>Commande C : $200\text{ kg}$ traités pour $380\text{ €}$</li>
+          </ul>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div>
+                <label class="block font-semibold text-slate-800 mb-1">Prix au kg Commande A :</label>
+                <div class="flex items-center gap-1">
+                  <input type="text" inputmode="decimal" id="ex2-2-pA" class="calc-input w-28 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                  <span>€/kg</span>
+                </div>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-800 mb-1">Prix au kg Commande B :</label>
+                <div class="flex items-center gap-1">
+                  <input type="text" inputmode="decimal" id="ex2-2-pB" class="calc-input w-28 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                  <span>€/kg</span>
+                </div>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-800 mb-1">Prix au kg Commande C :</label>
+                <div class="flex items-center gap-1">
+                  <input type="text" inputmode="decimal" id="ex2-2-pC" class="calc-input w-28 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                  <span>€/kg</span>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                Le coût est-il proportionnel à la masse traitée ?
+              </label>
+              <select id="ex2-2-prop" class="calc-input border border-slate-300 rounded px-2 bg-white font-medium">
+                <option value="">-- Sélectionnez --</option>
+                <option value="non">Non, le prix au kg diminue avec la masse (tarif dégressif)</option>
+                <option value="oui">Oui, c'est rigoureusement proportionnel</option>
+              </select>
+            </div>
+            <button onclick="verifierEx2_2()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 2.2
+            </button>
+            <div id="fb-ex2-2" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+        <!-- EXERCICE 2.3 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex2-3">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 2.3 (C2, C3) • Automatisation Tableur pour devis d'atelier
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            La cellule <code>B1</code> contient la masse linéique de la cornière ($k = 3{,}77\text{ kg/m}$). Les cellules <code>A4</code> à <code>A8</code> contiennent les longueurs débitées des différentes pièces.
+          </p>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                1. Saisissez la formule exacte à écrire en <code>B4</code> (sans espace, ex: =A4*$B$1) :
+              </label>
+              <input type="text" id="ex2-3-formule" class="calc-input w-56 border border-slate-300 rounded px-2 font-mono font-semibold" placeholder="Votre résultat...">
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                2. Si la somme des longueurs débitées est de $36\text{ m}$, calculez la masse totale d'acier :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex2-3-masse" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg</span>
+              </div>
+            </div>
+            <button onclick="verifierEx2_3()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 2.3
+            </button>
+            <div id="fb-ex2-3" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+        <!-- EXERCICE 2.4 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex2-4">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 2.4 (C3, C4) • Devis matière & calcul de coût à Sainte-Clotilde
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-3">
+            Prix d'achat HT chez le grossiste : $2{,}20\text{ €/kg}$. Pour fabriquer une grille de clôture, il faut $48\text{ mètres}$ de profilé pesant $1{,}80\text{ kg/m}$.
+          </p>
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                1. Calculez la masse totale d'acier nécessaire :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex2-4-q1" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">kg</span>
+              </div>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                2. Calculez le coût matière total hors taxes (HT) :
+              </label>
+              <div class="flex items-center gap-2">
+                <input type="text" inputmode="decimal" id="ex2-4-q2" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                <span class="text-slate-500">€ HT</span>
+              </div>
+            </div>
+            <button onclick="verifierEx2_4()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 2.4
+            </button>
+            <div id="fb-ex2-4" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== NIVEAU 3 ==================== -->
+      <div id="panel-lvl-3" class="space-y-4 hidden">
+        <div class="p-3 bg-red-50 border border-red-200 rounded-lg text-xs sm:text-sm text-red-900">
+          <strong>🔴 Niveau 3 • Expert / Excellence :</strong> Analyse Complexe, Sécurité Routière & Logistique Réunionnaise. Décrochez le badge Grand Maître Métallier !
+        </div>
+
+        <!-- EXERCICE 3.1 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex3-1">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 3.1 (C3, C4) • Étude de charge & logistique : Varangue à Saint-Gilles
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-2">
+            Structure d'une varangue bioclimatique résistante aux vents cycloniques. Barres de $6\text{ m}$ livrées depuis Sainte-Clotilde :
+          </p>
+          <ul class="text-xs sm:text-sm text-slate-600 list-disc list-inside space-y-1 mb-3">
+            <li>14 barres de tube carré $60 \times 60 \times 3\text{ mm}$ ($5{,}22\text{ kg/m}$)</li>
+            <li>8 barres de cornière $60 \times 60 \times 6\text{ mm}$ ($5{,}42\text{ kg/m}$)</li>
+            <li>6 barres d'IPN 120 ($10{,}40\text{ kg/m}$)</li>
+          </ul>
+
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div class="bg-slate-50 p-3 rounded-lg border space-y-2">
+              <span class="font-bold text-slate-800 block">1. Linéaires totaux en mètres :</span>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div>
+                  <label class="block text-slate-600 text-xs">Tube carré (14 barres) :</label>
+                  <input type="text" inputmode="decimal" id="ex3-1-lin1" class="calc-input w-full border border-slate-300 rounded px-2" placeholder="Votre résultat...">
+                </div>
+                <div>
+                  <label class="block text-slate-600 text-xs">Cornière (8 barres) :</label>
+                  <input type="text" inputmode="decimal" id="ex3-1-lin2" class="calc-input w-full border border-slate-300 rounded px-2" placeholder="Votre résultat...">
+                </div>
+                <div>
+                  <label class="block text-slate-600 text-xs">IPN 120 (6 barres) :</label>
+                  <input type="text" inputmode="decimal" id="ex3-1-lin3" class="calc-input w-full border border-slate-300 rounded px-2" placeholder="Votre résultat...">
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-lg border space-y-2">
+              <span class="font-bold text-slate-800 block">2. Masse globale totale :</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label class="block text-slate-600 text-xs">Masse totale (en kg) :</label>
+                  <input type="text" inputmode="decimal" id="ex3-1-mtot-kg" class="calc-input w-full border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                </div>
+                <div>
+                  <label class="block text-slate-600 text-xs">Masse totale (en tonnes, arrondi 2 déc.) :</label>
+                  <input type="text" inputmode="decimal" id="ex3-1-mtot-t" class="calc-input w-full border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                3. Charge utile du camion : $1{,}20\text{ tonne}$. L'artisan peut-il transporter toute la commande en un seul trajet ?
+              </label>
+              <select id="ex3-1-decision" class="calc-input border border-slate-300 rounded px-2 bg-white font-medium w-full">
+                <option value="">-- Sélectionnez votre justification --</option>
+                <option value="oui">Oui, car la charge totale (environ 1,07 t) est inférieure à la charge utile maximale de 1,20 t</option>
+                <option value="non">Non, la charge dépasse 1,20 t et impose deux rotations</option>
+              </select>
+            </div>
+
+            <button onclick="verifierEx3_1()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 3.1
+            </button>
+            <div id="fb-ex3-1" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+        <!-- EXERCICE 3.2 -->
+        <div class="card-pro p-4 sm:p-5" id="card-ex3-2">
+          <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center mb-2">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Exercice 3.2 (C3, C4) • Comparatif pannes de toiture au Port (120 m linéaires)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-700 mb-2">
+            Hangar artisanal au Port. Comparatif entre deux options techniques équivalentes pour un linéaire total de $120\text{ m}$ :
+          </p>
+          <ul class="text-xs sm:text-sm text-slate-600 list-disc list-inside space-y-1 mb-3">
+            <li>Option A (Acier galva) : $7{,}50\text{ kg/m}$ à $2{,}40\text{ €/kg}$ HT</li>
+            <li>Option B (Aluminium structural) : $2{,}70\text{ kg/m}$ à $6{,}80\text{ €/kg}$ HT</li>
+          </ul>
+
+          <div class="space-y-3 text-xs sm:text-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="p-3 bg-slate-50 border rounded-lg space-y-2">
+                <span class="font-bold text-slate-800 block text-xs uppercase">Option A (Acier Galvanisé)</span>
+                <div>
+                  <label class="block text-slate-600 text-xs">Masse totale :</label>
+                  <div class="flex items-center gap-1">
+                    <input type="text" inputmode="decimal" id="ex3-2-mA" class="calc-input w-28 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                    <span>kg</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-slate-600 text-xs">Coût matière HT :</label>
+                  <div class="flex items-center gap-1">
+                    <input type="text" inputmode="decimal" id="ex3-2-cA" class="calc-input w-28 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                    <span>€ HT</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 bg-slate-50 border rounded-lg space-y-2">
+                <span class="font-bold text-slate-800 block text-xs uppercase">Option B (Aluminium)</span>
+                <div>
+                  <label class="block text-slate-600 text-xs">Masse totale :</label>
+                  <div class="flex items-center gap-1">
+                    <input type="text" inputmode="decimal" id="ex3-2-mB" class="calc-input w-28 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                    <span>kg</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-slate-600 text-xs">Coût matière HT :</label>
+                  <div class="flex items-center gap-1">
+                    <input type="text" inputmode="decimal" id="ex3-2-cB" class="calc-input w-28 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+                    <span>€ HT</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-800 mb-1">
+                3. Analyse technique littoral réunionnais (corrosion marine & pose en toiture) :
+              </label>
+              <select id="ex3-2-synthese" class="calc-input border border-slate-300 rounded px-2 bg-white font-medium w-full">
+                <option value="">-- Synthèse technico-économique --</option>
+                <option value="alu">L'aluminium est presque 3 fois plus léger (324 kg vs 900 kg) et insensible aux embruns du Port pour un surcoût modéré (43,20 € HT)</option>
+                <option value="acier">L'acier est toujours préférable car son coût au kg est inférieur sans considération de masse</option>
+              </select>
+            </div>
+
+            <button onclick="verifierEx3_2()" class="btn-touch px-4 py-2 bg-[#A50F23] text-white font-semibold rounded shadow">
+              Valider l'exercice 3.2
+            </button>
+            <div id="fb-ex3-2" class="text-xs sm:text-sm hidden p-2.5 rounded"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex justify-between items-center pt-2">
+        <button onclick="goToStep(2)" class="btn-touch px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg text-xs sm:text-sm">
+          &larr; Cours
+        </button>
+        <button onclick="goToStep(4)" class="btn-touch px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg text-xs sm:text-sm shadow">
+          Accéder au Bilan & Attestation &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- ÉTAPE 4 : BILAN, ÉVALUATION FORMELLE & ATTESTATION -->
+    <!-- ======================================================== -->
+    <section id="step-4" class="space-y-5 hidden">
+
+      <!-- Identification Apprenant pour l'Attestation -->
+      <div class="card-pro p-4 sm:p-5 no-print border-l-4 border-l-[#A50F23]">
+        <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center mb-2">
+          <img src="fleche_rouge.png" alt="" class="icon-bullet">
+          Identification de l'Apprenant
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-600 mb-3">
+          Saisissez votre prénom et votre nom pour personnaliser votre attestation numérique de réussite :
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Prénom :</label>
+            <input type="text" id="student-firstname" oninput="updateStudentIdentity()" class="calc-input w-full border border-slate-300 rounded-lg px-3 text-slate-800 font-medium focus:border-[#A50F23]" placeholder="Votre prénom...">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nom :</label>
+            <input type="text" id="student-lastname" oninput="updateStudentIdentity()" class="calc-input w-full border border-slate-300 rounded-lg px-3 text-slate-800 font-medium focus:border-[#A50F23]" placeholder="Votre nom...">
+          </div>
+        </div>
+      </div>
+
+      <!-- ÉVALUATION FORMELLE INDIVIDUELLE (Score: /10) -->
+      <div class="card-pro p-4 sm:p-5 no-print" id="eval-formelle-card">
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 flex items-center">
+            <img src="fleche_rouge.png" alt="" class="icon-bullet">
+            Évaluation Formelle Individuelle (Durée : 15 min | Score : /10)
+          </h2>
+          <span class="text-xs font-bold px-2.5 py-1 rounded bg-slate-100 text-slate-800" id="eval-score-badge">Non validée</span>
+        </div>
+        <p class="text-xs sm:text-sm text-slate-700 mb-3">
+          <strong>Situation :</strong> Fabrication d'une rampe d'escalier à Sainte-Clotilde. Pour la main courante et les lisses d'un garde-corps extérieur, un métallier utilise du tube rond en acier de masse linéique $k = 1{,}85\text{ kg/m}$.
+        </p>
+
+        <div class="space-y-4 text-xs sm:text-sm">
+          <!-- Question 1 -->
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <label class="block font-semibold text-slate-800 mb-1">
+              1. Définissez la relation mathématique donnant la masse $m$ (en kg) en fonction de la longueur $L$ (en m) (1 pt) :
+            </label>
+            <select id="eval-q1" class="calc-input border border-slate-300 rounded px-2 bg-white font-medium w-full sm:w-auto">
+              <option value="">-- Choisissez la formule exacte --</option>
+              <option value="m=1.85*L">m = 1,85 × L</option>
+              <option value="m=1.85/L">m = 1,85 / L</option>
+              <option value="m=L+1.85">m = L + 1,85</option>
+            </select>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <label class="block font-semibold text-slate-800 mb-1">
+              2. Calculez la masse d'un élément de main courante mesurant $3{,}20\text{ m}$ (2 pts) :
+            </label>
+            <div class="flex items-center gap-2">
+              <input type="text" inputmode="decimal" id="eval-q2" class="calc-input w-36 border border-slate-300 rounded px-2 font-semibold" placeholder="Votre résultat...">
+              <span class="text-slate-500">kg</span>
+            </div>
+          </div>
+
+          <!-- Question 3 : Tableau -->
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <label class="block font-semibold text-slate-800 mb-2">
+              3. Complétez le tableau de proportionnalité d'atelier ci-dessous (4 pts) :
+            </label>
+            <div class="overflow-x-auto">
+              <table class="w-full text-center border-collapse border border-slate-300 text-xs sm:text-sm">
+                <thead class="bg-slate-100 font-semibold text-slate-700">
+                  <tr>
+                    <th class="border border-slate-300 p-2 text-left">Grandeur</th>
+                    <th class="border border-slate-300 p-2">Col. 1</th>
+                    <th class="border border-slate-300 p-2">Col. 2</th>
+                    <th class="border border-slate-300 p-2">Col. 3</th>
+                    <th class="border border-slate-300 p-2 bg-amber-50">Col. 4</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="border border-slate-300 p-2 font-medium text-left">Longueur $L$ (m)</td>
+                    <td class="border border-slate-300 p-2">1,50</td>
+                    <td class="border border-slate-300 p-2">3,20</td>
+                    <td class="border border-slate-300 p-2">4,00</td>
+                    <td class="border border-slate-300 p-2 bg-amber-50">
+                      <input type="text" inputmode="decimal" id="eval-t-l4" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="border border-slate-300 p-2 font-medium text-left">Masse $m$ (kg)</td>
+                    <td class="border border-slate-300 p-2 bg-amber-50">
+                      <input type="text" inputmode="decimal" id="eval-t-m1" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                    </td>
+                    <td class="border border-slate-300 p-2 bg-amber-50">
+                      <input type="text" inputmode="decimal" id="eval-t-m2" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                    </td>
+                    <td class="border border-slate-300 p-2 bg-amber-50">
+                      <input type="text" inputmode="decimal" id="eval-t-m3" class="calc-input w-20 text-center border border-slate-300 rounded font-semibold" placeholder="Votre résultat...">
+                    </td>
+                    <td class="border border-slate-300 p-2">11,10</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="p-3 bg-slate-50 rounded-lg border">
+            <label class="block font-semibold text-slate-800 mb-1">
+              4. Pour fixer l'ensemble sur la dalle béton, le métallier doit ajouter 5 platines métalliques d'ancrage pesant $0{,}75\text{ kg}$ chacune. La masse totale est-elle strictement proportionnelle à la longueur de tube ? (3 pts)
+            </label>
+            <select id="eval-q4" class="calc-input border border-slate-300 rounded px-2 bg-white font-medium w-full">
+              <option value="">-- Choisissez votre justification mathématique --</option>
+              <option value="non">Non, car l'ajout d'une masse fixe (5 × 0,75 kg = 3,75 kg) donne une relation affine m = 1,85×L + 3,75 (l'ordonnée à l'origine n'est pas nulle)</option>
+              <option value="oui">Oui, car le tube d'acier reste toujours de masse linéique 1,85 kg/m</option>
+            </select>
+          </div>
+
+          <button onclick="corrigerEvaluationFormelle()" class="btn-touch px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-lg shadow">
+            Soumettre l'évaluation formelle
+          </button>
+          <div id="fb-eval-formelle" class="text-xs sm:text-sm hidden p-3 rounded-lg"></div>
+        </div>
+      </div>
+
+      <!-- ATTESTATION NUMÉRIQUE OFFICIELLE -->
+      <div id="attestation-wrapper">
+        <div id="attestation-locked" class="card-pro p-6 text-center text-slate-500 no-print">
+          <div class="text-3xl mb-2">🔒</div>
+          <h3 class="text-base font-bold text-slate-700">Attestation Pédagogique Verrouillée</h3>
+          <p class="text-xs sm:text-sm mt-1 max-w-md mx-auto">
+            Validez l'intégralité des 5 exercices du <strong>Niveau 1 (Socle CAP)</strong> à l'Étape 3 pour débloquer automatiquement votre attestation officielle.
+          </p>
+        </div>
+
+        <div id="attestation-printable" class="card-pro p-6 sm:p-8 bg-white border-2 border-[#A50F23] relative hidden">
+          <!-- En-tête attestation avec Logo officiel -->
+          <div class="flex items-center justify-between border-b-2 border-red-100 pb-4 mb-5">
+            <div>
+              <img src="logo.png" alt="CMA Formation" class="app-logo">
+              <div class="text-[11px] font-bold text-[#A50F23] tracking-widest uppercase mt-1">CMA Formation Sainte-Clotilde</div>
+            </div>
+            <div class="text-right">
+              <span class="inline-block px-3 py-1 bg-red-50 text-[#A50F23] font-bold rounded-full text-xs uppercase tracking-wider border border-red-200">
+                Attestation de Réussite
+              </span>
+              <div class="text-xs text-slate-500 mt-1" id="attestation-date-display">Date : --/--/----</div>
+            </div>
+          </div>
+
+          <!-- Corps attestation -->
+          <div class="text-center space-y-3 mb-6">
+            <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              ATTESTATION PÉDAGOGIQUE DE RÉUSSITE
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-600 italic">
+              Délivrée au titre du parcours de formation individualisé en Mathématiques (CAP Métallier - Année 1)
+            </p>
+
+            <div class="py-3 px-4 bg-slate-50 rounded-xl border border-slate-200 inline-block min-w-[280px]">
+              <span class="text-xs text-slate-500 block">Apprenant(e) certifié(e) :</span>
+              <div class="text-lg sm:text-xl font-extrabold text-[#A50F23]" id="attestation-student-name">
+                [Prénom & Nom de l'Apprenant]
+              </div>
+            </div>
+
+            <p class="text-xs sm:text-sm text-slate-700 max-w-xl mx-auto leading-relaxed">
+              a validé avec succès l'ensemble des compétences professionnelles et mathématiques de la séance :<br>
+              <strong>« Proportionnalité : Coefficients & Suites proportionnelles — Masse des profilés acier selon le linéaire »</strong>.
+            </p>
+          </div>
+
+          <!-- Grille des Compétences & Badges vérifiés -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 text-xs">
+            <div class="p-3 bg-red-50/50 rounded-lg border border-red-100">
+              <span class="font-bold text-[#A50F23] block mb-1">Compétences BO 2024 vérifiées :</span>
+              <ul class="space-y-1 text-slate-700">
+                <li>✓ <strong>C1 (S'approprier) :</strong> Identification du linéaire et de la masse linéique.</li>
+                <li>✓ <strong>C2 (Analyser/Raisonner) :</strong> Calcul de quotients et reconnaissance de proportionnalité.</li>
+                <li>✓ <strong>C3 (Réaliser) :</strong> Résolution par produit en croix et formules tableur.</li>
+                <li>✓ <strong>C4 (Valider/Communiquer) :</strong> Contrôle des charges et contraintes d'atelier.</li>
+              </ul>
+            </div>
+            <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <span class="font-bold text-slate-800 block mb-1">Résultats obtenus :</span>
+              <div class="space-y-1.5 text-slate-700">
+                <div class="flex justify-between">
+                  <span>Socle CAP Métallier :</span>
+                  <strong class="text-emerald-700 font-bold" id="attest-socle-pct">100% Validé</strong>
+                </div>
+                <div class="flex justify-between">
+                  <span>Dépassement / Bonus :</span>
+                  <strong class="text-amber-700 font-bold" id="attest-bonus-pts">0 pts</strong>
+                </div>
+                <div class="flex justify-between">
+                  <span>Évaluation formelle :</span>
+                  <strong class="text-slate-800 font-bold" id="attest-eval-note">Non évaluée</strong>
+                </div>
+                <div class="flex justify-between">
+                  <span>Statut :</span>
+                  <span class="font-semibold text-[#A50F23]" id="attest-badge-title">Métallier Qualifié Socle</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Signatures officielles -->
+          <div class="flex justify-between items-end border-t border-slate-200 pt-4 text-xs text-slate-600">
+            <div>
+              <div class="font-semibold text-slate-800">Formateur référent :</div>
+              <div>Rachel Lamberet-Lezais</div>
+              <div class="text-[10px] text-slate-400">CMA Formation Sainte-Clotilde</div>
+            </div>
+            <div class="text-right">
+              <div class="font-semibold text-slate-800">Validation pédagogique :</div>
+              <div class="font-mono text-emerald-600 font-bold">CERTIFIÉ CONFORME QUALIOPI</div>
+              <div class="text-[10px] text-slate-400">Réf. S3 M1 Groupement 1</div>
+            </div>
+          </div>
+
+          <!-- Bouton d'impression / export PDF -->
+          <div class="mt-6 text-center no-print">
+            <button onclick="window.print()" class="btn-touch px-6 py-2.5 bg-[#A50F23] hover:bg-[#830b1b] text-white font-bold rounded-lg shadow inline-flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+              <span>Imprimer l'Attestation / Sauvegarder en PDF</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-500 no-print">
+    <div class="max-w-4xl mx-auto px-4">
+      CMA Formation Sainte-Clotilde • Île de La Réunion • Réf. BO 2024 Mathématiques CAP Métallier
+    </div>
+  </footer>
+
+  <!-- ==================== LOGIQUE JAVASCRIPT GLOBALE ==================== -->
+  <script>
+    // --- ÉTAT GLOBAL DE L'APPLICATION ---
+    const appState = {
+      currentStep: 1,
+      currentLevel: 1,
+      student: { firstname: '', lastname: '' },
+      step1Validated: false,
+      n1: { ex1_1: false, ex1_2: false, ex1_3: false, ex1_4: false, ex1_5: false },
+      n2: { ex2_1: false, ex2_2: false, ex2_3: false, ex2_4: false },
+      n3: { ex3_1: false, ex3_2: false },
+      bonusPoints: 0,
+      evalScore: null
+    };
+
+    // --- NAVIGATION ENTRE LES 4 ÉTAPES ---
+    function goToStep(stepNum) {
+      for (let i = 1; i <= 4; i++) {
+        const sec = document.getElementById('step-' + i);
+        const btn = document.getElementById('nav-btn-' + i);
+        if (sec) sec.classList.add('hidden');
+        if (btn) {
+          btn.className = "btn-touch px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200";
+        }
+      }
+      const targetSec = document.getElementById('step-' + stepNum);
+      const targetBtn = document.getElementById('nav-btn-' + stepNum);
+      if (targetSec) targetSec.classList.remove('hidden');
+      if (targetBtn) {
+        targetBtn.className = "btn-touch px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-[#A50F23] text-white shadow-sm";
+      }
+      appState.currentStep = stepNum;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Retraiter MathJax si nécessaire
+      if (window.MathJax && MathJax.typesetPromise) {
+        MathJax.typesetPromise();
+      }
+      updateGlobalProgress();
+    }
+
+    // --- NAVIGATION DANS L'ENTRAÎNEMENT (NIVEAUX 1, 2, 3) ---
+    function switchLevelTab(lvl) {
+      if (lvl === 2 && !isNiveau1Complet()) return;
+      if (lvl === 3 && !isNiveau2Complet()) return;
+
+      for (let i = 1; i <= 3; i++) {
+        const panel = document.getElementById('panel-lvl-' + i);
+        const tab = document.getElementById('tab-lvl-' + i);
+        if (panel) panel.classList.add('hidden');
+        if (tab && !tab.disabled) {
+          tab.className = "btn-touch px-3 py-2 font-bold text-xs sm:text-sm rounded-t-lg border-b-2 border-transparent text-slate-600 bg-slate-50";
+        }
+      }
+
+      const curPanel = document.getElementById('panel-lvl-' + lvl);
+      const curTab = document.getElementById('tab-lvl-' + lvl);
+      if (curPanel) curPanel.classList.remove('hidden');
+      if (curTab) {
+        curTab.className = "btn-touch px-3 py-2 font-bold text-xs sm:text-sm rounded-t-lg border-b-2 border-[#A50F23] text-[#A50F23] bg-white";
+      }
+      appState.currentLevel = lvl;
+      if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise();
+    }
+
+    // --- PARSING NUMÉRIQUE BIENVEILLANT (VIRGULE & POINT) ---
+    function parseUserNumber(str) {
+      if (!str) return NaN;
+      const clean = str.trim().replace(',', '.');
+      if (clean === '') return NaN;
+      const num = Number(clean);
+      return Number.isFinite(num) ? num : NaN;
+    }
+
+    function isClose(userVal, targetVal, tolerance = 0.1) {
+      return !isNaN(userVal) && Math.abs(userVal - targetVal) <= tolerance;
+    }
+
+    // --- ÉTAPE 1 : VÉRIFICATION DÉCOUVERTE ---
+    function verifierEtape1() {
+      const m3 = parseUserNumber(document.getElementById('step1-m3').value);
+      const m8 = parseUserNumber(document.getElementById('step1-m8').value);
+      const quot = parseUserNumber(document.getElementById('step1-quotient').value);
+      const barre6 = parseUserNumber(document.getElementById('step1-barre6m').value);
+      
+      const q3Els = document.getElementsByName('step1-q3');
+      let q3Val = '';
+      for (const el of q3Els) { if (el.checked) q3Val = el.value; }
+
+      const fb = document.getElementById('feedback-step1');
+      fb.classList.remove('hidden');
+
+      // Attendu : m3 = 7.20, m8 = 19.20, quot = 2.40, barre6 = 14.40, q3 = oui_masse_lineique
+      const okM3 = isClose(m3, 7.20);
+      const okM8 = isClose(m8, 19.20);
+      const okQuot = isClose(quot, 2.40);
+      const okBarre = isClose(barre6, 14.40);
+      const okQ3 = (q3Val === 'oui_masse_lineique');
+
+      if (okM3 && okM8 && okQuot && okBarre && okQ3) {
+        fb.className = "mt-3 text-xs sm:text-sm p-3 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Excellent travail d'investigation !</strong> Le quotient m/L est rigoureusement constant et égal à <strong>2,40 kg/m</strong>. Il s'agit de la masse linéique du tube carré. Une barre entière de 6 m pèse bien 2,40 × 6 = <strong>14,40 kg</strong>.";
+        appState.step1Validated = true;
+      } else {
+        fb.className = "mt-3 text-xs sm:text-sm p-3 rounded-lg bg-red-50 border border-red-300 text-red-900";
+        let errs = [];
+        if (!okM3) errs.push("Section 3 (3 m) : multipliez la longueur par 2,40 kg/m");
+        if (!okM8) errs.push("Section 5 (8 m) : multipliez 8 par 2,40 kg/m");
+        if (!okQuot) errs.push("Quotient m/L : vérifiez la division (ex: 4,80 / 2)");
+        if (!okQ3) errs.push("Question 3 : cochez la signification physique du coefficient");
+        if (!okBarre) errs.push("Barre de 6 m : calculez 6 × 2,40");
+        fb.innerHTML = "<strong>À réajuster :</strong> " + errs.join(" • ");
+      }
+      updateGlobalProgress();
+    }
+
+    // --- ÉTAPE 2 : SIMULATEUR D'ATELIER ---
+    function updateSimProfile() {
+      const select = document.getElementById('sim-profile-select');
+      const kInput = document.getElementById('sim-k-input');
+      if (select.value !== 'custom') {
+        kInput.value = select.value;
+      }
+      runSimulation();
+    }
+
+    function syncSimLength(val) {
+      document.getElementById('sim-len-display').textContent = Number(val).toFixed(2);
+      document.getElementById('sim-len-input').value = Number(val).toFixed(2);
+      runSimulation();
+    }
+
+    function syncSimLengthFromInput(val) {
+      const parsed = parseFloat(val);
+      if (!isNaN(parsed) && parsed >= 0) {
+        document.getElementById('sim-len-display').textContent = parsed.toFixed(2);
+        document.getElementById('sim-len-range').value = Math.min(30, Math.max(0.5, parsed));
+        runSimulation();
+      }
+    }
+
+    function runSimulation() {
+      const k = parseFloat(document.getElementById('sim-k-input').value) || 0;
+      const L = parseFloat(document.getElementById('sim-len-input').value) || 0;
+      const mass = k * L;
+      const tonnes = mass / 1000;
+
+      document.getElementById('sim-result-mass').textContent = mass.toFixed(2).replace('.', ',');
+      document.getElementById('sim-result-tonnes').textContent = tonnes.toFixed(3).replace('.', ',') + " t";
+
+      const kStr = k.toFixed(2).replace('.', ',');
+      const lStr = L.toFixed(2).replace('.', ',');
+      const mStr = mass.toFixed(2).replace('.', ',');
+      document.getElementById('sim-calc-detail').innerHTML = "m = " + kStr + " kg/m × " + lStr + " m = " + mStr + " kg";
+    }
+
+    // --- ÉTAPE 3 : VÉRIFICATION DU NIVEAU 1 ---
+    function verifierEx1_1() {
+      const k = parseUserNumber(document.getElementById('ex1-1-k').value);
+      const prop = document.getElementById('ex1-1-prop').value;
+      const fb = document.getElementById('fb-ex1-1');
+      fb.classList.remove('hidden');
+
+      if (isClose(k, 1.80) && prop === 'oui') {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Correct !</strong> 3,60/2 = 9,00/5 = 12,60/7 = <strong>1,80 kg/m</strong>. Tous les quotients sont égaux, il y a proportionnalité.";
+        appState.n1.ex1_1 = true;
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Attention :</strong> Calculez chaque rapport m/L (ex: 3,60 / 2 = 1,80). Concluez sur la proportionnalité.";
+      }
+      checkNiveau1Global();
+    }
+
+    function verifierEx1_2() {
+      const q1 = parseUserNumber(document.getElementById('ex1-2-q1').value);
+      const q2 = parseUserNumber(document.getElementById('ex1-2-q2').value);
+      const fb = document.getElementById('fb-ex1-2');
+      fb.classList.remove('hidden');
+
+      const ok1 = isClose(q1, 5.44);
+      const ok2 = isClose(q2, 8.16);
+
+      if (ok1 && ok2) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Correct !</strong> 4 m × 1,36 kg/m = <strong>5,44 kg</strong> et 6 m × 1,36 kg/m = <strong>8,16 kg</strong>.";
+        appState.n1.ex1_2 = true;
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Erreur :</strong> Appliquez la formule m = k × L avec k = 1,36 kg/m.";
+      }
+      checkNiveau1Global();
+    }
+
+    function verifierEx1_3() {
+      const q1 = parseUserNumber(document.getElementById('ex1-3-q1').value);
+      const fb = document.getElementById('fb-ex1-3');
+      fb.classList.remove('hidden');
+
+      if (isClose(q1, 3.0)) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Exact !</strong> L = m / k = 4,71 / 1,57 = <strong>3,00 mètres</strong>.";
+        appState.n1.ex1_3 = true;
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Erreur :</strong> Pour isoler la longueur, effectuez la division L = m / k (4,71 / 1,57).";
+      }
+      checkNiveau1Global();
+    }
+
+    function verifierEx1_4() {
+      const m1 = parseUserNumber(document.getElementById('ex1-4-m1').value);
+      const l2 = parseUserNumber(document.getElementById('ex1-4-l2').value);
+      const m3 = parseUserNumber(document.getElementById('ex1-4-m3').value);
+      const l4 = parseUserNumber(document.getElementById('ex1-4-l4').value);
+      const fb = document.getElementById('fb-ex1-4');
+      fb.classList.remove('hidden');
+
+      const okM1 = isClose(m1, 4.20);
+      const okL2 = isClose(l2, 10.0);
+      const okM3 = isClose(m3, 71.40);
+      const okL4 = isClose(l4, 80.0);
+
+      if (okM1 && okL2 && okM3 && okL4) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Tableau validé avec succès !</strong> Col.1 : 2 × 2,10 = 4,20 kg | Col.2 : 21 / 2,10 = 10 m | Col.3 : 34 × 2,10 = 71,40 kg | Col.4 : 168 / 2,10 = 80 m.";
+        appState.n1.ex1_4 = true;
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Incomplet ou erroné :</strong> Rappel : pour trouver m on multiplie par 2,10 ; pour trouver L on divise par 2,10.";
+      }
+      checkNiveau1Global();
+    }
+
+    function verifierEx1_5() {
+      const q1 = parseUserNumber(document.getElementById('ex1-5-q1').value);
+      const fb = document.getElementById('fb-ex1-5');
+      fb.classList.remove('hidden');
+
+      if (isClose(q1, 19.60)) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Excellent !</strong> Produit en croix : (7 × 8,40) / 3 = <strong>19,60 kg</strong> (ou 7 × 2,80 kg/m).";
+        appState.n1.ex1_5 = true;
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Attention :</strong> Appliquez la règle de trois : 3 m correspond à 8,40 kg, donc 7 m pèsent (7 × 8,40) / 3.";
+      }
+      checkNiveau1Global();
+    }
+
+    function isNiveau1Complet() {
+      return (appState.n1.ex1_1 && appState.n1.ex1_2 && appState.n1.ex1_3 && appState.n1.ex1_4 && appState.n1.ex1_5);
+    }
+
+    function checkNiveau1Global() {
+      const count = Object.values(appState.n1).filter(Boolean).length;
+      const status = document.getElementById('badge-socle-status');
+
+      if (isNiveau1Complet()) {
+        status.className = "px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800";
+        status.textContent = "Socle CAP validé à 100% !";
+
+        // Débloquer Niveau 2
+        const tab2 = document.getElementById('tab-lvl-2');
+        if (tab2.disabled) {
+          tab2.disabled = false;
+          tab2.classList.remove('cursor-not-allowed');
+          tab2.textContent = "🟡 Niveau 2 • Avancé";
+        }
+
+        // Débloquer Attestation
+        document.getElementById('attestation-locked').classList.add('hidden');
+        document.getElementById('attestation-printable').classList.remove('hidden');
+      } else {
+        status.textContent = "Niveau 1 en cours (" + count + "/5)";
+      }
+      updateGlobalProgress();
+    }
+
+    // --- ÉTAPE 3 : VÉRIFICATION DU NIVEAU 2 (BONUS AVANCÉ) ---
+    function verifierEx2_1() {
+      const q1 = parseUserNumber(document.getElementById('ex2-1-q1').value);
+      const q2 = parseUserNumber(document.getElementById('ex2-1-q2').value);
+      const q3 = parseUserNumber(document.getElementById('ex2-1-q3').value);
+      const fb = document.getElementById('fb-ex2-1');
+      fb.classList.remove('hidden');
+
+      const ok1 = isClose(q1, 12.60);
+      const ok2 = isClose(q2, 53.93);
+      const ok3 = isClose(q3, 69.34);
+
+      if (ok1 && ok2 && ok3) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Parfait !</strong> Périmètre : 2 × (4,50 + 1,80) = 12,60 m. Masse cadre : 12,60 × 4,28 = 53,93 kg. Avec 2 renforts de 1,80 m (+3,60 m = 16,20 m au total) : 16,20 × 4,28 = <strong>69,34 kg</strong>.";
+        if (!appState.n2.ex2_1) {
+          appState.n2.ex2_1 = true;
+          appState.bonusPoints += 10;
+        }
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>À revoir :</strong> Périmètre rectangulaire P = 2 × (L + h) = 12,60 m. Masse totale avec renforts = (12,60 + 2 × 1,80) × 4,28 kg/m.";
+      }
+      checkNiveau2Global();
+    }
+
+    function verifierEx2_2() {
+      const pA = parseUserNumber(document.getElementById('ex2-2-pA').value);
+      const pB = parseUserNumber(document.getElementById('ex2-2-pB').value);
+      const pC = parseUserNumber(document.getElementById('ex2-2-pC').value);
+      const prop = document.getElementById('ex2-2-prop').value;
+      const fb = document.getElementById('fb-ex2-2');
+      fb.classList.remove('hidden');
+
+      const okA = isClose(pA, 2.50);
+      const okB = isClose(pB, 2.10);
+      const okC = isClose(pC, 1.90);
+
+      if (okA && okB && okC && prop === 'non') {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Excellente analyse !</strong> 125/50 = 2,50 €/kg | 210/100 = 2,10 €/kg | 380/200 = 1,90 €/kg. Le tarif est dégressif, donc il n'y a pas proportionnalité stricte.";
+        if (!appState.n2.ex2_2) {
+          appState.n2.ex2_2 = true;
+          appState.bonusPoints += 10;
+        }
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Attention :</strong> Calculez chaque coût au kg en divisant le prix total par la masse, puis déduisez s'il y a proportionnalité.";
+      }
+      checkNiveau2Global();
+    }
+
+    function verifierEx2_3() {
+      const formule = document.getElementById('ex2-3-formule').value.trim().toUpperCase().replace(/\s+/g, '');
+      const masse = parseUserNumber(document.getElementById('ex2-3-masse').value);
+      const fb = document.getElementById('fb-ex2-3');
+      fb.classList.remove('hidden');
+
+      const okForm = (formule === '=A4*$B$1' || formule === '=$B$1*A4');
+      const okMass = isClose(masse, 135.72);
+
+      if (okForm && okMass) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Validé !</strong> La formule avec référence absolue <code>=A4*$B$1</code> fige le coefficient. Masse pour 36 m : 36 × 3,77 = <strong>135,72 kg</strong>.";
+        if (!appState.n2.ex2_3) {
+          appState.n2.ex2_3 = true;
+          appState.bonusPoints += 10;
+        }
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Attention :</strong> La formule doit débuter par un égal et utiliser le dollar pour figer B1 (ex: =A4*$B$1). Vérifiez également 36 × 3,77.";
+      }
+      checkNiveau2Global();
+    }
+
+    function verifierEx2_4() {
+      const q1 = parseUserNumber(document.getElementById('ex2-4-q1').value);
+      const q2 = parseUserNumber(document.getElementById('ex2-4-q2').value);
+      const fb = document.getElementById('fb-ex2-4');
+      fb.classList.remove('hidden');
+
+      const ok1 = isClose(q1, 86.40);
+      const ok2 = isClose(q2, 190.08);
+
+      if (ok1 && ok2) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Devis exact !</strong> Masse : 48 m × 1,80 kg/m = 86,40 kg. Coût HT : 86,40 kg × 2,20 €/kg = <strong>190,08 € HT</strong>.";
+        if (!appState.n2.ex2_4) {
+          appState.n2.ex2_4 = true;
+          appState.bonusPoints += 10;
+        }
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>Erreur de calcul :</strong> Masse = 48 × 1,80 | Coût = Masse × 2,20 €.";
+      }
+      checkNiveau2Global();
+    }
+
+    function isNiveau2Complet() {
+      return (appState.n2.ex2_1 && appState.n2.ex2_2 && appState.n2.ex2_3 && appState.n2.ex2_4);
+    }
+
+    function checkNiveau2Global() {
+      document.getElementById('bonus-points-counter').textContent = appState.bonusPoints + " pts";
+      document.getElementById('attest-bonus-pts').textContent = appState.bonusPoints + " pts";
+
+      if (isNiveau2Complet()) {
+        const tab3 = document.getElementById('tab-lvl-3');
+        if (tab3.disabled) {
+          tab3.disabled = false;
+          tab3.classList.remove('cursor-not-allowed');
+          tab3.textContent = "🔴 Niveau 3 • Expert";
+        }
+      }
+      updateGlobalProgress();
+    }
+
+    // --- ÉTAPE 3 : VÉRIFICATION DU NIVEAU 3 (BONUS EXPERT) ---
+    function verifierEx3_1() {
+      const lin1 = parseUserNumber(document.getElementById('ex3-1-lin1').value);
+      const lin2 = parseUserNumber(document.getElementById('ex3-1-lin2').value);
+      const lin3 = parseUserNumber(document.getElementById('ex3-1-lin3').value);
+      const mtotKg = parseUserNumber(document.getElementById('ex3-1-mtot-kg').value);
+      const mtotT = parseUserNumber(document.getElementById('ex3-1-mtot-t').value);
+      const decision = document.getElementById('ex3-1-decision').value;
+      const fb = document.getElementById('fb-ex3-1');
+      fb.classList.remove('hidden');
+
+      // 14*6=84m -> 84*5.22 = 438.48 kg
+      // 8*6=48m -> 48*5.42 = 260.16 kg
+      // 6*6=36m -> 36*10.40 = 374.40 kg
+      // Total = 1073.04 kg = 1.07 t
+      const okLin = (isClose(lin1, 84) && isClose(lin2, 48) && isClose(lin3, 36));
+      const okMass = isClose(mtotKg, 1073.04, 1.0) && isClose(mtotT, 1.07, 0.05);
+      const okDec = (decision === 'oui');
+
+      if (okLin && okMass && okDec) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Expertise validée !</strong> Masse totale : 438,48 + 260,16 + 374,40 = <strong>1073,04 kg (1,07 t)</strong>. Comme 1,07 t &le; 1,20 t, le transport s'effectue en toute sécurité routière en un unique trajet !";
+        if (!appState.n3.ex3_1) {
+          appState.n3.ex3_1 = true;
+          appState.bonusPoints += 20;
+          document.getElementById('bonus-points-counter').textContent = appState.bonusPoints + " pts";
+          document.getElementById('attest-bonus-pts').textContent = appState.bonusPoints + " pts";
+        }
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>À vérifier :</strong> Linéaires : 14×6, 8×6, 6×6 m. Masse = somme des trois produits. Comparez ensuite 1,07 t à la charge utile de 1,20 t.";
+      }
+      checkNiveau3Global();
+    }
+
+    function verifierEx3_2() {
+      const mA = parseUserNumber(document.getElementById('ex3-2-mA').value);
+      const cA = parseUserNumber(document.getElementById('ex3-2-cA').value);
+      const mB = parseUserNumber(document.getElementById('ex3-2-mB').value);
+      const cB = parseUserNumber(document.getElementById('ex3-2-cB').value);
+      const synthese = document.getElementById('ex3-2-synthese').value;
+      const fb = document.getElementById('fb-ex3-2');
+      fb.classList.remove('hidden');
+
+      // Option A : 120 * 7.50 = 900 kg | 900 * 2.40 = 2160 €
+      // Option B : 120 * 2.70 = 324 kg | 324 * 6.80 = 2203.20 €
+      const okA = isClose(mA, 900.0) && isClose(cA, 2160.0);
+      const okB = isClose(mB, 324.0) && isClose(cB, 2203.20);
+      const okSyn = (synthese === 'alu');
+
+      if (okA && okB && okSyn) {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Excellente étude technico-économique !</strong> Acier : 900 kg pour 2160 € HT. Aluminium : 324 kg pour 2203,20 € HT. Pour seulement 43,20 € d'écart, l'aluminium divise la charge par 2,8 et résiste parfaitement à l'air marin du Port.";
+        if (!appState.n3.ex3_2) {
+          appState.n3.ex3_2 = true;
+          appState.bonusPoints += 20;
+          document.getElementById('bonus-points-counter').textContent = appState.bonusPoints + " pts";
+          document.getElementById('attest-bonus-pts').textContent = appState.bonusPoints + " pts";
+        }
+      } else {
+        fb.className = "text-xs sm:text-sm p-2.5 rounded bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>À ajuster :</strong> Option A : 120 × 7,50 kg et 900 × 2,40 €. Option B : 120 × 2,70 kg et 324 × 6,80 €. Choisissez l'analyse insulaire appropriée.";
+      }
+      checkNiveau3Global();
+    }
+
+    function checkNiveau3Global() {
+      if (appState.n3.ex3_1 && appState.n3.ex3_2) {
+        document.getElementById('attest-badge-title').textContent = "Expert Métallier Excellence (Niveau 3)";
+      } else if (isNiveau2Complet()) {
+        document.getElementById('attest-badge-title').textContent = "Métallier Confirmé (Niveau 2)";
+      }
+      updateGlobalProgress();
+    }
+
+    // --- ÉTAPE 4 : IDENTITÉ APPRENANT & ÉVALUATION FORMELLE ---
+    function updateStudentIdentity() {
+      const fn = document.getElementById('student-firstname').value.trim();
+      const ln = document.getElementById('student-lastname').value.trim();
+      appState.student.firstname = fn;
+      appState.student.lastname = ln;
+
+      const nameEl = document.getElementById('attestation-student-name');
+      if (fn || ln) {
+        nameEl.textContent = (fn + " " + ln).toUpperCase();
+      } else {
+        nameEl.textContent = "[Prénom & Nom de l'Apprenant]";
+      }
+    }
+
+    function corrigerEvaluationFormelle() {
+      const q1 = document.getElementById('eval-q1').value;
+      const q2 = parseUserNumber(document.getElementById('eval-q2').value);
+      const tm1 = parseUserNumber(document.getElementById('eval-t-m1').value);
+      const tm2 = parseUserNumber(document.getElementById('eval-t-m2').value);
+      const tm3 = parseUserNumber(document.getElementById('eval-t-m3').value);
+      const tl4 = parseUserNumber(document.getElementById('eval-t-l4').value);
+      const q4 = document.getElementById('eval-q4').value;
+
+      let score = 0;
+      // Q1 : 1 pt
+      if (q1 === 'm=1.85*L') score += 1;
+      // Q2 : 2 pts (3.20 * 1.85 = 5.92)
+      if (isClose(q2, 5.92)) score += 2;
+      // Q3 : 4 pts (tm1: 1.50*1.85=2.78, tm2: 5.92, tm3: 4.00*1.85=7.40, tl4: 11.10/1.85=6.00)
+      if (isClose(tm1, 2.78, 0.05)) score += 1;
+      if (isClose(tm2, 5.92, 0.05)) score += 1;
+      if (isClose(tm3, 7.40, 0.05)) score += 1;
+      if (isClose(tl4, 6.00, 0.05)) score += 1;
+      // Q4 : 3 pts
+      if (q4 === 'non') score += 3;
+
+      appState.evalScore = score;
+      const badge = document.getElementById('eval-score-badge');
+      badge.textContent = score + " / 10";
+      badge.className = "text-xs font-bold px-2.5 py-1 rounded " + (score >= 5 ? "bg-emerald-100 text-emerald-800" : "bg-red-100 text-red-800");
+
+      document.getElementById('attest-eval-note').textContent = score + " / 10";
+
+      const fb = document.getElementById('fb-eval-formelle');
+      fb.classList.remove('hidden');
+      if (score >= 8) {
+        fb.className = "text-xs sm:text-sm p-3 rounded-lg bg-emerald-50 border border-emerald-300 text-emerald-900";
+        fb.innerHTML = "<strong>Félicitations !</strong> Note obtenue : <strong>" + score + " / 10</strong>. Vous maîtrisez parfaitement les fonctions linéaires et la distinction essentielle avec les relations affines (platines fixes).";
+      } else if (score >= 5) {
+        fb.className = "text-xs sm:text-sm p-3 rounded-lg bg-amber-50 border border-amber-300 text-amber-900";
+        fb.innerHTML = "<strong>Résultat convenable :</strong> Note obtenue : <strong>" + score + " / 10</strong>. Révisez le produit en croix et l'impact de l'ordonnée à l'origine.";
+      } else {
+        fb.className = "text-xs sm:text-sm p-3 rounded-lg bg-red-50 border border-red-300 text-red-900";
+        fb.innerHTML = "<strong>À retravailler :</strong> Note obtenue : <strong>" + score + " / 10</strong>. Prenez le temps de recalculer chaque élément à l'aide du simulateur de l'Étape 2.";
+      }
+      updateGlobalProgress();
+    }
+
+    // --- BARRE DE PROGRESSION GLOBALE ---
+    function updateGlobalProgress() {
+      // 5 ex N1 (12% chaque = 60%), Découverte (10%), Évaluation formelle (15%), Bonus N2/N3 (15%)
+      let pct = 0;
+      if (appState.step1Validated) pct += 10;
+      
+      const n1Count = Object.values(appState.n1).filter(Boolean).length;
+      pct += (n1Count * 12); // jusqu'à 60%
+
+      const n2Count = Object.values(appState.n2).filter(Boolean).length;
+      pct += (n2Count * 2); // 8%
+
+      const n3Count = Object.values(appState.n3).filter(Boolean).length;
+      pct += (n3Count * 3.5); // 7%
+
+      if (appState.evalScore !== null) pct += 15;
+
+      pct = Math.min(100, Math.round(pct));
+      document.getElementById('global-progress-bar').style.width = Math.max(5, pct) + "%";
+      document.getElementById('global-progress-label').textContent = pct + "%";
+    }
+
+    // --- INITIALISATION AU CHARGEMENT ---
+    window.onload = function() {
+      // Date du jour pour l'attestation
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const el = document.getElementById('attestation-date-display');
+      if (el) el.textContent = "Date : " + dateStr;
+
+      // Initialiser le simulateur
+      runSimulation();
+      updateGlobalProgress();
+    };
+  </script>
+</body>
+</html>

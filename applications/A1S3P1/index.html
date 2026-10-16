@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>A1 S3 P1 - Atomes, Molécules, Ions & Métaux d'Atelier | CMA Formation Sainte-Clotilde</title>
+  
+  <!-- MathJax v3 CDN -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --cma-bordeaux: #A50F23;
+      --cma-corail: #EE3C3D;
+      --cma-bg: #F8FAFC;
+      --cma-text: #1E293B;
+      --cma-card-bg: #FFFFFF;
+      --cma-border: #E2E8F0;
+      --cma-success: #15803D;
+      --cma-success-bg: #DCFCE7;
+      --cma-warning: #B45309;
+      --cma-warning-bg: #FEF3C7;
+      --cma-error: #B91C1C;
+      --cma-error-bg: #FEE2E2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--cma-bg);
+      color: var(--cma-text);
+      line-height: 1.5;
+      padding-bottom: 40px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* HEADER & VAGUE CMA */
+    .app-header {
+      background: linear-gradient(135deg, #7A0A19 0%, #A50F23 60%, #EE3C3D 100%);
+      color: #FFFFFF;
+      position: relative;
+      overflow: hidden;
+      padding: 16px 16px 26px 16px;
+      box-shadow: 0 4px 12px rgba(165, 15, 35, 0.25);
+    }
+
+    .header-content {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .app-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+      background: #FFFFFF;
+      border-radius: 6px;
+      padding: 3px 6px;
+    }
+
+    .header-titles h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.2px;
+    }
+
+    .header-titles .subtitle {
+      font-size: 0.8rem;
+      opacity: 0.92;
+      margin-top: 2px;
+    }
+
+    .cma-wave-border {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 14px;
+      margin: 0;
+      border: 0;
+      background-image: url("ruban_vague.png");
+      background-repeat: repeat-x;
+      background-size: 102.941176px 102.941176px;
+      background-position: left -46.941176px;
+    }
+
+    /* BARRE DE PROGRESSION GLOBALE */
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background-color: #E2E8F0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cma-corail), var(--cma-bordeaux));
+      transition: width 0.35s ease;
+    }
+
+    /* NAVIGATION PAR ÉTAPES */
+    .nav-container {
+      max-width: 900px;
+      margin: 12px auto 6px auto;
+      padding: 0 12px;
+    }
+
+    .step-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .step-tabs::-webkit-scrollbar {
+      height: 4px;
+    }
+    .step-tabs::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 4px;
+    }
+
+    .step-tab-btn {
+      flex: 1 0 auto;
+      min-width: 140px;
+      min-height: 44px;
+      border: 1px solid var(--cma-border);
+      background-color: #FFFFFF;
+      color: var(--cma-text);
+      font-size: 0.88rem;
+      font-weight: 700;
+      border-radius: 24px;
+      padding: 8px 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .step-tab-btn.active {
+      background-color: var(--cma-bordeaux);
+      color: #FFFFFF;
+      border-color: var(--cma-bordeaux);
+      box-shadow: 0 3px 8px rgba(165, 15, 35, 0.3);
+    }
+
+    /* CONTENEUR PRINCIPAL */
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+
+    .step-section {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .step-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* PUCES FLECHE ROUGE */
+    .icon-bullet {
+      height: 18px;
+      width: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-right: 6px;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      color: var(--cma-bordeaux);
+      margin: 18px 0 10px 0;
+      display: flex;
+      align-items: center;
+      font-weight: 800;
+      border-bottom: 2px solid #F1F5F9;
+      padding-bottom: 6px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      color: #334155;
+      margin: 14px 0 8px 0;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    /* CARTES & CADRES */
+    .card {
+      background-color: var(--cma-card-bg);
+      border: 1px solid var(--cma-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .callout-local {
+      background: #FFF5F5;
+      border-left: 4px solid var(--cma-corail);
+      padding: 12px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+
+    .badge-socle {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-green { background-color: #DCFCE7; color: #166534; }
+    .badge-yellow { background-color: #FEF3C7; color: #92400E; }
+    .badge-red { background-color: #FEE2E2; color: #991B1B; }
+
+    /* TABLEAUX RESPONSIVE */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin: 12px 0;
+      border-radius: 8px;
+      border: 1px solid var(--cma-border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background-color: #FFFFFF;
+      min-width: 480px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #F1F5F9;
+    }
+
+    th {
+      background-color: #F8FAFC;
+      color: #334155;
+      font-weight: 700;
+    }
+
+    /* FORMULAIRES & SAISIES TACTILES */
+    .input-group {
+      margin: 12px 0;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      min-height: 44px;
+      font-size: 16px;
+      padding: 8px 12px;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      color: var(--cma-text);
+      background-color: #FFFFFF;
+      width: 100%;
+      max-width: 260px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--cma-bordeaux);
+    }
+
+    .btn-action {
+      min-height: 44px;
+      min-width: 120px;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      background-color: var(--cma-bordeaux);
+      color: #FFFFFF;
+    }
+
+    .btn-action:active {
+      transform: scale(0.98);
+    }
+
+    .btn-action.btn-secondary {
+      background-color: #E2E8F0;
+      color: #1E293B;
+    }
+
+    .btn-action:disabled {
+      background-color: #CBD5E1;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 0.65;
+    }
+
+    /* FEEDBACKS SANS SYMBOLE DOLLAR */
+    .feedback-box {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      display: none;
+      line-height: 1.45;
+    }
+
+    .feedback-box.correct {
+      display: block;
+      background-color: var(--cma-success-bg);
+      color: var(--cma-success);
+      border-left: 4px solid var(--cma-success);
+    }
+
+    .feedback-box.incorrect {
+      display: block;
+      background-color: var(--cma-error-bg);
+      color: var(--cma-error);
+      border-left: 4px solid var(--cma-error);
+    }
+
+    /* SIMULATEUR INTERACTIF (ÉTAPE 2) */
+    .simulator-box {
+      background: #F1F5F9;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .sim-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .sim-atom-btn {
+      min-height: 44px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      background: #FFFFFF;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      transition: all 0.2s;
+    }
+
+    .sim-atom-btn.active {
+      background: var(--cma-bordeaux);
+      color: #FFFFFF;
+      border-color: var(--cma-bordeaux);
+      box-shadow: 0 3px 8px rgba(165, 15, 35, 0.25);
+    }
+
+    .atom-visualizer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #FFFFFF;
+      border-radius: 10px;
+      padding: 16px;
+      border: 1px solid var(--cma-border);
+      min-height: 200px;
+      position: relative;
+    }
+
+    .atom-svg {
+      max-width: 220px;
+      width: 100%;
+      height: auto;
+    }
+
+    /* GAMIFICATION & NIVEAUX SEQUENTIELS */
+    .level-container {
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--cma-border);
+      background: #FFFFFF;
+      overflow: hidden;
+    }
+
+    .level-header {
+      padding: 14px 16px;
+      background: #F8FAFC;
+      border-bottom: 1px solid var(--cma-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .level-body {
+      padding: 16px;
+    }
+
+    .level-locked {
+      opacity: 0.55;
+      pointer-events: none;
+      filter: grayscale(85%);
+      position: relative;
+    }
+
+    .exercise-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+      border-left: 4px solid var(--cma-bordeaux);
+    }
+
+    .exercise-card.completed {
+      border-left-color: var(--cma-success);
+      background: #F0FDF4;
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #FFFFFF;
+      border: 1px solid #CBD5E1;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    /* ATTESTATION OFFICIELLE (ETAPE 4) */
+    .attestation-wrapper {
+      background: #FFFFFF;
+      border: 4px double var(--cma-bordeaux);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 720px;
+      margin: 16px auto;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    .attestation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--cma-bordeaux);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+
+    .attestation-header img {
+      max-height: 48px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .attestation-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--cma-bordeaux);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .attestation-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      font-size: 0.92rem;
+      margin-bottom: 16px;
+    }
+
+    .attestation-seal {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-top: 1px solid #E2E8F0;
+      padding-top: 12px;
+      font-size: 0.82rem;
+      color: #64748B;
+    }
+
+    /* STYLE IMPRESSION */
+    @media print {
+      body {
+        background: #FFFFFF;
+        color: #000000;
+        padding: 0;
+      }
+      .app-header, .progress-bar-container, .nav-container, .btn-action, .step-tabs, .non-printable {
+        display: none !important;
+      }
+      .step-section {
+        display: none !important;
+      }
+      #step-4, .attestation-wrapper {
+        display: block !important;
+        border: 2px solid #000000;
+        box-shadow: none;
+        margin: 0;
+        padding: 16px;
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (min-width: 640px) {
+      .header-titles h1 { font-size: 1.35rem; }
+      .header-titles .subtitle { font-size: 0.9rem; }
+      .attestation-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- EN-TÊTE OFFICIEL CMA -->
+  <header class="app-header">
+    <div class="header-content">
+      <img src="logo.png" alt="Logo CMA Formation" class="app-logo">
+      <div class="header-titles">
+        <h1>CMA FORMATION Sainte-Clotilde</h1>
+        <div class="subtitle">CAP Métallier • Année 1 | Physique-Chimie (S3 P1)</div>
+      </div>
+    </div>
+    <div class="cma-wave-border"></div>
+  </header>
+
+  <!-- BARRE DE PROGRESSION GLOBALE -->
+  <div class="progress-bar-container">
+    <div class="progress-bar-fill" id="globalProgressBar"></div>
+  </div>
+
+  <!-- NAVIGATION PAR ONGLETS -->
+  <div class="nav-container">
+    <div class="step-tabs">
+      <button class="step-tab-btn active" onclick="switchStep(1)" id="tab-step-1">
+        <span>🔍</span> Étape 1 : Découverte
+      </button>
+      <button class="step-tab-btn" onclick="switchStep(2)" id="tab-step-2">
+        <span>⚛️</span> Étape 2 : Cours & Simu
+      </button>
+      <button class="step-tab-btn" onclick="switchStep(3)" id="tab-step-3">
+        <span>🎯</span> Étape 3 : Entraînement
+      </button>
+      <button class="step-tab-btn" onclick="switchStep(4)" id="tab-step-4">
+        <span>📜</span> Étape 4 : Bilan & Attestation
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENU PRINCIPAL -->
+  <main class="main-container">
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 1 : DÉCOUVERTE                      -->
+    <!-- ========================================== -->
+    <section id="step-1" class="step-section active">
+      <div class="card">
+        <h2><img src="fleche_rouge.png" class="icon-bullet" alt=""> Situation Professionnelle : Chantier Littoral au Port de Sainte-Marie</h2>
+        <div class="callout-local">
+          <strong>Contexte Atelier :</strong> L'entreprise <em>Métal Réunion Océan Indien</em> basée à Sainte-Clotilde fabrique les structures de la capitainerie et des embarcadères du port de Sainte-Marie. L'air marin chargé d'humidité et d'embruns salins (chlorures Cl<sup>−</sup>) attaque impitoyablement les métaux non protégés. Le chef d'atelier vous charge de classifier les métaux d'atelier (Fe, Al, Cu, Zn) et de justifier le recours aux aciers inoxydables marins (Inox 316L).
+        </div>
+
+        <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Les Métaux du Parc d'Atelier au Microscope</h3>
+        <p style="font-size: 0.92rem; margin-bottom: 12px;">Dans le rack de stockage de Sainte-Clotilde, plusieurs nuances de métaux et alliages sont préparées pour le chantier :</p>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Métal / Alliage</th>
+                <th>Symbole / Nature</th>
+                <th>Propriétés Clés en Atelier</th>
+                <th>Usage Chantier Sainte-Marie</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Fer pur</strong></td>
+                <td>Fe (Métal pur)</td>
+                <td>Magnétique, base des profilés, rouille en milieu humide</td>
+                <td>Charpente abritée (profilés IPN S235)</td>
+              </tr>
+              <tr>
+                <td><strong>Aluminium</strong></td>
+                <td>Al (Métal pur)</td>
+                <td>Très léger (2,7 g/cm³), film protecteur Al<sub>2</sub>O<sub>3</sub></td>
+                <td>Ventelles d'aération et menuiseries légères</td>
+              </tr>
+              <tr>
+                <td><strong>Cuivre</strong></td>
+                <td>Cu (Métal pur)</td>
+                <td>Rouge-orangé, excellent conducteur électrique/thermique</td>
+                <td>Tuyauteries fluides, réseaux et raccords</td>
+              </tr>
+              <tr>
+                <td><strong>Zinc</strong></td>
+                <td>Zn (Métal pur)</td>
+                <td>Couche sacrificielle de protection anti-corrosion</td>
+                <td>Galvanisation à chaud des poteaux extérieurs</td>
+              </tr>
+              <tr>
+                <td><strong>Inox 316L</strong></td>
+                <td>Alliage Fe + Cr + Ni + Mo</td>
+                <td>Inoxydable de qualité marine, film passif Cr<sub>2</sub>O<sub>3</sub> renforcé au Mo</td>
+                <td>Garde-corps et visserie exposés aux embruns</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Questions d'Investigation d'Atelier</h3>
+
+        <!-- Q1.1 Découverte -->
+        <div class="input-group">
+          <label class="input-label">1. Quel est le numéro atomique Z de l'aluminium (Al) ?</label>
+          <div class="input-row">
+            <input type="number" id="q_dec_z_al" placeholder="Votre résultat...">
+            <button class="btn-action" onclick="verifyDecZAl()">Valider</button>
+          </div>
+          <div class="feedback-box" id="fb_dec_z_al"></div>
+        </div>
+
+        <!-- Q1.2 Découverte -->
+        <div class="input-group">
+          <label class="input-label">2. Quel est le numéro atomique Z du zinc (Zn) utilisé pour la galvanisation ?</label>
+          <div class="input-row">
+            <input type="number" id="q_dec_z_zn" placeholder="Votre résultat...">
+            <button class="btn-action" onclick="verifyDecZZn()">Valider</button>
+          </div>
+          <div class="feedback-box" id="fb_dec_z_zn"></div>
+        </div>
+
+        <!-- Q1.3 Découverte : Différence Métal / Alliage -->
+        <div class="input-group">
+          <label class="input-label">3. Un alliage comme l'acier S235 est-il constitué d'une seule espèce chimique d'atomes (1 pour OUI, 0 pour NON) ?</label>
+          <div class="input-row">
+            <input type="number" id="q_dec_alliage" placeholder="Votre résultat (1 ou 0)...">
+            <button class="btn-action" onclick="verifyDecAlliage()">Valider</button>
+          </div>
+          <div class="feedback-box" id="fb_dec_alliage"></div>
+        </div>
+
+        <div style="margin-top: 18px; text-align: right;">
+          <button class="btn-action" onclick="switchStep(2)">Passer au Cours & Simulateur ➡️</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 2 : COURS & SIMULATEUR INTERACTIF   -->
+    <!-- ========================================== -->
+    <section id="step-2" class="step-section">
+      <div class="card">
+        <h2><img src="fleche_rouge.png" class="icon-bullet" alt=""> Synthèse de Cours : Atomes, Molécules, Ions & Alliages</h2>
+        
+        <div class="callout-local">
+          <strong>1. L'Atome & Sa Neutralité Électrique :</strong>
+          <br>Un atome est constitué d'un <strong>noyau central</strong> (protons de charge $+e$ et neutrons neutres) entouré d'un <strong>nuage électronique</strong> (électrons de charge $-e$).
+          <br>Dans un atome neutre :
+          $$\text{Nombre de protons} = \text{Nombre d'électrons} = Z \text{ (numéro atomique)}$$
+        </div>
+
+        <div class="callout-local">
+          <strong>2. La Molécule :</strong>
+          <br>Groupement électriquement neutre d'atomes unis par liaisons covalentes.
+          <br>Exemples de soudage/métallerie :
+          $\text{Dioxygène } O_2 \text{ (chalumeau)}$, $\text{Eau } H_2O$, $\text{Dioxyde de carbone } CO_2 \text{ (soudure MAG)}$, $\text{Méthane } CH_4$.
+        </div>
+
+        <div class="callout-local">
+          <strong>3. Les Ions (Cations & Anions) :</strong>
+          <br>• <strong>Cation (ion positif) :</strong> Atome métallique ayant <em>perdu</em> un ou plusieurs électrons.
+          <br>Exemples : $\text{Fer ferreux } Fe^{2+}$, $\text{Fer ferrique } Fe^{3+}$, $\text{Aluminium } Al^{3+}$, $\text{Cuivre } Cu^{2+}$, $\text{Zinc } Zn^{2+}$.
+          <br>• <strong>Anion (ion négatif) :</strong> Atome ou groupe ayant <em>gagné</em> un ou plusieurs électrons.
+          <br>Exemples : $\text{Ion chlorure } Cl^- \text{ (embruns marins)}$, $\text{Ion sulfate } SO_4^{2-}$, $\text{Ion hydroxyde } OH^-$.
+        </div>
+
+        <div class="callout-local">
+          <strong>4. Métaux Purs vs Alliages Métalliers :</strong>
+          <br>• <strong>Acier au carbone :</strong> Fer (Fe) + Carbone ($\%C < 2\%$). Augmente la dureté et l'élasticité.
+          <br>• <strong>Fonte :</strong> Fer (Fe) + Carbone ($\%C > 2\%$). Dure mais cassante.
+          <br>• <strong>Acier Inoxydable :</strong> Fer (Fe) + Chrome ($\%Cr \ge 10,5\%$) + Nickel ($\%Ni$). Le chrome forme un film microscopique passif de trioxyde de dichrome $Cr_2O_3$ qui bloque l'oxydation.
+          <br>• <strong>Inox 316L (qualité marine) :</strong> Contient $2,5\%$ de Molybdène (Mo) supplémentaire pour résister aux ions chlorures $Cl^-$ du littoral réunionnais.
+        </div>
+
+        <!-- SIMULATEUR DYNAMIQUE D'ATOME & MATÉRIAUX -->
+        <h2><img src="fleche_rouge.png" class="icon-bullet" alt=""> Simulateur Interactif : Atomes d'Atelier & Alliages</h2>
+        <div class="simulator-box">
+          <p style="font-size: 0.88rem; margin-bottom: 10px;">Choisissez un élément chimique d'atelier pour visualiser sa structure atomique et son ion correspondant :</p>
+          
+          <div class="sim-controls">
+            <button class="sim-atom-btn active" onclick="loadSimAtom('Fe', this)">
+              <span>Fe (26)</span>
+              <small>Fer</small>
+            </button>
+            <button class="sim-atom-btn" onclick="loadSimAtom('Al', this)">
+              <span>Al (13)</span>
+              <small>Aluminium</small>
+            </button>
+            <button class="sim-atom-btn" onclick="loadSimAtom('Cu', this)">
+              <span>Cu (29)</span>
+              <small>Cuivre</small>
+            </button>
+            <button class="sim-atom-btn" onclick="loadSimAtom('Zn', this)">
+              <span>Zn (30)</span>
+              <small>Zinc</small>
+            </button>
+            <button class="sim-atom-btn" onclick="loadSimAtom('C', this)">
+              <span>C (6)</span>
+              <small>Carbone</small>
+            </button>
+            <button class="sim-atom-btn" onclick="loadSimAtom('Cr', this)">
+              <span>Cr (24)</span>
+              <small>Chrome</small>
+            </button>
+          </div>
+
+          <div class="atom-visualizer">
+            <svg class="atom-svg" viewBox="0 0 200 200" id="atomSvg">
+              <!-- Orbites dynamiques -->
+              <circle cx="100" cy="100" r="30" fill="none" stroke="#CBD5E1" stroke-dasharray="2 2" />
+              <circle cx="100" cy="100" r="55" fill="none" stroke="#CBD5E1" stroke-dasharray="3 3" />
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#CBD5E1" stroke-dasharray="3 3" />
+              <!-- Noyau -->
+              <circle cx="100" cy="100" r="18" fill="#A50F23" />
+              <text x="100" y="105" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="bold" id="simAtomSymbol">Fe</text>
+            </svg>
+            <div id="simAtomDetails" style="margin-top: 12px; text-align: center; font-size: 0.9rem;">
+              <!-- Rempli par JavaScript -->
+            </div>
+          </div>
+
+          <!-- COMPARATEUR D'ALLIAGES REUNION -->
+          <h3 style="margin-top: 16px;"><img src="fleche_rouge.png" class="icon-bullet" alt=""> Comportement des Nuances en Climat Salin Réunionnais</h3>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+            <button class="btn-action btn-secondary" onclick="simulateAlloy('acier')">Acier Doux S235</button>
+            <button class="btn-action btn-secondary" onclick="simulateAlloy('galva')">Acier Galva (Zinc)</button>
+            <button class="btn-action btn-secondary" onclick="simulateAlloy('inox304')">Inox 304L</button>
+            <button class="btn-action btn-secondary" onclick="simulateAlloy('inox316')">Inox 316L (Marine)</button>
+          </div>
+          <div id="alloyAnalysisBox" class="card" style="margin-bottom: 0; background: #FFFFFF; font-size: 0.9rem;">
+            Cliquez sur une nuance pour analyser sa résistance aux embruns marins du littoral réunionnais.
+          </div>
+        </div>
+
+        <div style="margin-top: 18px; text-align: right;">
+          <button class="btn-action" onclick="switchStep(3)">Accéder aux Exercices d'Entraînement ➡️</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 3 : ENTRAÎNEMENT GAMIFIÉ             -->
+    <!-- ========================================== -->
+    <section id="step-3" class="step-section">
+      
+      <!-- SCORE ET BADGE DU SOCLE -->
+      <div class="card" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <span class="badge-socle badge-green" id="socleStatusBadge">Socle CAP : En cours</span>
+          <div style="font-size: 0.85rem; color: #64748B; margin-top: 4px;">Validation complète du Niveau 1 requise</div>
+        </div>
+        <div class="score-badge">
+          <span>🏆 Score Socle :</span>
+          <span id="socleScoreDisplay" style="color: var(--cma-bordeaux);">0%</span>
+        </div>
+        <div class="score-badge">
+          <span>⭐ Points Bonus :</span>
+          <span id="bonusScoreDisplay" style="color: var(--cma-corail);">0 pts</span>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- NIVEAU 1 : SOCLE CAP (OBLIGATOIRE)         -->
+      <!-- ========================================== -->
+      <div class="level-container" id="level-1-container">
+        <div class="level-header">
+          <div>
+            <strong>🟢 NIVEAU 1 : DÉBUTANT / SOCLE CAP</strong>
+            <div style="font-size: 0.8rem; color: #64748B;">Application directe & Identification guidée</div>
+          </div>
+          <span class="badge-socle badge-green">100% requis</span>
+        </div>
+        <div class="level-body">
+          
+          <!-- EXERCICE 1.1 -->
+          <div class="exercise-card" id="card-ex1-1">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 1.1 : Structure de l'atome de fer</h3>
+            <p style="font-size: 0.9rem;">L'atome de fer possède le symbole chimique Fe et son numéro atomique est $Z = 26$.</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Nombre de protons contenus dans le noyau du fer :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_1_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_1_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_1_a"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">2. Nombre d'électrons de l'atome neutre de fer :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_1_b" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_1_b()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_1_b"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">3. Charge électrique globale d'un atome neutre (en charge élémentaire $e$) :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_1_c" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_1_c()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_1_c"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 1.2 -->
+          <div class="exercise-card" id="card-ex1-2">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 1.2 : Numéros atomiques des métaux d'atelier</h3>
+            <p style="font-size: 0.9rem;">À l'aide du tableau périodique de votre atelier, indiquez les numéros atomiques :</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Numéro atomique Z du cuivre (Cu) :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_2_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_2_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_2_a"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">2. Numéro atomique Z de l'aluminium (Al) :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_2_b" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_2_b()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_2_b"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 1.3 -->
+          <div class="exercise-card" id="card-ex1-3">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 1.3 : Formation des ions métalliques</h3>
+            <p style="font-size: 0.9rem;">Lors de la corrosion, l'atome de fer Fe ($Z = 26$) perd 2 électrons pour former l'ion ferreux $Fe^{2+}$.</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Nombre d'électrons restant dans l'ion ferreux $Fe^{2+}$ :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_3_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_3_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_3_a"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">2. Combien d'électrons l'atome d'aluminium Al perd-il pour former l'ion $Al^{3+}$ ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_3_b" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_3_b()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_3_b"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">3. Combien d'électrons l'atome de zinc Zn perd-il pour former l'ion $Zn^{2+}$ ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_3_c" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_3_c()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_3_c"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 1.4 -->
+          <div class="exercise-card" id="card-ex1-4">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 1.4 : Composition atomique des gaz de soudage</h3>
+            <p style="font-size: 0.9rem;">En métallerie, le dioxyde de carbone $CO_2$ sert de gaz actif protecteur pour le procédé de soudage MAG (135).</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Nombre d'atomes de carbone (C) dans une molécule de $CO_2$ :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_4_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_4_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_4_a"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">2. Nombre d'atomes d'oxygène (O) dans une molécule de $CO_2$ :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_4_b" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_4_b()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_4_b"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">3. Nombre total d'atomes dans une molécule de méthane $CH_4$ :</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_4_c" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_4_c()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_4_c"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 1.5 -->
+          <div class="exercise-card" id="card-ex1-5">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 1.5 : Dénombrement d'entités chimiques</h3>
+            <p style="font-size: 0.9rem;">On considère la liste d'entités chimiques d'atelier suivante :<br>
+            <strong>Fe ; H<sub>2</sub>O ; Fe<sup>2+</sup> ; CO<sub>2</sub> ; Al ; Cl<sup>−</sup> ; Cu<sup>2+</sup> ; O<sub>2</sub> ; Zn ; OH<sup>−</sup></strong></p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Combien y a-t-il d'atomes isolés neutres dans cette liste ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_5_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_5_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_5_a"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">2. Combien y a-t-il de molécules dans cette liste ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_5_b" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_5_b()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_5_b"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">3. Combien y a-t-il d'ions (cations ou anions) dans cette liste ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_1_5_c" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx1_5_c()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_1_5_c"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- NIVEAU 2 : AVANCÉ / STANDARD CAP (BONUS)   -->
+      <!-- ========================================== -->
+      <div class="level-container level-locked" id="level-2-container">
+        <div class="level-header">
+          <div>
+            <strong>🟡 NIVEAU 2 : AVANCÉ / STANDARD CAP (Dépassement)</strong>
+            <div style="font-size: 0.8rem; color: #64748B;">Autonomie & Analyse Métier Réunion</div>
+          </div>
+          <span class="badge-socle badge-yellow" id="badge-lock-lvl2">🔒 Verrouillé</span>
+        </div>
+        <div class="level-body">
+          
+          <!-- EXERCICE 2.1 -->
+          <div class="exercise-card" id="card-ex2-1">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 2.1 : Oxydation du fer et rouille $Fe(OH)_3$</h3>
+            <p style="font-size: 0.9rem;">Sur le front de mer de Sainte-Marie, la rouille se forme sous forme d'hydroxyde de fer (III) de formule $Fe(OH)_3$.</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Quel est le nombre total d'atomes d'oxygène (O) dans une formule de $Fe(OH)_3$ ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_2_1_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx2_1_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_2_1_a"></div>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">2. Pour former l'ion ferrique $Fe^{3+}$, combien d'électrons l'atome de fer cède-t-il ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_2_1_b" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx2_1_b()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_2_1_b"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 2.2 -->
+          <div class="exercise-card" id="card-ex2-2">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 2.2 : Nuance de l'acier S235</h3>
+            <p style="font-size: 0.9rem;">Une poutrelle IPN S235 livrée à Sainte-Clotilde a la composition massique : Fer $Fe = 98,20\%$, Carbone $C = 0,17\%$, Manganèse $Mn = 1,40\%$, Silicium $Si = 0,23\%$.</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Quel pourcentage massique maximal de carbone sépare un acier d'une fonte (seuil limite en %) ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_2_2_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx2_2_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_2_2_a"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 2.3 -->
+          <div class="exercise-card" id="card-ex2-3">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 2.3 : Comparaison Inox 304L vs 316L</h3>
+            <p style="font-size: 0.9rem;">L'Inox 304L contient 18% Cr et 9% Ni. L'Inox 316L contient 17% Cr, 12% Ni et 2,5% de Molybdène (Mo).</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Quel pourcentage de molybdène (Mo) est présent dans l'Inox 316L pour contrer les chlorures marins (en %) ?</label>
+              <div class="input-row">
+                <input type="number" step="0.1" id="ans_2_3_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx2_3_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_2_3_a"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 2.4 -->
+          <div class="exercise-card" id="card-ex2-4">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 2.4 : Électroneutralité du chlorure de cuivre</h3>
+            <p style="font-size: 0.9rem;">Dans un bain de décapage, on dissout des ions cuivre $Cu^{2+}$ et des ions chlorures $Cl^-$. La formule statistique s'écrit $CuCl_n$.</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Combien d'ions $Cl^-$ faut-il associer à 1 ion $Cu^{2+}$ pour assurer la neutralité électrique ($n$) ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_2_4_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx2_4_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_2_4_a"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- NIVEAU 3 : EXPERT / EXCELLENCE (BONUS)     -->
+      <!-- ========================================== -->
+      <div class="level-container level-locked" id="level-3-container">
+        <div class="level-header">
+          <div>
+            <strong>🔴 NIVEAU 3 : EXPERT / EXCELLENCE (Bonus Maîtrise)</strong>
+            <div style="font-size: 0.8rem; color: #64748B;">Métallurgie Tropicale & Couple Galvanique</div>
+          </div>
+          <span class="badge-socle badge-red" id="badge-lock-lvl3">🔒 Verrouillé</span>
+        </div>
+        <div class="level-body">
+          
+          <!-- EXERCICE 3.1 -->
+          <div class="exercise-card" id="card-ex3-1">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 3.1 : Protection sacrificielle du zinc (Galvanisation)</h3>
+            <p style="font-size: 0.9rem;">Données électrochimiques : $E^\circ(Zn^{2+}/Zn) = -0,76\text{ V}$ et $E^\circ(Fe^{2+}/Fe) = -0,44\text{ V}$. Le métal au potentiel le plus réducteur s'oxyde en premier en cédant des électrons.</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Combien d'électrons un atome de zinc libère-t-il lors de sa dissolution sacrificielle : $Zn \rightarrow Zn^{2+} + n\,e^-$ ($n$) ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_3_1_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx3_1_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_3_1_a"></div>
+            </div>
+          </div>
+
+          <!-- EXERCICE 3.2 -->
+          <div class="exercise-card" id="card-ex3-2">
+            <h3><img src="fleche_rouge.png" class="icon-bullet" alt=""> Exercice 3.2 : Corrosion galvanique contact Inox / Aluminium</h3>
+            <p style="font-size: 0.9rem;">Données : $E^\circ(Al^{3+}/Al) = -1,66\text{ V}$ face à l'inox passif ($+0,10\text{ V}$). En l'absence de bague isolante au Port, l'aluminium s'oxyde très violemment.</p>
+            
+            <div class="input-group">
+              <label class="input-label">1. Combien d'électrons chaque atome d'aluminium cède-t-il pour former l'ion $Al^{3+}$ lors de cette corrosion galvanique ?</label>
+              <div class="input-row">
+                <input type="number" id="ans_3_2_a" placeholder="Votre résultat...">
+                <button class="btn-action" onclick="checkEx3_2_a()">Valider</button>
+              </div>
+              <div class="feedback-box" id="fb_3_2_a"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div style="margin-top: 18px; text-align: right;">
+        <button class="btn-action" onclick="switchStep(4)">Voir le Bilan & l'Attestation 📜</button>
+      </div>
+
+    </section>
+
+    <!-- ========================================== -->
+    <!-- ÉTAPE 4 : BILAN & ATTESTATION              -->
+    <!-- ========================================== -->
+    <section id="step-4" class="step-section">
+      <div class="card non-printable">
+        <h2><img src="fleche_rouge.png" class="icon-bullet" alt=""> Bilan & Identification de l'Apprenant</h2>
+        <p style="font-size: 0.92rem; margin-bottom: 12px;">Renseignez vos nom et prénom pour générer votre attestation pédagogique individuelle officielle :</p>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px;">
+          <input type="text" id="studentNameInput" placeholder="Nom et Prénom de l'apprenti..." style="flex: 1 1 240px;" oninput="updateStudentName()">
+          <button class="btn-action" onclick="window.print()">🖨️ Imprimer / Exporter PDF</button>
+        </div>
+
+        <div id="unlockMessage" class="callout-local" style="display: none;">
+          ✅ <strong>Félicitations !</strong> Le Niveau 1 a été validé à 100 %. Votre attestation de réussite au socle CAP est débloquée et certifiée ci-dessous.
+        </div>
+      </div>
+
+      <!-- ATTESTATION NUMÉRIQUE OFFICIELLE -->
+      <div class="attestation-wrapper" id="printableAttestation">
+        <div class="attestation-header">
+          <img src="logo.png" alt="Logo CMA Formation" style="max-height: 48px;">
+          <div style="text-align: right; font-size: 0.8rem; color: #475569;">
+            <strong>CMA FORMATION Sainte-Clotilde</strong><br>
+            La Réunion • Référentiel BO 2024 Qualiopi
+          </div>
+        </div>
+
+        <div class="attestation-title">ATTESTATION PÉDAGOGIQUE DE RÉUSSITE</div>
+        
+        <p style="text-align: center; font-size: 0.92rem; margin-bottom: 16px;">
+          Délivrée par Rachel Lamberet-Lezais, formatrice en Sciences Physiques et Chimiques,<br>
+          attestant la validation du module d'atelier :
+        </p>
+
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; padding: 12px; margin-bottom: 16px; text-align: center;">
+          <strong style="color: var(--cma-bordeaux); font-size: 1.05rem;">SÉANCE A1 S3 P1 : ATOMES, MOLÉCULES, IONS & MÉTAUX D'ATELIER</strong><br>
+          <span style="font-size: 0.85rem; color: #475569;">CAP Métallier • Groupe Métallerie / BTP Industrie</span>
+        </div>
+
+        <div class="attestation-grid">
+          <div><strong>Apprenti(e) :</strong> <span id="attestationStudentName">................................................</span></div>
+          <div><strong>Date de validation :</strong> <span id="attestationDate">--/--/----</span></div>
+          <div><strong>Validation Socle CAP (Niv 1) :</strong> <strong id="attestationSocleScore" style="color: var(--cma-bordeaux);">0%</strong></div>
+          <div><strong>Défis Bonus Réalisés (Niv 2/3) :</strong> <span id="attestationBonusScore">0 point</span></div>
+        </div>
+
+        <div style="font-size: 0.84rem; color: #334155; line-height: 1.45; border-top: 1px dashed #CBD5E1; padding-top: 10px;">
+          <strong>Compétences du Référentiel National BO 2024 vérifiées :</strong>
+          <ul style="padding-left: 20px; margin-top: 4px;">
+            <li><strong>C1 (S'approprier) :</strong> Différenciation atome, molécule et ion ; repérage de Z et composition des aciers/inox.</li>
+            <li><strong>C2 (Réaliser) :</strong> Association des symboles des métaux (Fe, Al, Cu, Zn) et de leurs ions métalliques ($Fe^{2+}$, $Al^{3+}$, $Zn^{2+}$).</li>
+            <li><strong>C3 (Analyser / Raisonner) :</strong> Justification du choix de l'Inox 316L et du zinc sacrificiel face au climat tropical marin.</li>
+            <li><strong>C4 (Valider / Communiquer) :</strong> Renseignement technique conforme d'une fiche matière d'atelier.</li>
+          </ul>
+        </div>
+
+        <div class="attestation-seal">
+          <div>
+            Établissement conventionné Qualiopi<br>
+            CMA Réunion • Centre de Sainte-Clotilde
+          </div>
+          <div style="text-align: right;">
+            <strong>Visa du formateur :</strong><br>
+            Rachel Lamberet-Lezais
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- MOTEUR JAVASCRIPT                          -->
+  <!-- ========================================== -->
+  <script>
+    // ÉTAT DE L'APPLICATION
+    const state = {
+      completedExercises: new Set(),
+      socleTotal: 14, // 14 sous-questions au Niveau 1
+      bonusPoints: 0,
+      socleValidated: false
+    };
+
+    // DATE ACTUELLE AUTO
+    document.addEventListener("DOMContentLoaded", function() {
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('fr-FR', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+      document.getElementById('attestationDate').textContent = formattedDate;
+      loadSimAtom('Fe', document.querySelector('.sim-atom-btn'));
+    });
+
+    // NAVIGATION PAR ONGLETS
+    function switchStep(stepNumber) {
+      for (let i = 1; i <= 4; i++) {
+        const section = document.getElementById('step-' + i);
+        const tab = document.getElementById('tab-step-' + i);
+        if (section) section.classList.remove('active');
+        if (tab) tab.classList.remove('active');
+      }
+      const activeSection = document.getElementById('step-' + stepNumber);
+      const activeTab = document.getElementById('tab-step-' + stepNumber);
+      if (activeSection) activeSection.classList.add('active');
+      if (activeTab) activeTab.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // NORMALISATION DES SAISIES DÉCIMALES & VIRGULES
+    function parseInput(val) {
+      if (val === null || val === undefined) return null;
+      const str = String(val).trim().replace(',', '.');
+      if (str === '') return null;
+      const num = parseFloat(str);
+      return isNaN(num) ? null : num;
+    }
+
+    // HELPER AFFICHAGE FEEDBACK SANS DOLLAR
+    function showFeedback(elementId, isCorrect, messageHtml) {
+      const fb = document.getElementById(elementId);
+      if (!fb) return;
+      fb.className = 'feedback-box ' + (isCorrect ? 'correct' : 'incorrect');
+      fb.innerHTML = messageHtml;
+      fb.style.display = 'block';
+    }
+
+    // MISE A JOUR PROGRESSION SOCLE
+    function registerSuccess(exId, isBonus = false, bonusVal = 1) {
+      if (state.completedExercises.has(exId)) return;
+      state.completedExercises.add(exId);
+
+      if (!isBonus) {
+        // Décompte socle Niveau 1
+        const socleDone = Array.from(state.completedExercises).filter(id => id.startsWith('1_')).length;
+        const percent = Math.min(100, Math.round((socleDone / state.socleTotal) * 100));
+        document.getElementById('socleScoreDisplay').textContent = percent + '%';
+        document.getElementById('globalProgressBar').style.width = percent + '%';
+        document.getElementById('attestationSocleScore').textContent = percent + '%';
+
+        if (percent >= 100) {
+          state.socleValidated = true;
+          document.getElementById('socleStatusBadge').textContent = 'Socle CAP : 100% Validé 🏆';
+          document.getElementById('socleStatusBadge').className = 'badge-socle badge-green';
+          
+          // Débloquer Niveau 2
+          const lvl2 = document.getElementById('level-2-container');
+          if (lvl2) {
+            lvl2.classList.remove('level-locked');
+            document.getElementById('badge-lock-lvl2').textContent = '🟢 Débloqué';
+            document.getElementById('badge-lock-lvl2').className = 'badge-socle badge-green';
+          }
+          document.getElementById('unlockMessage').style.display = 'block';
+        }
+      } else {
+        // Points bonus Niveaux 2 & 3
+        state.bonusPoints += bonusVal;
+        document.getElementById('bonusScoreDisplay').textContent = state.bonusPoints + ' pts';
+        document.getElementById('attestationBonusScore').textContent = state.bonusPoints + ' point(s)';
+
+        // Déblocage Niveau 3 si niveau 2 bien entamé (ex: 4 exos réussis en niveau 2)
+        const lvl2Done = Array.from(state.completedExercises).filter(id => id.startsWith('2_')).length;
+        if (lvl2Done >= 4) {
+          const lvl3 = document.getElementById('level-3-container');
+          if (lvl3) {
+            lvl3.classList.remove('level-locked');
+            document.getElementById('badge-lock-lvl3').textContent = '🟢 Débloqué';
+            document.getElementById('badge-lock-lvl3').className = 'badge-socle badge-green';
+          }
+        }
+      }
+    }
+
+    // RECOPIE DU NOM DANS L'ATTESTATION SANS INJECTION
+    function updateStudentName() {
+      const input = document.getElementById('studentNameInput');
+      const target = document.getElementById('attestationStudentName');
+      target.textContent = input.value.trim() !== '' ? input.value.trim() : '................................................';
+    }
+
+    // ==========================================
+    // VALIDATIONS ÉTAPE 1 (DÉCOUVERTE)
+    // ==========================================
+    function verifyDecZAl() {
+      const val = parseInput(document.getElementById('q_dec_z_al').value);
+      if (val === 13) {
+        showFeedback('fb_dec_z_al', true, '<strong>Correct !</strong> L\'aluminium a bien le numéro atomique Z = 13 (13 protons et 13 électrons).');
+      } else {
+        showFeedback('fb_dec_z_al', false, '<strong>Incorrect.</strong> Consultez la classification : Al se trouve à la 13e case (Z = 13).');
+      }
+    }
+
+    function verifyDecZZn() {
+      const val = parseInput(document.getElementById('q_dec_z_zn').value);
+      if (val === 30) {
+        showFeedback('fb_dec_z_zn', true, '<strong>Correct !</strong> Le zinc possède Z = 30 protons dans son noyau.');
+      } else {
+        showFeedback('fb_dec_z_zn', false, '<strong>Incorrect.</strong> Le numéro atomique du zinc est Z = 30.');
+      }
+    }
+
+    function verifyDecAlliage() {
+      const val = parseInput(document.getElementById('q_dec_alliage').value);
+      if (val === 0) {
+        showFeedback('fb_dec_alliage', true, '<strong>Exact !</strong> Un alliage est un mélange de fer avec du carbone et d\'autres métaux (Mn, Si, Cr...), contrairement à un métal pur constitué d\'un seul type d\'atomes.');
+      } else {
+        showFeedback('fb_dec_alliage', false, '<strong>Attention :</strong> Non (0), un alliage n\'est pas un métal pur : il contient plusieurs éléments chimiques intimement combinés.');
+      }
+    }
+
+    // ==========================================
+    // SIMULATEUR D'ATOME (ÉTAPE 2)
+    // ==========================================
+    const atomData = {
+      'Fe': { name: 'Fer', Z: 26, protons: 26, electrons: 26, ion: 'Fe²⁺ ou Fe³⁺', use: 'Matrice des profilés, tôles et poutrelles IPN' },
+      'Al': { name: 'Aluminium', Z: 13, protons: 13, electrons: 13, ion: 'Al³⁺', use: 'Menuiseries légères, ventelles inoxydables' },
+      'Cu': { name: 'Cuivre', Z: 29, protons: 29, electrons: 29, ion: 'Cu²⁺', use: 'Tuyauteries fluides, câblage, raccords bruns' },
+      'Zn': { name: 'Zinc', Z: 30, protons: 30, electrons: 30, ion: 'Zn²⁺', use: 'Anode sacrificielle pour galvanisation à chaud' },
+      'C':  { name: 'Carbone', Z: 6, protons: 6, electrons: 6, ion: 'Non métallique', use: 'Durcisseur inséré dans le fer pour faire l\'acier (<2%)' },
+      'Cr': { name: 'Chrome', Z: 24, protons: 24, electrons: 24, ion: 'Cr³⁺', use: 'Agent d\'inoxydabilité formant le film passif Cr₂O₃' }
+    };
+
+    function loadSimAtom(symbol, btn) {
+      document.querySelectorAll('.sim-atom-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      const data = atomData[symbol];
+      document.getElementById('simAtomSymbol').textContent = symbol;
+      
+      const details = document.getElementById('simAtomDetails');
+      details.innerHTML = '<strong>' + data.name + ' (' + symbol + ')</strong> — Numéro atomique Z = ' + data.Z + '<br>' +
+                          'Noyau : ' + data.protons + ' protons (+e) | Nuage : ' + data.electrons + ' électrons (−e) [Neutre]<br>' +
+                          'Ion d\'atelier : <strong>' + data.ion + '</strong><br>' +
+                          '<em>Usage métallier : ' + data.use + '</em>';
+    }
+
+    function simulateAlloy(alloyType) {
+      const box = document.getElementById('alloyAnalysisBox');
+      if (alloyType === 'acier') {
+        box.innerHTML = '<strong style="color:#A50F23;">Acier Doux S235 (Fe + 0,17% C) :</strong><br>' +
+                        'Sous les embruns de Sainte-Marie, le fer s\'oxyde rapidement en rouille poreuse Fe(OH)₃. ' +
+                        'Nécessite obligatoirement un sablage et une peinture anticorrosion marine (système C4/C5) ou une galvanisation.';
+      } else if (alloyType === 'galva') {
+        box.innerHTML = '<strong style="color:#15803D;">Acier Galvanisé à Chaud (Revêtement Zn) :</strong><br>' +
+                        'Le zinc constitue une <em>anode sacrificielle</em> (E° = −0,76 V contre −0,44 V pour le fer). ' +
+                        'Même en cas de rayure profonde, le zinc s\'oxyde en premier et protège cathodiquement le fer sous-jacent.';
+      } else if (alloyType === 'inox304') {
+        box.innerHTML = '<strong style="color:#B45309;">Inox 304L (18% Cr, 9% Ni) :</strong><br>' +
+                        'Convient à l\'intérieur ou dans les Hauts (Plaine des Palmistes). En revanche, sur le littoral, ' +
+                        'les ions chlorures Cl⁻ percent localement la couche passive : risque de piqûres de rouille sous 6 mois.';
+      } else if (alloyType === 'inox316') {
+        box.innerHTML = '<strong style="color:#15803D;">Inox 316L Qualité Marine (17% Cr, 12% Ni, 2,5% Mo) :</strong><br>' +
+                        'Recommandé à 100% pour le port de Sainte-Marie ! L\'addition de 2,5% de <strong>Molybdène (Mo)</strong> ' +
+                        'bloque l\'action perforante des ions marins Cl⁻ et stabilise durablement le film protecteur passif Cr₂O₃.';
+      }
+    }
+
+    // ==========================================
+    // EXERCICES DU NIVEAU 1 (SOCLE CAP)
+    // ==========================================
+    // Ex 1.1
+    function checkEx1_1_a() {
+      const val = parseInput(document.getElementById('ans_1_1_a').value);
+      if (val === 26) {
+        showFeedback('fb_1_1_a', true, '<strong>Correct !</strong> Le numéro atomique Z = 26 correspond exactement à 26 protons dans le noyau.');
+        registerSuccess('1_1_a');
+      } else {
+        showFeedback('fb_1_1_a', false, '<strong>Incorrect.</strong> Le nombre de protons est égal à Z, soit 26.');
+      }
+    }
+
+    function checkEx1_1_b() {
+      const val = parseInput(document.getElementById('ans_1_1_b').value);
+      if (val === 26) {
+        showFeedback('fb_1_1_b', true, '<strong>Correct !</strong> L\'atome étant électriquement neutre, il possède autant d\'électrons que de protons, soit 26 électrons.');
+        registerSuccess('1_1_b');
+      } else {
+        showFeedback('fb_1_1_b', false, '<strong>Incorrect.</strong> Un atome neutre comporte autant d\'électrons (−e) que de protons (+e), soit 26.');
+      }
+    }
+
+    function checkEx1_1_c() {
+      const val = parseInput(document.getElementById('ans_1_1_c').value);
+      if (val === 0) {
+        showFeedback('fb_1_1_c', true, '<strong>Exact !</strong> La charge globale d\'un atome neutre est nulle (0).');
+        registerSuccess('1_1_c');
+      } else {
+        showFeedback('fb_1_1_c', false, '<strong>Incorrect.</strong> Les 26 charges positives (+26e) annulent les 26 charges négatives (−26e) : le bilan est 0.');
+      }
+    }
+
+    // Ex 1.2
+    function checkEx1_2_a() {
+      const val = parseInput(document.getElementById('ans_1_2_a').value);
+      if (val === 29) {
+        showFeedback('fb_1_2_a', true, '<strong>Correct !</strong> Le cuivre possède Z = 29.');
+        registerSuccess('1_2_a');
+      } else {
+        showFeedback('fb_1_2_a', false, '<strong>Incorrect.</strong> Pour le cuivre (Cu), Z = 29.');
+      }
+    }
+
+    function checkEx1_2_b() {
+      const val = parseInput(document.getElementById('ans_1_2_b').value);
+      if (val === 13) {
+        showFeedback('fb_1_2_b', true, '<strong>Correct !</strong> Pour l\'aluminium (Al), Z = 13.');
+        registerSuccess('1_2_b');
+      } else {
+        showFeedback('fb_1_2_b', false, '<strong>Incorrect.</strong> Pour l\'aluminium (Al), Z = 13.');
+      }
+    }
+
+    // Ex 1.3
+    function checkEx1_3_a() {
+      const val = parseInput(document.getElementById('ans_1_3_a').value);
+      if (val === 24) {
+        showFeedback('fb_1_3_a', true, '<strong>Correct !</strong> 26 − 2 = 24 électrons restants. L\'ion porte une charge globale de +2e (Fe²⁺).');
+        registerSuccess('1_3_a');
+      } else {
+        showFeedback('fb_1_3_a', false, '<strong>Incorrect.</strong> L\'atome avait 26 électrons et en perd 2 : 26 − 2 = 24 électrons.');
+      }
+    }
+
+    function checkEx1_3_b() {
+      const val = parseInput(document.getElementById('ans_1_3_b').value);
+      if (val === 3) {
+        showFeedback('fb_1_3_b', true, '<strong>Correct !</strong> L\'ion aluminium Al³⁺ a perdu 3 électrons.');
+        registerSuccess('1_3_b');
+      } else {
+        showFeedback('fb_1_3_b', false, '<strong>Incorrect.</strong> La charge 3+ indique la perte de 3 électrons.');
+      }
+    }
+
+    function checkEx1_3_c() {
+      const val = parseInput(document.getElementById('ans_1_3_c').value);
+      if (val === 2) {
+        showFeedback('fb_1_3_c', true, '<strong>Correct !</strong> L\'atome de zinc perd 2 électrons pour devenir le cation Zn²⁺.');
+        registerSuccess('1_3_c');
+      } else {
+        showFeedback('fb_1_3_c', false, '<strong>Incorrect.</strong> La formule Zn²⁺ indique la perte de 2 électrons.');
+      }
+    }
+
+    // Ex 1.4
+    function checkEx1_4_a() {
+      const val = parseInput(document.getElementById('ans_1_4_a').value);
+      if (val === 1) {
+        showFeedback('fb_1_4_a', true, '<strong>Correct !</strong> Dans CO₂, il y a un unique atome de carbone C.');
+        registerSuccess('1_4_a');
+      } else {
+        showFeedback('fb_1_4_a', false, '<strong>Incorrect.</strong> L\'absence d\'indice sous le symbole C signifie qu\'il y a 1 atome de carbone.');
+      }
+    }
+
+    function checkEx1_4_b() {
+      const val = parseInput(document.getElementById('ans_1_4_b').value);
+      if (val === 2) {
+        showFeedback('fb_1_4_b', true, '<strong>Correct !</strong> L\'indice 2 sous la lettre O indique 2 atomes d\'oxygène.');
+        registerSuccess('1_4_b');
+      } else {
+        showFeedback('fb_1_4_b', false, '<strong>Incorrect.</strong> Dans CO₂, l\'indice 2 indique 2 atomes d\'oxygène.');
+      }
+    }
+
+    function checkEx1_4_c() {
+      const val = parseInput(document.getElementById('ans_1_4_c').value);
+      if (val === 5) {
+        showFeedback('fb_1_4_c', true, '<strong>Correct !</strong> CH₄ comprend 1 atome de carbone + 4 atomes d\'hydrogène = 5 atomes au total.');
+        registerSuccess('1_4_c');
+      } else {
+        showFeedback('fb_1_4_c', false, '<strong>Incorrect.</strong> CH₄ comprend 1 carbone + 4 hydrogènes, soit 1 + 4 = 5 atomes.');
+      }
+    }
+
+    // Ex 1.5
+    function checkEx1_5_a() {
+      const val = parseInput(document.getElementById('ans_1_5_a').value);
+      if (val === 3) {
+        showFeedback('fb_1_5_a', true, '<strong>Correct !</strong> Il y a 3 atomes isolés neutres : Fe, Al et Zn.');
+        registerSuccess('1_5_a');
+      } else {
+        showFeedback('fb_1_5_a', false, '<strong>Incorrect.</strong> Les atomes isolés neutres sont Fe, Al et Zn (soit 3 au total).');
+      }
+    }
+
+    function checkEx1_5_b() {
+      const val = parseInput(document.getElementById('ans_1_5_b').value);
+      if (val === 3) {
+        showFeedback('fb_1_5_b', true, '<strong>Correct !</strong> Il y a 3 molécules : H₂O, CO₂ et O₂.');
+        registerSuccess('1_5_b');
+      } else {
+        showFeedback('fb_1_5_b', false, '<strong>Incorrect.</strong> Les molécules neutres sont H₂O, CO₂ et O₂ (soit 3 au total).');
+      }
+    }
+
+    function checkEx1_5_c() {
+      const val = parseInput(document.getElementById('ans_1_5_c').value);
+      if (val === 4) {
+        showFeedback('fb_1_5_c', true, '<strong>Correct !</strong> Il y a 4 ions : Fe²⁺, Cl⁻, Cu²⁺ et OH⁻.');
+        registerSuccess('1_5_c');
+      } else {
+        showFeedback('fb_1_5_c', false, '<strong>Incorrect.</strong> Les ions porteurs de charges sont Fe²⁺, Cl⁻, Cu²⁺ et OH⁻ (soit 4 au total).');
+      }
+    }
+
+    // ==========================================
+    // EXERCICES DU NIVEAU 2 (AVANCÉ / BONUS)
+    // ==========================================
+    function checkEx2_1_a() {
+      const val = parseInput(document.getElementById('ans_2_1_a').value);
+      if (val === 3) {
+        showFeedback('fb_2_1_a', true, '<strong>Correct !</strong> Dans Fe(OH)₃, le groupement (OH) est pris 3 fois : il y a donc 3 atomes d\'oxygène O.');
+        registerSuccess('2_1_a', true, 2);
+      } else {
+        showFeedback('fb_2_1_a', false, '<strong>Incorrect.</strong> Le chiffre 3 en indice après la parenthèse multiplie chaque atome interne : 1 × 3 = 3 atomes d\'oxygène.');
+      }
+    }
+
+    function checkEx2_1_b() {
+      const val = parseInput(document.getElementById('ans_2_1_b').value);
+      if (val === 3) {
+        showFeedback('fb_2_1_b', true, '<strong>Correct !</strong> L\'atome de fer cède 3 électrons pour former l\'ion ferrique Fe³⁺.');
+        registerSuccess('2_1_b', true, 2);
+      } else {
+        showFeedback('fb_2_1_b', false, '<strong>Incorrect.</strong> La charge 3+ de l\'ion ferrique correspond à la cession de 3 électrons.');
+      }
+    }
+
+    function checkEx2_2_a() {
+      const val = parseInput(document.getElementById('ans_2_2_a').value);
+      if (Math.abs(val - 2.0) < 0.1) {
+        showFeedback('fb_2_2_a', true, '<strong>Correct !</strong> La limite métallurgique entre l\'acier et la fonte est fixée à 2% de carbone.');
+        registerSuccess('2_2_a', true, 2);
+      } else {
+        showFeedback('fb_2_2_a', false, '<strong>Incorrect.</strong> En métallurgie, un acier contient moins de 2% de carbone. Au-delà de 2%, l\'alliage devient une fonte.');
+      }
+    }
+
+    function checkEx2_3_a() {
+      const val = parseInput(document.getElementById('ans_2_3_a').value);
+      if (Math.abs(val - 2.5) < 0.1) {
+        showFeedback('fb_2_3_a', true, '<strong>Exact !</strong> L\'Inox 316L contient 2,5% de molybdène (Mo), ce qui prévient la corrosion par piqûres causée par les embruns marins.');
+        registerSuccess('2_3_a', true, 2);
+      } else {
+        showFeedback('fb_2_3_a', false, '<strong>Incorrect.</strong> La fiche technique indique 2,5% de molybdène (Mo).');
+      }
+    }
+
+    function checkEx2_4_a() {
+      const val = parseInput(document.getElementById('ans_2_4_a').value);
+      if (val === 2) {
+        showFeedback('fb_2_4_a', true, '<strong>Exact !</strong> Pour neutraliser la charge de l\'ion Cu²⁺ (+2e), il faut deux ions Cl⁻ (−2e). La formule est CuCl₂.');
+        registerSuccess('2_4_a', true, 2);
+      } else {
+        showFeedback('fb_2_4_a', false, '<strong>Incorrect.</strong> Un ion Cu²⁺ (+2e) requiert 2 ions Cl⁻ (−1e chacun) pour obtenir une solution électriquement neutre.');
+      }
+    }
+
+    // ==========================================
+    // EXERCICES DU NIVEAU 3 (EXPERT / BONUS)
+    // ==========================================
+    function checkEx3_1_a() {
+      const val = parseInput(document.getElementById('ans_3_1_a').value);
+      if (val === 2) {
+        showFeedback('fb_3_1_a', true, '<strong>Correct !</strong> Demi-équation : Zn → Zn²⁺ + 2 e⁻. Le zinc perd 2 électrons et se dissout pour protéger le fer.');
+        registerSuccess('3_1_a', true, 3);
+      } else {
+        showFeedback('fb_3_1_a', false, '<strong>Incorrect.</strong> L\'oxydation du zinc s\'écrit : Zn → Zn²⁺ + 2 e⁻ (2 électrons libérés).');
+      }
+    }
+
+    function checkEx3_2_a() {
+      const val = parseInput(document.getElementById('ans_3_2_a').value);
+      if (val === 3) {
+        showFeedback('fb_3_2_a', true, '<strong>Exact !</strong> Demi-équation : Al → Al³⁺ + 3 e⁻. L\'aluminium perd 3 électrons en contact direct avec l\'inox sans bague isolante.');
+        registerSuccess('3_2_a', true, 3);
+      } else {
+        showFeedback('fb_3_2_a', false, '<strong>Incorrect.</strong> L\'oxydation de l\'aluminium s\'écrit : Al → Al³⁺ + 3 e⁻ (3 électrons cédés).');
+      }
+    }
+  </script>
+</body>
+</html>

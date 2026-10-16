@@ -46,5 +46,38 @@ window.APPLICATIONS = [
     titre: 'Sécurité en atelier & EPI',
     description: 'Identifier les équipements de protection individuelle (EPI) et leur rôle pour travailler en sécurité dans un atelier de métallerie.',
     lien: './applications/A1S2P1/index.html'
+  },
+  {
+    "code": "A1S3M1",
+    "publication": "2026-10-20T07:50:00+04:00",
+    "annee": 1,
+    "semaine": 3,
+    "discipline": "M",
+    "activite": 1,
+    "titre": "Proportionnalité et masse linéique",
+    "description": "Calculer des masses et des longueurs à partir de situations professionnelles de métallerie.",
+    "lien": "./applications/A1S3M1/index.html"
+  },
+  {
+    "code": "A1S3M2",
+    "publication": "2026-10-23T07:50:00+04:00",
+    "annee": 1,
+    "semaine": 3,
+    "discipline": "M",
+    "activite": 2,
+    "titre": "Pourcentages et gestion des chutes",
+    "description": "Utiliser les pourcentages pour gérer les chutes en atelier.",
+    "lien": "./applications/A1S3M2/index.html"
+  },
+  {
+    "code": "A1S3P1",
+    "publication": "2026-10-23T07:50:00+04:00",
+    "annee": 1,
+    "semaine": 3,
+    "discipline": "P",
+    "activite": 1,
+    "titre": "Atomes, molécules, ions et métaux d’atelier",
+    "description": "Identifier les atomes, molécules et ions dans le contexte des métaux d’atelier.",
+    "lien": "./applications/A1S3P1/index.html"
   }
 ];
