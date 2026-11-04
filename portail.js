@@ -2,6 +2,7 @@
   'use strict';
   // Verrou pédagogique seulement : le code et les fichiers sont publics.
   // Clé distincte de Coiffure ; aucune donnée nominative n'est enregistrée.
+  let accessRole = 'apprenant';
   const storageKey = 'cap-metallier-access-v1';
   const access = document.getElementById('acces');
   const portal = document.getElementById('portail');
@@ -50,7 +51,7 @@
       return;
     }
     document.getElementById('discipline-title').textContent = titles[key];
-    const selected = applications.filter(app => app.discipline === key && isPublished(app, now));
+    const selected = applications.filter(app => app.discipline === key && (accessRole === 'formateur' || isPublished(app, now)));
     document.getElementById('discipline-description').textContent = selected.length
       ? 'Choisis une activité pour commencer.' : 'Ton espace est prêt à accueillir les prochaines activités.';
     catalogue.replaceChildren();
@@ -67,6 +68,7 @@
         link.setAttribute('aria-label', `Lancer l’activité : ${app.titre}`);
         card.append(element('span', 'metadata', `Année ${app.annee} · Semaine ${app.semaine} · Activité ${app.activite}`),
           element('h3', '', app.titre), element('p', '', app.description), link);
+        CMAAccess.addStatus(card, app, now, accessRole);
         catalogue.append(card);
       }
     }
@@ -77,26 +79,19 @@
     access.hidden = true;
     portal.hidden = false;
     input.value = '';
-    try { sessionStorage.setItem(storageKey, 'granted'); } catch { /* Navigation utilisable même sans stockage. */ }
     render(focus);
   }
-  document.getElementById('access-form').addEventListener('submit', event => {
-    event.preventDefault();
-    if (input.value.trim() !== 'CMAFormationSC') {
-      error.textContent = 'Code incorrect. Vérifie le code communiqué par ton formateur.';
-      input.setAttribute('aria-invalid', 'true');
-      input.focus(); input.select();
-      return;
-    }
-    input.removeAttribute('aria-invalid'); error.textContent = '';
-    unlock(true);
-  });
-  input.addEventListener('input', () => { input.removeAttribute('aria-invalid'); error.textContent = ''; });
   document.querySelectorAll('[data-discipline]').forEach(button => button.addEventListener('click', () => {
     location.hash = button.dataset.discipline === 'M' ? 'mathematiques' : 'physique-chimie';
   }));
   document.getElementById('retour').addEventListener('click', () => { location.hash = 'matieres'; });
   window.addEventListener('hashchange', () => render());
-  try { if (sessionStorage.getItem(storageKey) === 'granted') unlock(false); }
-  catch { /* Le formulaire reste utilisable si le stockage est désactivé. */ }
+  CMAAccess.mount({ storageKey, access, portal, input, error,
+    onUnlock(role, focus) { accessRole = role; unlock(focus); },
+    onLogout() {
+      accessRole = 'apprenant';
+      unlocked = false;
+      clearTimeout(publicationTimer); catalogue.replaceChildren();
+    }
+  });
 })();
