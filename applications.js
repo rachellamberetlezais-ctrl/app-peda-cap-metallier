@@ -79,5 +79,27 @@ window.APPLICATIONS = [
     "titre": "Atomes, molécules, ions et métaux d’atelier",
     "description": "Identifier les atomes, molécules et ions dans le contexte des métaux d’atelier.",
     "lien": "./applications/A1S3P1/index.html"
-  }
+  },
+{
+  "code": "A1S4M1",
+  "annee": 1,
+  "semaine": 4,
+  "discipline": "M",
+  "activite": 1,
+  "titre": "Proportionnalité : échelles et lecture de plans",
+  "description": "Manipuler une règle virtuelle, passer du plan à la cote réelle et préparer un métré de métallerie.",
+  "lien": "./applications/A1S4M1/index.html",
+  "formateurSeulement": true
+},
+{
+  "code": "A1S4M2",
+  "annee": 1,
+  "semaine": 4,
+  "discipline": "M",
+  "activite": 2,
+  "titre": "Équations ax = b et répartition d’atelier",
+  "description": "Visualiser intervalles et barreaux, isoler une inconnue sur une balance et comparer débit idéal et trait de scie.",
+  "lien": "./applications/A1S4M2/index.html",
+  "formateurSeulement": true
+}
 ];
