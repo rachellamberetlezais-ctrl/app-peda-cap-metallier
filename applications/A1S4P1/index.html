@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMA Formation Sainte-Clotilde - CAP Métallier - Mesure du pH</title>
+  <!-- MathJax v3 pour les formules statiques -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script" async></script>
+  <style>
+    :root {
+      --cma-bordeaux: #A50F23;
+      --cma-coral: #EE3C3D;
+      --cma-bg: #F8FAFC;
+      --cma-text: #1E293B;
+      --cma-card-bg: #FFFFFF;
+      --cma-border: #E2E8F0;
+      --cma-success: #16A34A;
+      --cma-warning: #D97706;
+      --cma-danger: #DC2626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: var(--cma-bg);
+      color: var(--cma-text);
+      line-height: 1.5;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header officiel CMA avec ruban inférieur */
+    .app-header {
+      position: relative;
+      overflow: hidden;
+      background: #FFFFFF;
+      padding: 16px 16px 24px 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-bottom: 2px solid var(--cma-bordeaux);
+    }
+
+    .header-content {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .app-logo {
+      height: 48px;
+      width: auto;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .header-titles {
+      flex: 1;
+    }
+
+    .header-titles h1 {
+      font-size: 1.1rem;
+      color: var(--cma-bordeaux);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .header-titles p {
+      font-size: 0.82rem;
+      color: #64748B;
+      margin-top: 2px;
+    }
+
+    .cma-wave-border {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: auto;
+      height: 14px;
+      margin: 0;
+      border: 0;
+      background-image: url("ruban_vague.png");
+      background-repeat: repeat-x;
+      background-size: 102.941176px 102.941176px;
+      background-position: left -46.941176px;
+    }
+
+    /* Barre de progression globale */
+    .global-progress-bar {
+      width: 100%;
+      height: 8px;
+      background-color: #E2E8F0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .global-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cma-bordeaux), var(--cma-coral));
+      transition: width 0.3s ease;
+    }
+
+    /* Navigation par étapes */
+    .nav-container {
+      max-width: 960px;
+      margin: 12px auto;
+      padding: 0 12px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      min-width: max-content;
+      padding-bottom: 4px;
+    }
+
+    .tab-btn {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border: 1px solid var(--cma-border);
+      background-color: #FFFFFF;
+      color: #475569;
+      border-radius: 22px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      background-color: var(--cma-bordeaux);
+      color: #FFFFFF;
+      border-color: var(--cma-bordeaux);
+      box-shadow: 0 2px 6px rgba(165, 15, 35, 0.3);
+    }
+
+    /* Puce officielle CMA */
+    .icon-bullet {
+      height: 18px;
+      width: 18px;
+      object-fit: contain;
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+      margin-right: 6px;
+    }
+
+    /* Conteneur principal */
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 12px 48px 12px;
+    }
+
+    .step-section {
+      display: none;
+    }
+
+    .step-section.active {
+      display: block;
+    }
+
+    /* Cartes */
+    .card {
+      background: var(--cma-card-bg);
+      border: 1px solid var(--cma-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      color: var(--cma-bordeaux);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+    }
+
+    h3 {
+      font-size: 1rem;
+      color: #0F172A;
+      margin: 12px 0 8px 0;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Étape 1 : Découverte */
+    .context-box {
+      background: #FFF1F2;
+      border-left: 4px solid var(--cma-coral);
+      padding: 12px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 16px;
+      font-size: 0.92rem;
+    }
+
+    .discovery-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    @media (min-width: 680px) {
+      .discovery-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .cuve-card {
+      border: 1px solid var(--cma-border);
+      border-radius: 8px;
+      padding: 12px;
+      background: #FFFFFF;
+      cursor: pointer;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .cuve-card:hover, .cuve-card.active {
+      border-color: var(--cma-bordeaux);
+      box-shadow: 0 2px 8px rgba(165, 15, 35, 0.12);
+    }
+
+    .cuve-card .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .badge-acid { background: #FEE2E2; color: #991B1B; }
+    .badge-neutral { background: #DCFCE7; color: #166534; }
+    .badge-base { background: #DBEAFE; color: #1E40AF; }
+
+    .image-showcase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      background: #F1F5F9;
+      padding: 16px;
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+
+    .showcase-item {
+      text-align: center;
+      max-width: 200px;
+    }
+
+    .showcase-item img {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #FFFFFF;
+      padding: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+
+    .showcase-item p {
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 6px;
+      color: #334155;
+    }
+
+    /* Tableau responsive */
+    .table-container {
+      overflow-x: auto;
+      margin: 12px 0;
+      border: 1px solid var(--cma-border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      min-width: 500px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--cma-border);
+    }
+
+    th {
+      background: #F1F5F9;
+      color: var(--cma-text);
+      font-weight: 600;
+    }
+
+    /* Accordéon Étape 2 */
+    .accordion-item {
+      border: 1px solid var(--cma-border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      width: 100%;
+      min-height: 44px;
+      padding: 12px;
+      background: #FFFFFF;
+      border: none;
+      text-align: left;
+      font-weight: 600;
+      color: var(--cma-text);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .accordion-content {
+      padding: 12px;
+      background: #F8FAFC;
+      border-top: 1px solid var(--cma-border);
+      display: none;
+      font-size: 0.92rem;
+    }
+
+    .accordion-content.open {
+      display: block;
+    }
+
+    /* Simulateur Étape 2 */
+    .simulator-box {
+      background: #FFFFFF;
+      border: 2px solid var(--cma-bordeaux);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .slider-container {
+      margin: 16px 0;
+    }
+
+    .slider-container input[type="range"] {
+      width: 100%;
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(to right, #DC2626 0%, #F97316 20%, #EAB308 35%, #22C55E 50%, #06B6D4 65%, #3B82F6 80%, #1E1B4B 100%);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .simulator-display {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-radius: 8px;
+      background: #F1F5F9;
+      text-align: center;
+    }
+
+    @media (min-width: 500px) {
+      .simulator-display {
+        flex-direction: row;
+        justify-content: space-around;
+      }
+    }
+
+    .ph-meter-lcd {
+      background: #0F172A;
+      color: #22D3EE;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      min-width: 120px;
+      display: inline-block;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .paper-strip-visual {
+      width: 60px;
+      height: 36px;
+      border-radius: 4px;
+      border: 2px solid #334155;
+      transition: background-color 0.2s ease;
+      display: inline-block;
+    }
+
+    /* Étape 3 : Entraînement */
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .level-1-header { background: #DCFCE7; color: #166534; }
+    .level-2-header { background: #FEF3C7; color: #92400E; }
+    .level-3-header { background: #FEE2E2; color: #991B1B; }
+
+    .exercise-card {
+      border: 1px solid var(--cma-border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+      background: #FFFFFF;
+    }
+
+    .exercise-card.locked {
+      opacity: 0.55;
+      pointer-events: none;
+      filter: grayscale(80%);
+    }
+
+    .sub-question {
+      margin: 14px 0;
+      padding-top: 10px;
+      border-top: 1px dashed var(--cma-border);
+    }
+
+    .input-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .input-row input {
+      min-height: 44px;
+      font-size: 16px;
+      padding: 6px 12px;
+      border: 1px solid #94A3B8;
+      border-radius: 6px;
+      width: 180px;
+      max-width: 100%;
+    }
+
+    .input-row select {
+      min-height: 44px;
+      font-size: 16px;
+      padding: 6px 10px;
+      border: 1px solid #94A3B8;
+      border-radius: 6px;
+      background: #FFFFFF;
+      max-width: 100%;
+    }
+
+    .btn-validate {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 8px 16px;
+      background-color: var(--cma-bordeaux);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-validate:active {
+      background-color: #830B1C;
+    }
+
+    .feedback-msg {
+      margin-top: 8px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .feedback-msg.success {
+      display: block;
+      background-color: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+    }
+
+    .feedback-msg.error {
+      display: block;
+      background-color: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FCA5A5;
+    }
+
+    /* Scoreboard récapitulatif */
+    .score-summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: #F1F5F9;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .score-pill {
+      flex: 1;
+      min-width: 140px;
+      background: #FFFFFF;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border-left: 4px solid var(--cma-bordeaux);
+    }
+
+    .score-pill span {
+      display: block;
+      font-size: 0.75rem;
+      color: #64748B;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .score-pill strong {
+      font-size: 1.1rem;
+      color: var(--cma-text);
+    }
+
+    /* Attestation Étape 4 */
+    .attestation-container {
+      background: #FFFFFF;
+      border: 2px solid var(--cma-bordeaux);
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 680px;
+      margin: 16px auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .attestation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--cma-bordeaux);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .attestation-body p {
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .attestation-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--cma-bordeaux);
+      border-bottom: 1px solid #CBD5E1;
+      padding-bottom: 2px;
+      display: inline-block;
+    }
+
+    .btn-print {
+      min-height: 44px;
+      padding: 10px 20px;
+      background: var(--cma-bordeaux);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    /* Responsive & Print */
+    @media print {
+      body {
+        background: #FFFFFF;
+        color: #000000;
+      }
+      .app-header, .global-progress-bar, .nav-container, .btn-print, .step-section:not(#step-4) {
+        display: none !important;
+      }
+      .step-section#step-4 {
+        display: block !important;
+      }
+      .attestation-container {
+        border: 2px solid #000000;
+        box-shadow: none;
+        max-width: 100%;
+        padding: 20px;
+      }
+    }
+  </style>
+<link rel="stylesheet" href="../../assets/retour-portail.css?v=1"><script src="../../assets/retour-portail.js?v=1" data-portal="../../index.html" data-section="physique-chimie" data-label="Métallier · Année 1" defer></script></head>
+<body>
+
+  <!-- Barre de progression générale compacte (8 px) -->
+  <div class="global-progress-bar">
+    <div class="global-progress-fill" id="globalProgressBar"></div>
+  </div>
+
+  <!-- Header officiel CMA -->
+  <header class="app-header">
+    <div class="header-content">
+      <img src="logo.png" alt="Logo CMA Formation" class="app-logo">
+      <div class="header-titles">
+        <h1>CMA Formation Sainte-Clotilde</h1>
+        <p>CAP Métallier • Physique-Chimie (S4 P1 : Solutions aqueuses & pH)</p>
+      </div>
+    </div>
+    <div class="cma-wave-border"></div>
+  </header>
+
+  <!-- Navigation à 4 étapes Mobile-First -->
+  <nav class="nav-container">
+    <div class="nav-tabs" role="tablist">
+      <button class="tab-btn active" onclick="switchStep(1)" id="tab-1">
+        <span>📍</span> Étape 1 • Découverte
+      </button>
+      <button class="tab-btn" onclick="switchStep(2)" id="tab-2">
+        <span>🧪</span> Étape 2 • Cours & Simulateur
+      </button>
+      <button class="tab-btn" onclick="switchStep(3)" id="tab-3">
+        <span>⚙️</span> Étape 3 • Entraînement
+      </button>
+      <button class="tab-btn" onclick="switchStep(4)" id="tab-4">
+        <span>🎓</span> Étape 4 • Bilan & Attestation
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ==========================================
+         ÉTAPE 1 : DÉCOUVERTE PROFESSIONNELLE
+         ========================================== -->
+    <section id="step-1" class="step-section active">
+      <div class="card">
+        <h2><img src="fleche_rouge.png" class="icon-bullet" alt="">Contexte Métier : Traitement de surface au Chaudron</h2>
+        <div class="context-box">
+          <strong>Entreprise « Métal Réunion Océan Indien » (ZI du Chaudron, Sainte-Clotilde) :</strong><br>
+          Les métalliers fabriquent des portails et des garde-corps de varangues en acier et aluminium. Avant peinture ou soudure sous le climat chaud et humide de La Réunion, les profilés doivent être immergés dans 3 cuves d'atelier :
+          <ol style="margin-left: 20px; margin-top: 6px;">
+            <li>Bain de dégraissage alcalin (huiles d'usinage)</li>
+            <li>Bain de décapage/dérochage acide (calamine et oxydes)</li>
+            <li>Bain de rinçage à l'eau claire</li>
+          </ol>
+        </div>
+
+        <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Ressources d'Atelier & Contrôle Visuel</h3>
+        <p style="font-size:0.9rem;">Inspectez le rouleau de papier pH étalonné et le pictogramme de sécurité apposé sur les fûts de préparation :</p>
+        
+        <div class="image-showcase">
+          <div class="showcase-item">
+            <img src="1374-papier-ph-bande-controle-ph-5-metres-echelle-1-14.jpg" alt="Papier pH échelle circulaire 1-14">
+            <p>Rouleau indicateur de pH (1 à 14)</p>
+          </div>
+          <div class="showcase-item">
+            <img src="SGH05_Corrosion.jpg" alt="Pictogramme SGH05 Corrosif">
+            <p>Pictogramme SGH05 : Corrosif</p>
+          </div>
+        </div>
+
+        <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Tableau d'analyse des cuves d'atelier (50 mL)</h3>
+        <p style="font-size:0.88rem; color:#64748B;">Touchez une cuve pour observer l'échantillon prélevé :</p>
+        
+        <div class="discovery-grid">
+          <div class="cuve-card" onclick="inspectCuve(1)">
+            <span class="badge badge-acid">Cuve 1</span>
+            <strong>Décapage acier (HCl dilué)</strong>
+            <p style="font-size:0.85rem; margin-top:4px;">Couleur papier : <strong style="color:#DC2626;">Rouge vif</strong> | pH = <strong>1,5</strong></p>
+            <p style="font-size:0.82rem; color:#64748B;">Ion dominant : H⁺ (H₃O⁺)</p>
+          </div>
+          <div class="cuve-card" onclick="inspectCuve(2)">
+            <span class="badge badge-neutral">Cuve 2</span>
+            <strong>Rinçage (Eau du réseau Sainte-Clotilde)</strong>
+            <p style="font-size:0.85rem; margin-top:4px;">Couleur papier : <strong style="color:#16A34A;">Verte pâle</strong> | pH = <strong>7,0</strong></p>
+            <p style="font-size:0.82rem; color:#64748B;">Équilibre : H⁺ / OH⁻</p>
+          </div>
+          <div class="cuve-card" onclick="inspectCuve(3)">
+            <span class="badge badge-base">Cuve 3</span>
+            <strong>Dégraissage (Soude NaOH diluée)</strong>
+            <p style="font-size:0.85rem; margin-top:4px;">Couleur papier : <strong style="color:#1E40AF;">Bleu foncé</strong> | pH = <strong>12,5</strong></p>
+            <p style="font-size:0.82rem; color:#64748B;">Ion dominant : OH⁻</p>
+          </div>
+          <div class="cuve-card" onclick="inspectCuve(4)">
+            <span class="badge badge-acid">Cuve 4</span>
+            <strong>Dérochage alu (H₃PO₄ dilué)</strong>
+            <p style="font-size:0.85rem; margin-top:4px;">Couleur papier : <strong style="color:#EA580C;">Orange</strong> | pH = <strong>2,5</strong></p>
+            <p style="font-size:0.82rem; color:#64748B;">Ion dominant : H⁺ (H₃O⁺)</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; text-align: right;">
+          <button class="btn-validate" onclick="switchStep(2)">Consulter le cours & le simulateur ➜</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ÉTAPE 2 : COURS ET SIMULATEUR INTERACTIF
+         ========================================== -->
+    <section id="step-2" class="step-section">
+      <div class="card">
+        <h2><img src="fleche_rouge.png" class="icon-bullet" alt="">Synthèse de Cours : Notions Clés & Sécurité</h2>
+        
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span>1. Définition du pH et ions caractéristiques</span>
+            <span>▼</span>
+          </button>
+          <div class="accordion-content open">
+            Le <strong>pH (potentiel Hydrogène)</strong> est un nombre sans unité, compris entre <strong>0 et 14</strong> à 25°C :
+            <ul style="margin: 8px 0 8px 20px;">
+              <li><strong>Solution acide (\(pH < 7\)) :</strong> Contient plus d'ions hydrogène \(H^+\) (ou oxonium \(H_3O^+\)) que d'ions hydroxyde \(OH^-\). Plus le pH est bas, plus la solution attaque le métal.</li>
+              <li><strong>Solution neutre (\(pH = 7\)) :</strong> Égalité parfaite entre ions \(H^+\) et ions \(OH^-\) (ex: eau pure à 25°C).</li>
+              <li><strong>Solution basique / alcaline (\(pH > 7\)) :</strong> Contient plus d'ions hydroxyde \(OH^-\) que d'ions \(H^+\). Plus le pH est élevé, plus elle est caustique.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span>2. Instruments de mesure en métallerie</span>
+            <span>▼</span>
+          </button>
+          <div class="accordion-content">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+              <div style="flex:1; min-width:220px;">
+                <p>• <strong>Papier indicateur de pH :</strong> Bandelette traitée chimiquement changeant de couleur au contact de la goutte. Estimation rapide à <strong>l'unité près</strong>.</p>
+                <p style="margin-top:6px;">• <strong>pH-mètre digital :</strong> Sonde en verre avec voltmètre électronique étalonné par solutions tampons (pH 4, 7, 10). Mesure précise au <strong>dixième</strong> ou <strong>centième</strong>.</p>
+              </div>
+              <img src="1374-papier-ph-bande-controle-ph-5-metres-echelle-1-14.jpg" style="height:80px; width:auto; border-radius:6px;" alt="Bande pH">
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-header" onclick="toggleAccordion(this)">
+            <span>3. Sécurité chimique et EPI obligatoires</span>
+            <span>▼</span>
+          </button>
+          <div class="accordion-content">
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+              <div style="flex:1; min-width:220px;">
+                <p>Les acides concentrés (\(HCl\), \(H_2SO_4\), \(H_3PO_4\)) et bases fortes (\(NaOH\)) sont <strong>corrosifs</strong>.</p>
+                <p style="margin-top:6px;"><strong>EPI indispensables :</strong> Gants étanches en nitrile/néoprène (EN ISO 374-1), lunettes masques fermées ou visière faciale intégrale, et tablier anti-acide.</p>
+                <p style="margin-top:6px; color:var(--cma-bordeaux); font-weight:700;">Règle d'or : Toujours verser l'acide dans l'eau, JAMAIS l'eau dans l'acide !</p>
+              </div>
+              <img src="SGH05_Corrosion.jpg" style="height:70px; width:auto;" alt="SGH05">
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulateur dynamique -->
+        <div class="simulator-box">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Simulateur Interactif : Banc de Test pH d'Atelier</h3>
+          <p style="font-size:0.88rem; color:#475569;">Déplacez le curseur pour tester la réaction du papier pH et la valeur lue sur le pH-mètre digital :</p>
+          
+          <div class="slider-container">
+            <input type="range" id="phSlider" min="0" max="14" step="0.1" value="7" oninput="updateSim()">
+          </div>
+
+          <div class="simulator-display">
+            <div>
+              <span style="font-size:0.8rem; color:#64748B; display:block;">pH-mètre digital</span>
+              <div class="ph-meter-lcd" id="simLcd">pH 7.0</div>
+            </div>
+            <div>
+              <span style="font-size:0.8rem; color:#64748B; display:block;">Papier pH</span>
+              <div class="paper-strip-visual" id="simPaper"></div>
+            </div>
+            <div style="text-align:left;">
+              <span style="font-size:0.8rem; color:#64748B; display:block;">Caractère chimique</span>
+              <strong id="simNature" style="color:var(--cma-success); font-size:1.05rem;">Solution Neutre</strong>
+              <div id="simIons" style="font-size:0.85rem; color:#475569;">[H⁺] = [OH⁻]</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; text-align: right;">
+          <button class="btn-validate" onclick="switchStep(3)">Passer aux exercices d'entraînement ➜</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ÉTAPE 3 : ENTRAÎNEMENT GAMIFIÉ SÉQUENTIEL
+         ========================================== -->
+    <section id="step-3" class="step-section">
+      <!-- Tableau de bord score -->
+      <div class="score-summary">
+        <div class="score-pill">
+          <span>Socle CAP (Niveau 1)</span>
+          <strong id="socleProgressText">0 / 5 validés (0%)</strong>
+        </div>
+        <div class="score-pill">
+          <span>Points Bonus (Niv 2 & 3)</span>
+          <strong id="bonusPointsText">0 pt</strong>
+        </div>
+        <div class="score-pill">
+          <span>Statut Diplôme</span>
+          <strong id="badgeStatusText" style="color:#64748B;">En cours...</strong>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           NIVEAU 1 : DÉBUTANT / SOCLE CAP (5 EXERCICES)
+           ========================================================= -->
+      <div class="card">
+        <span class="level-badge level-1-header">🟢 Niveau 1 • Débutant / Socle CAP (100% requis pour validation)</span>
+
+        <!-- Exercice 1.1 -->
+        <div class="exercise-card" id="card-ex1_1">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 1.1 (C1) • Identification de l'échelle de pH</h3>
+          <p style="font-size:0.9rem;">Sur l'échelle de pH graduée de 0 à 14 :</p>
+          
+          <div class="sub-question">
+            <p>1. Borne maximale de la zone des <strong>solutions acides</strong> (\(pH < \dots\)) :</p>
+            <div class="input-row">
+              <input type="text" inputmode="decimal" id="ans_1_1_1" placeholder="Votre résultat...">
+              <button class="btn-validate" onclick="checkEx1_1_1()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_1_1_1"></div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Valeur exacte correspondant à une <strong>solution neutre</strong> :</p>
+            <div class="input-row">
+              <input type="text" inputmode="decimal" id="ans_1_1_2" placeholder="Votre résultat...">
+              <button class="btn-validate" onclick="checkEx1_1_2()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_1_1_2"></div>
+          </div>
+
+          <div class="sub-question">
+            <p>3. Borne maximale de l'échelle correspondant aux <strong>solutions basiques</strong> (\(pH\) jusqu'à) :</p>
+            <div class="input-row">
+              <input type="text" inputmode="decimal" id="ans_1_1_3" placeholder="Votre résultat...">
+              <button class="btn-validate" onclick="checkEx1_1_3()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_1_1_3"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 1.2 -->
+        <div class="exercise-card" id="card-ex1_2">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 1.2 (C1, C2) • Caractérisation de liquides courants d'atelier</h3>
+          <p style="font-size:0.9rem;">Indiquez la nature de chaque bain testé au laboratoire de Sainte-Clotilde :</p>
+
+          <div class="sub-question">
+            <p>• Décapant chlorhydrique (\(pH = 1{,}2\)) :</p>
+            <div class="input-row">
+              <select id="ans_1_2_1">
+                <option value="">Sélectionner la nature...</option>
+                <option value="acide">Acide</option>
+                <option value="neutre">Neutre</option>
+                <option value="basique">Basique</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>• Lessive de dégraissage alcalin (\(pH = 11{,}8\)) :</p>
+            <div class="input-row">
+              <select id="ans_1_2_2">
+                <option value="">Sélectionner la nature...</option>
+                <option value="acide">Acide</option>
+                <option value="neutre">Neutre</option>
+                <option value="basique">Basique</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>• Eau distillée de rinçage (\(pH = 7{,}0\)) :</p>
+            <div class="input-row">
+              <select id="ans_1_2_3">
+                <option value="">Sélectionner la nature...</option>
+                <option value="acide">Acide</option>
+                <option value="neutre">Neutre</option>
+                <option value="basique">Basique</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>• Vinaigre blanc de nettoyage (\(pH = 2{,}8\)) :</p>
+            <div class="input-row">
+              <select id="ans_1_2_4">
+                <option value="">Sélectionner la nature...</option>
+                <option value="acide">Acide</option>
+                <option value="neutre">Neutre</option>
+                <option value="basique">Basique</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>• Solution de soude caustique (\(pH = 13{,}5\)) :</p>
+            <div class="input-row">
+              <select id="ans_1_2_5">
+                <option value="">Sélectionner la nature...</option>
+                <option value="acide">Acide</option>
+                <option value="neutre">Neutre</option>
+                <option value="basique">Basique</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx1_2()">Valider l'ensemble</button>
+            </div>
+            <div class="feedback-msg" id="fb_1_2"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 1.3 -->
+        <div class="exercise-card" id="card-ex1_3">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 1.3 (C2) • Ions responsables de l'acidité et de la basicité</h3>
+          
+          <div class="sub-question">
+            <p>1. Ion responsable du <strong>caractère acide</strong> :</p>
+            <div class="input-row">
+              <select id="ans_1_3_1">
+                <option value="">Choisir l'ion...</option>
+                <option value="H+">Ion Hydrogène / Oxonium (H+ / H3O+)</option>
+                <option value="OH-">Ion Hydroxyde (OH-)</option>
+                <option value="Na+">Ion Sodium (Na+)</option>
+                <option value="Cl-">Ion Chlorure (Cl-)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Ion responsable du <strong>caractère basique</strong> :</p>
+            <div class="input-row">
+              <select id="ans_1_3_2">
+                <option value="">Choisir l'ion...</option>
+                <option value="H+">Ion Hydrogène / Oxonium (H+ / H3O+)</option>
+                <option value="OH-">Ion Hydroxyde (OH-)</option>
+                <option value="SO4">Ion Sulfate</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>3. Dans une cuve d'eau pure à \(pH = 7\), quelle est la relation entre le nombre d'ions \(H^+\) et \(OH^-\) ?</p>
+            <div class="input-row">
+              <select id="ans_1_3_3">
+                <option value="">Choisir la relation...</option>
+                <option value="egal">Égalité stricte : autant d'ions H+ que d'ions OH-</option>
+                <option value="plus_h">Plus d'ions H+ que d'ions OH-</option>
+                <option value="plus_oh">Plus d'ions OH- que d'ions H+</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx1_3()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_1_3"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 1.4 -->
+        <div class="exercise-card" id="card-ex1_4">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 1.4 (C1, C2) • Comparaison des instruments de mesure</h3>
+          
+          <div class="sub-question">
+            <p>1. Instrument donnant une estimation rapide mais <strong>approximative</strong> (à l'unité près) :</p>
+            <div class="input-row">
+              <select id="ans_1_4_1">
+                <option value="">Sélectionner...</option>
+                <option value="papier">Papier indicateur de pH</option>
+                <option value="phmetre">pH-mètre digital</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Instrument de précision au dixième ou centième d'unité :</p>
+            <div class="input-row">
+              <select id="ans_1_4_2">
+                <option value="">Sélectionner...</option>
+                <option value="papier">Papier indicateur de pH</option>
+                <option value="phmetre">pH-mètre digital</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>3. Opération indispensable à effectuer avant d'utiliser un pH-mètre :</p>
+            <div class="input-row">
+              <select id="ans_1_4_3">
+                <option value="">Sélectionner l'opération...</option>
+                <option value="etalonnage">Étalonnage avec des solutions tampons (pH 4, 7, 10)</option>
+                <option value="chauffe">Préchauffage au chalumeau</option>
+                <option value="rincage_acide">Trempage prolongé dans l'acide pur</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx1_4()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_1_4"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 1.5 -->
+        <div class="exercise-card" id="card-ex1_5">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 1.5 (C1, C2) • Pictogramme de danger des bains d'atelier</h3>
+          <div style="display:flex; align-items:center; gap:16px; margin: 8px 0;">
+            <img src="SGH05_Corrosion.jpg" style="height:70px; width:auto;" alt="SGH05">
+            <p style="font-size:0.88rem;">Les bidons d'acide chlorhydrique et de soude portent ce symbole réglementaire.</p>
+          </div>
+
+          <div class="sub-question">
+            <p>1. Signification exacte de ce pictogramme :</p>
+            <div class="input-row">
+              <select id="ans_1_5_1">
+                <option value="">Choisir la signification...</option>
+                <option value="corrosif">Produit Corrosif (attaque les métaux et ronge la peau)</option>
+                <option value="inflammable">Produit Inflammable</option>
+                <option value="explosif">Produit Explosif</option>
+                <option value="toxique">Toxique aigu</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Équipement de Protection Individuelle (EPI) impératif pour les mains :</p>
+            <div class="input-row">
+              <select id="ans_1_5_2">
+                <option value="">Choisir l'EPI...</option>
+                <option value="gants_chimiques">Gants étanches en nitrile ou néoprène (EN ISO 374-1)</option>
+                <option value="gants_cuir">Gants de manutention en cuir non étanches</option>
+                <option value="sans_gant">Mains nues pour plus d'agilité</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx1_5()">Valider le Niveau 1</button>
+            </div>
+            <div class="feedback-msg" id="fb_1_5"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           NIVEAU 2 : AVANCÉ / STANDARD CAP (4 EXERCICES BONUS)
+           ========================================================= -->
+      <div class="card">
+        <span class="level-badge level-2-header">🟡 Niveau 2 • Avancé / Dépassement (Défi Bonus)</span>
+        <div id="lockNoticeNiv2" style="font-size:0.88rem; color:#64748B; margin-bottom:10px;">
+          🔒 <em>Validez l'intégralité du Niveau 1 pour déverrouiller ce niveau.</em>
+        </div>
+
+        <!-- Exercice 2.1 -->
+        <div class="exercise-card locked" id="card-ex2_1">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 2.1 (C2, C3) • Surveillance et dérive du bain de décapage d'acier</h3>
+          <p style="font-size:0.9rem;">
+            Réaction : \(Fe + 2\,H^+ \rightarrow Fe^{2+} + H_2\). Le pH optimal requis est entre 1,0 et 2,0.
+          </p>
+          
+          <div class="sub-question">
+            <p>1. Au fil des immersions de fer, la quantité d'ions \(H^+\) libres dans la cuve va :</p>
+            <div class="input-row">
+              <select id="ans_2_1_1">
+                <option value="">Sélectionner...</option>
+                <option value="diminue">Diminuer (ils sont consommés par le fer)</option>
+                <option value="augmente">Augmenter</option>
+                <option value="stagnante">Rester constante</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Par conséquent, le pH du bain va :</p>
+            <div class="input-row">
+              <select id="ans_2_1_2">
+                <option value="">Sélectionner...</option>
+                <option value="augmente">Augmenter (se rapprocher de la neutralité)</option>
+                <option value="diminue">Diminuer</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>3. Le vendredi soir, le métallier mesure \(pH = 3{,}8\). Ce bain est-il encore efficace ?</p>
+            <div class="input-row">
+              <select id="ans_2_1_3">
+                <option value="">Sélectionner le diagnostic...</option>
+                <option value="non_efficace">Non, le pH est trop élevé (il faut réajuster en acide ou vidanger)</option>
+                <option value="efficace">Oui, le bain est encore parfaitement actif</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx2_1()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_2_1"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 2.2 -->
+        <div class="exercise-card locked" id="card-ex2_2">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 2.2 (C2, C3) • Effet de la dilution et sécurité</h3>
+          <p style="font-size:0.9rem;">On dilue 10 mL d'acide d'atelier de \(pH = 1{,}0\) avec 90 mL d'eau distillée.</p>
+
+          <div class="sub-question">
+            <p>1. Vers quelle valeur limite tendra le pH si l'on continue d'ajouter de l'eau en grande quantité ?</p>
+            <div class="input-row">
+              <input type="text" inputmode="decimal" id="ans_2_2_1" placeholder="Votre résultat...">
+              <button class="btn-validate" onclick="checkEx2_2_1()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_2_2_1"></div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Une solution acide peut-elle devenir basique (\(pH > 7\)) par simple ajout d'eau pure ?</p>
+            <div class="input-row">
+              <select id="ans_2_2_2">
+                <option value="">Choisir la réponse...</option>
+                <option value="non">Non, elle ne pourra jamais dépasser la neutralité (pH 7)</option>
+                <option value="oui">Oui, à force de diluer elle devient basique</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx2_2_2()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_2_2_2"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 2.3 -->
+        <div class="exercise-card locked" id="card-ex2_3">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 2.3 (C3, C4) • Dérochage des profilés alu pour menuiserie tropicale</h3>
+          <div class="sub-question">
+            <p>1. Pourquoi un bain trop agressif (\(pH < 1{,}0\)) est-il proscrit sur des tôles fines d'alu de 1,5 mm ?</p>
+            <div class="input-row">
+              <select id="ans_2_3_1">
+                <option value="">Sélectionner le risque...</option>
+                <option value="perforation">Risque de trouer/attaquer excessivement le métal aluminium</option>
+                <option value="aucun">Aucun risque mécanique</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Pourquoi un rinçage insuffisant (\(pH < 5\)) détruirait l'adhérence de la peinture sous la chaleur humide réunionnaise ?</p>
+            <div class="input-row">
+              <select id="ans_2_3_2">
+                <option value="">Sélectionner la conséquence...</option>
+                <option value="corrosion_peinture">L'acide résiduel corrode sous le film de peinture et provoque le cloquage</option>
+                <option value="bonne_tenue">L'acide renforce l'adhérence de la laque</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx2_3()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_2_3"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 2.4 -->
+        <div class="exercise-card locked" id="card-ex2_4">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 2.4 (C1, C3) • Neutralisation d'un déversement accidentel</h3>
+          <p style="font-size:0.9rem;">5 litres de bain acide à \(pH = 1{,}5\) se renversent sur le sol en béton de l'atelier.</p>
+          
+          <div class="sub-question">
+            <p>1. Type de substance d'atelier à épandre pour neutraliser l'acide (chaux ou bicarbonate) :</p>
+            <div class="input-row">
+              <select id="ans_2_4_1">
+                <option value="">Choisir la substance...</option>
+                <option value="basique">Substance basique (neutralisante)</option>
+                <option value="acide">Substance acide concentrée</option>
+                <option value="huile">Huile d'usinage</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Valeur de pH visée une fois la neutralisation complète atteinte :</p>
+            <div class="input-row">
+              <input type="text" inputmode="decimal" id="ans_2_4_2" placeholder="Votre résultat...">
+              <button class="btn-validate" onclick="checkEx2_4()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_2_4"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           NIVEAU 3 : EXPERT / EXCELLENCE (2 EXERCICES BONUS)
+           ========================================================= -->
+      <div class="card">
+        <span class="level-badge level-3-header">🔴 Niveau 3 • Expert / Excellence (Normes DEAL Réunion)</span>
+        <div id="lockNoticeNiv3" style="font-size:0.88rem; color:#64748B; margin-bottom:10px;">
+          🔒 <em>Validez le Niveau 2 pour déverrouiller ce niveau d'excellence.</em>
+        </div>
+
+        <!-- Exercice 3.1 -->
+        <div class="exercise-card locked" id="card-ex3_1">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 3.1 (C3, C4) • Traitement des rejets d'eaux d'atelier (ICPE / DEAL)</h3>
+          <p style="font-size:0.9rem;">
+            Rejet communal autorisé : <strong>6,5 ≤ pH ≤ 8,5</strong>. Une cuve de 500 L de rinçage affiche un \(pH = 3{,}2\).
+          </p>
+
+          <div class="sub-question">
+            <p>1. Cette eau peut-elle être rejetée directement au réseau ou en ravine ?</p>
+            <div class="input-row">
+              <select id="ans_3_1_1">
+                <option value="">Sélectionner...</option>
+                <option value="interdit">Non, formellement interdit (pH trop acide, pollution des ravines)</option>
+                <option value="autorise">Oui, le volume de 500 L est négligeable</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Lors de l'injection de soude (\(OH^-\)), quelle molécule stable est formée avec les ions \(H^+\) ?</p>
+            <div class="input-row">
+              <select id="ans_3_1_2">
+                <option value="">Choisir la molécule...</option>
+                <option value="H2O">Molécule d'eau (H2O)</option>
+                <option value="H2">Gaz dihydrogène (H2)</option>
+                <option value="Cl2">Dichlore toxique (Cl2)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>3. Pour séparer les boues d'hydroxyde de fer \(Fe(OH)_2\) formées à \(pH > 8\), quelle opération physique utilise-t-on ?</p>
+            <div class="input-row">
+              <select id="ans_3_1_3">
+                <option value="">Choisir le procédé...</option>
+                <option value="decantation">Décantation et filtration avant rejet de l'eau claire</option>
+                <option value="evaporation">Chauffage à ébullition</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx3_1()">Valider</button>
+            </div>
+            <div class="feedback-msg" id="fb_3_1"></div>
+          </div>
+        </div>
+
+        <!-- Exercice 3.2 -->
+        <div class="exercise-card locked" id="card-ex3_2">
+          <h3><img src="fleche_rouge.png" class="icon-bullet" alt="">Exercice 3.2 (C3, C4) • Passivation de cordons de soudure inox 316L</h3>
+          <p style="font-size:0.9rem;">Garde-corps en inox pour passerelle portuaire à Sainte-Marie décapé à l'acide puis passivé.</p>
+
+          <div class="sub-question">
+            <p>1. Pourquoi un test de pH résiduel est-il obligatoire avant la livraison au client ?</p>
+            <div class="input-row">
+              <select id="ans_3_2_1">
+                <option value="">Sélectionner la raison...</option>
+                <option value="verif_rincage">Vérifier l'élimination totale de la pâte acide corrosive</option>
+                <option value="brillance">Donner un éclat miroir au cordon</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="sub-question">
+            <p>2. Si un pH résiduel de 3,0 persiste sur le cordon, quel risque encourt l'ouvrage sous les embruns marins ?</p>
+            <div class="input-row">
+              <select id="ans_3_2_2">
+                <option value="">Sélectionner le risque...</option>
+                <option value="corrosion_piqure">Corrosion prématurée par piqûre accélérée par le sel et l'humidité</option>
+                <option value="durcissement">Durcissement excessif de l'inox</option>
+              </select>
+              <button class="btn-validate" onclick="checkEx3_2()">Valider l'exercice Expert</button>
+            </div>
+            <div class="feedback-msg" id="fb_3_2"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ÉTAPE 4 : BILAN ET ATTESTATION OFFICIELLE
+         ========================================== -->
+    <section id="step-4" class="step-section">
+      <div class="card">
+        <h2><img src="fleche_rouge.png" class="icon-bullet" alt="">Bilan de la Séance & Attestation Pédagogique</h2>
+        
+        <div id="attestationLockMsg" style="background:#FFF1F2; border-left:4px solid var(--cma-coral); padding:12px; border-radius:0 8px 8px 0; margin-bottom:16px;">
+          <strong>Accès restreint :</strong> L'attestation officielle se débloque automatiquement dès que vous avez validé les <strong>5 exercices du Niveau 1 (Socle CAP)</strong>.
+        </div>
+
+        <div class="attestation-container" id="attestationBox" style="display:none;">
+          <div class="attestation-header">
+            <div>
+              <h2 style="font-size:1.15rem; margin:0; color:var(--cma-bordeaux);">CMA FORMATION SAINTE-CLOTILDE</h2>
+              <p style="font-size:0.8rem; color:#64748B;">Chambre de Métiers et de l'Artisanat de La Réunion</p>
+            </div>
+            <img src="logo.png" alt="Logo CMA" style="height:46px; width:auto;">
+          </div>
+
+          <div class="attestation-body">
+            <p style="text-align:center; font-size:1.15rem; font-weight:700; color:var(--cma-bordeaux); margin-bottom:16px;">
+              ATTESTATION DE RÉUSSITE PÉDAGOGIQUE
+            </p>
+            <p>Délivrée à l'apprenant(e) :</p>
+            <p style="text-align:center;">
+              <span class="attestation-name" id="apprenantNameDisplay">Apprenant CAP Métallier</span>
+            </p>
+            <p style="margin-top:14px;"><strong>Diplôme préparé :</strong> CAP Métallier (Groupement 1 - BTP / Industrie)</p>
+            <p><strong>Séance :</strong> S4 P1 • Solutions aqueuses et mesure du pH en milieu industriel</p>
+            <p><strong>Date d'attribution :</strong> <span id="currentDateDisplay"></span></p>
+            <p><strong>Formateur référent :</strong> Rachel Lamberet-Lezais</p>
+
+            <hr style="border:none; border-top:1px dashed #CBD5E1; margin:14px 0;">
+
+            <p><strong>Résultats vérifiés :</strong></p>
+            <ul style="margin-left: 20px; font-size: 0.9rem;">
+              <li>Socle national CAP (Niveau 1) : <strong>100% Acquis</strong> (Badge Maîtrise pH validé)</li>
+              <li>Compétences validées : C1 (S'informer/Traduire), C2 (Exécuter/Mesurer), C3 (Raisonner)</li>
+              <li>Défis bonus d'excellence (Niv. 2 & 3) : <strong id="attestationBonusText">0 point bonus</strong></li>
+              <li>Ancrage professionnel : Traitement de surface et conformité environnementale DEAL Réunion</li>
+            </ul>
+
+            <div style="margin-top:24px; display:flex; justify-content:space-between; font-size:0.82rem; color:#64748B;">
+              <div>CMA Formation Sainte-Clotilde<br>Pôle Métiers de l'Artisanat</div>
+              <div style="text-align:right;">Visa Pédagogique<br><em>R. Lamberet-Lezais</em></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; text-align: center;">
+          <div style="margin-bottom:12px;">
+            <label for="learnerInput" style="font-size:0.9rem; font-weight:600;">Nom & Prénom de l'apprenant : </label>
+            <input type="text" id="learnerInput" placeholder="Ex: Jean PAYET" style="padding:8px 12px; font-size:16px; border:1px solid #94A3B8; border-radius:6px; min-width:240px;" oninput="updateLearnerName(this.value)">
+          </div>
+          <button class="btn-print" id="btnPrint" onclick="window.print()" style="display:none; margin:0 auto;">
+            🖨️ Imprimer l'Attestation / Exporter en PDF
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    /* ========================================================
+       ÉTATS & VARIABLES DE SUIVI
+       ======================================================== */
+    const state = {
+      currentStep: 1,
+      // Niveau 1 (Socle CAP) : 5 exercices obligatoires
+      n1: {
+        ex1_1: false,
+        ex1_2: false,
+        ex1_3: false,
+        ex1_4: false,
+        ex1_5: false
+      },
+      // Niveaux 2 & 3 (Bonus)
+      bonusScore: 0,
+      n2Unlocked: false,
+      n3Unlocked: false,
+      learnerName: "Apprenant CAP Métallier"
+    };
+
+    // Date du jour pour l'attestation
+    document.addEventListener("DOMContentLoaded", () => {
+      const d = new Date();
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      document.getElementById('currentDateDisplay').textContent = d.toLocaleDateString('fr-FR', options);
+      updateSim();
+    });
+
+    /* ========================================================
+       NAVIGATION PAR ÉTAPES
+       ======================================================== */
+    function switchStep(stepNumber) {
+      state.currentStep = stepNumber;
+      for (let i = 1; i <= 4; i++) {
+        const sec = document.getElementById(`step-${i}`);
+        const tab = document.getElementById(`tab-${i}`);
+        if (sec && tab) {
+          if (i === stepNumber) {
+            sec.classList.add('active');
+            tab.classList.add('active');
+          } else {
+            sec.classList.remove('active');
+            tab.classList.remove('active');
+          }
+        }
+      }
+      updateGlobalProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleAccordion(btn) {
+      const content = btn.nextElementSibling;
+      const arrow = btn.querySelector('span:last-child');
+      if (content.classList.contains('open')) {
+        content.classList.remove('open');
+        if (arrow) arrow.textContent = '▼';
+      } else {
+        content.classList.add('open');
+        if (arrow) arrow.textContent = '▲';
+      }
+    }
+
+    /* ========================================================
+       SIMULATEUR INTERACTIF (ÉTAPE 2)
+       ======================================================== */
+    const phColorMap = [
+      "#DC2626", // 0
+      "#EA580C", // 1
+      "#F97316", // 2
+      "#FB923C", // 3
+      "#FBBF24", // 4
+      "#EAB308", // 5
+      "#A3E635", // 6
+      "#22C55E", // 7 (neutre)
+      "#16A34A", // 8
+      "#0D9488", // 9
+      "#06B6D4", // 10
+      "#0284C7", // 11
+      "#2563EB", // 12
+      "#1D4ED8", // 13
+      "#1E1B4B"  // 14
+    ];
+
+    function updateSim() {
+      const slider = document.getElementById('phSlider');
+      if (!slider) return;
+      const ph = parseFloat(slider.value);
+      
+      const lcd = document.getElementById('simLcd');
+      const paper = document.getElementById('simPaper');
+      const nature = document.getElementById('simNature');
+      const ions = document.getElementById('simIons');
+
+      lcd.textContent = `pH ${ph.toFixed(1)}`;
+      
+      const colorIndex = Math.min(14, Math.max(0, Math.round(ph)));
+      paper.style.backgroundColor = phColorMap[colorIndex];
+
+      if (ph < 6.8) {
+        nature.textContent = "Solution Acide";
+        nature.style.color = "#DC2626";
+        ions.textContent = "Ions dominants : H⁺ (H₃O⁺ oxonium)";
+      } else if (ph > 7.2) {
+        nature.textContent = "Solution Basique (Alcaline)";
+        nature.style.color = "#2563EB";
+        ions.textContent = "Ions dominants : OH⁻ (hydroxyde)";
+      } else {
+        nature.textContent = "Solution Neutre";
+        nature.style.color = "#16A34A";
+        ions.textContent = "Équilibre parfait : [H⁺] = [OH⁻]";
+      }
+    }
+
+    function inspectCuve(cuveNum) {
+      const slider = document.getElementById('phSlider');
+      if (!slider) return;
+      switchStep(2);
+      if (cuveNum === 1) slider.value = 1.5;
+      if (cuveNum === 2) slider.value = 7.0;
+      if (cuveNum === 3) slider.value = 12.5;
+      if (cuveNum === 4) slider.value = 2.5;
+      updateSim();
+    }
+
+    /* ========================================================
+       PARSING ET NORMALISATION SÉCURISÉE
+       ======================================================== */
+    function parseInput(val) {
+      if (!val) return NaN;
+      const cleaned = val.trim().replace(',', '.');
+      return parseFloat(cleaned);
+    }
+
+    function showFeedback(id, isOk, msgHtml) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.className = isOk ? "feedback-msg success" : "feedback-msg error";
+      el.innerHTML = msgHtml;
+    }
+
+    /* ========================================================
+       VALIDATION NIVEAU 1 (SOCLE CAP)
+       ======================================================== */
+    let ex1_1_sub = { q1: false, q2: false, q3: false };
+
+    function checkEx1_1_1() {
+      const val = parseInput(document.getElementById('ans_1_1_1').value);
+      if (isNaN(val)) {
+        showFeedback('fb_1_1_1', false, "Veuillez saisir un nombre pour valider.");
+        return;
+      }
+      if (Math.abs(val - 7) < 0.1) {
+        ex1_1_sub.q1 = true;
+        showFeedback('fb_1_1_1', true, "Exact ! La zone acide correspond aux valeurs de pH inférieures à 7.");
+      } else {
+        showFeedback('fb_1_1_1', false, "Incorrect. La frontière de l'acidité se situe à pH = 7.");
+      }
+      checkEx1_1_Global();
+    }
+
+    function checkEx1_1_2() {
+      const val = parseInput(document.getElementById('ans_1_1_2').value);
+      if (isNaN(val)) {
+        showFeedback('fb_1_1_2', false, "Veuillez saisir une valeur numérique.");
+        return;
+      }
+      if (Math.abs(val - 7) < 0.1) {
+        ex1_1_sub.q2 = true;
+        showFeedback('fb_1_1_2', true, "Correct ! Une solution est rigoureusement neutre à pH = 7.");
+      } else {
+        showFeedback('fb_1_1_2', false, "Faux. Rappelez-vous du pH de l'eau pure (pH = 7).");
+      }
+      checkEx1_1_Global();
+    }
+
+    function checkEx1_1_3() {
+      const val = parseInput(document.getElementById('ans_1_1_3').value);
+      if (isNaN(val)) {
+        showFeedback('fb_1_1_3', false, "Veuillez saisir un nombre.");
+        return;
+      }
+      if (Math.abs(val - 14) < 0.1) {
+        ex1_1_sub.q3 = true;
+        showFeedback('fb_1_1_3', true, "Très bien ! La zone basique s'étend de 7 à 14.");
+      } else {
+        showFeedback('fb_1_1_3', false, "Incorrect. L'échelle standard de pH s'arrête à 14.");
+      }
+      checkEx1_1_Global();
+    }
+
+    function checkEx1_1_Global() {
+      if (ex1_1_sub.q1 && ex1_1_sub.q2 && ex1_1_sub.q3 && !state.n1.ex1_1) {
+        state.n1.ex1_1 = true;
+        updateScores();
+      }
+    }
+
+    function checkEx1_2() {
+      const c1 = document.getElementById('ans_1_2_1').value;
+      const c2 = document.getElementById('ans_1_2_2').value;
+      const c3 = document.getElementById('ans_1_2_3').value;
+      const c4 = document.getElementById('ans_1_2_4').value;
+      const c5 = document.getElementById('ans_1_2_5').value;
+
+      if (!c1 || !c2 || !c3 || !c4 || !c5) {
+        showFeedback('fb_1_2', false, "Veuillez qualifier l'ensemble des 5 liquides d'atelier.");
+        return;
+      }
+
+      if (c1 === 'acide' && c2 === 'basique' && c3 === 'neutre' && c4 === 'acide' && c5 === 'basique') {
+        state.n1.ex1_2 = true;
+        showFeedback('fb_1_2', true, "Parfait ! Toutes les solutions sont correctement identifiées.");
+        updateScores();
+      } else {
+        showFeedback('fb_1_2', false, "Certaines natures sont incorrectes. Rappel : Acide si pH < 7, Neutre si pH = 7, Basique si pH > 7.");
+      }
+    }
+
+    function checkEx1_3() {
+      const i1 = document.getElementById('ans_1_3_1').value;
+      const i2 = document.getElementById('ans_1_3_2').value;
+      const i3 = document.getElementById('ans_1_3_3').value;
+
+      if (!i1 || !i2 || !i3) {
+        showFeedback('fb_1_3', false, "Veuillez répondre aux 3 sous-questions.");
+        return;
+      }
+
+      if (i1 === 'H+' && i2 === 'OH-' && i3 === 'egal') {
+        state.n1.ex1_3 = true;
+        showFeedback('fb_1_3', true, "Exact ! L'ion H⁺ apporte l'acidité, OH⁻ la basicité, et à pH 7 il y a stricte égalité.");
+        updateScores();
+      } else {
+        showFeedback('fb_1_3', false, "Attention aux formules d'ions. H⁺ = acide, OH⁻ = basique.");
+      }
+    }
+
+    function checkEx1_4() {
+      const m1 = document.getElementById('ans_1_4_1').value;
+      const m2 = document.getElementById('ans_1_4_2').value;
+      const m3 = document.getElementById('ans_1_4_3').value;
+
+      if (!m1 || !m2 || !m3) {
+        showFeedback('fb_1_4', false, "Veuillez compléter toutes les options.");
+        return;
+      }
+
+      if (m1 === 'papier' && m2 === 'phmetre' && m3 === 'etalonnage') {
+        state.n1.ex1_4 = true;
+        showFeedback('fb_1_4', true, "Bravo ! L'étalonnage avec les tampons pH 4, 7 et 10 garantit la fiabilité du pH-mètre.");
+        updateScores();
+      } else {
+        showFeedback('fb_1_4', false, "Erreur dans le choix des instruments ou de la procédure d'étalonnage.");
+      }
+    }
+
+    function checkEx1_5() {
+      const s1 = document.getElementById('ans_1_5_1').value;
+      const s2 = document.getElementById('ans_1_5_2').value;
+
+      if (!s1 || !s2) {
+        showFeedback('fb_1_5', false, "Veuillez sélectionner les réponses.");
+        return;
+      }
+
+      if (s1 === 'corrosif' && s2 === 'gants_chimiques') {
+        state.n1.ex1_5 = true;
+        showFeedback('fb_1_5', true, "Excellent ! Symbole SGH05 Corrosif validé et port de gants nitrile/néoprène requis.");
+        updateScores();
+      } else {
+        showFeedback('fb_1_5', false, "Attention : ce pictogramme signale le danger de corrosion cutanée et métallique.");
+      }
+    }
+
+    /* ========================================================
+       VALIDATION NIVEAU 2 (AVANCÉ / BONUS)
+       ======================================================== */
+    let ex2_1_ok = false;
+    function checkEx2_1() {
+      const q1 = document.getElementById('ans_2_1_1').value;
+      const q2 = document.getElementById('ans_2_1_2').value;
+      const q3 = document.getElementById('ans_2_1_3').value;
+
+      if (!q1 || !q2 || !q3) {
+        showFeedback('fb_2_1', false, "Veuillez répondre à toutes les questions de l'exercice 2.1.");
+        return;
+      }
+
+      if (q1 === 'diminue' && q2 === 'augmente' && q3 === 'non_efficace') {
+        if (!ex2_1_ok) {
+          state.bonusScore += 5;
+          ex2_1_ok = true;
+        }
+        showFeedback('fb_2_1', true, "Parfait ! La consommation des ions H⁺ fait monter le pH. À 3,8, le décapage de l'acier n'est plus actif.");
+        updateScores();
+      } else {
+        showFeedback('fb_2_1', false, "Erreur de raisonnement chimique. Relisez l'équation bilan : H⁺ est un réactif consommé.");
+      }
+    }
+
+    let ex2_2_q1 = false;
+    function checkEx2_2_1() {
+      const val = parseInput(document.getElementById('ans_2_2_1').value);
+      if (isNaN(val)) {
+        showFeedback('fb_2_2_1', false, "Entrez une valeur numérique.");
+        return;
+      }
+      if (Math.abs(val - 7) < 0.1) {
+        ex2_2_q1 = true;
+        showFeedback('fb_2_2_1', true, "Correct ! Même très diluée avec de l'eau, une solution acide tend vers la neutralité (pH = 7).");
+      } else {
+        showFeedback('fb_2_2_1', false, "Incorrect. Quelle est la valeur de neutralité de l'eau pure ?");
+      }
+      checkEx2_2_Global();
+    }
+
+    let ex2_2_q2 = false;
+    function checkEx2_2_2() {
+      const rep = document.getElementById('ans_2_2_2').value;
+      if (!rep) {
+        showFeedback('fb_2_2_2', false, "Sélectionnez une option.");
+        return;
+      }
+      if (rep === 'non') {
+        ex2_2_q2 = true;
+        showFeedback('fb_2_2_2', true, "Exact ! L'ajout d'eau n'apporte aucun ion basique en excès : le pH ne dépassera jamais 7.");
+      } else {
+        showFeedback('fb_2_2_2', false, "Faux. L'eau ne peut pas transformer un acide en base.");
+      }
+      checkEx2_2_Global();
+    }
+
+    let ex2_2_ok = false;
+    function checkEx2_2_Global() {
+      if (ex2_2_q1 && ex2_2_q2 && !ex2_2_ok) {
+        state.bonusScore += 5;
+        ex2_2_ok = true;
+        updateScores();
+      }
+    }
+
+    let ex2_3_ok = false;
+    function checkEx2_3() {
+      const q1 = document.getElementById('ans_2_3_1').value;
+      const q2 = document.getElementById('ans_2_3_2').value;
+
+      if (!q1 || !q2) {
+        showFeedback('fb_2_3', false, "Veuillez répondre aux 2 questions.");
+        return;
+      }
+
+      if (q1 === 'perforation' && q2 === 'corrosion_peinture') {
+        if (!ex2_3_ok) {
+          state.bonusScore += 5;
+          ex2_3_ok = true;
+        }
+        showFeedback('fb_2_3', true, "Très bien ! L'acidité résiduelle détruirait l'adhérence du thermolaquage sous notre climat tropical.");
+        updateScores();
+      } else {
+        showFeedback('fb_2_3', false, "Attention aux conséquences mécaniques et aux défauts de peinture.");
+      }
+    }
+
+    let ex2_4_ok = false;
+    function checkEx2_4() {
+      const q1 = document.getElementById('ans_2_4_1').value;
+      const val = parseInput(document.getElementById('ans_2_4_2').value);
+
+      if (!q1 || isNaN(val)) {
+        showFeedback('fb_2_4', false, "Sélectionnez le type de produit et saisissez le pH attendu.");
+        return;
+      }
+
+      if (q1 === 'basique' && Math.abs(val - 7) < 0.1) {
+        if (!ex2_4_ok) {
+          state.bonusScore += 5;
+          ex2_4_ok = true;
+        }
+        showFeedback('fb_2_4', true, "Parfait ! Une base neutralise un acide pour atteindre un pH neutre de 7.");
+        updateScores();
+      } else {
+        showFeedback('fb_2_4', false, "Erreur : on utilise une base faible pour ramener le sol à pH neutre (7).");
+      }
+    }
+
+    /* ========================================================
+       VALIDATION NIVEAU 3 (EXPERT / EXCELLENCE)
+       ======================================================== */
+    let ex3_1_ok = false;
+    function checkEx3_1() {
+      const q1 = document.getElementById('ans_3_1_1').value;
+      const q2 = document.getElementById('ans_3_1_2').value;
+      const q3 = document.getElementById('ans_3_1_3').value;
+
+      if (!q1 || !q2 || !q3) {
+        showFeedback('fb_3_1', false, "Veuillez répondre à toutes les questions environnementales.");
+        return;
+      }
+
+      if (q1 === 'interdit' && q2 === 'H2O' && q3 === 'decantation') {
+        if (!ex3_1_ok) {
+          state.bonusScore += 10;
+          ex3_1_ok = true;
+        }
+        showFeedback('fb_3_1', true, "Expertise validée ! Neutralisation : H⁺ + OH⁻ → H₂O, puis décantation des hydroxydes de fer.");
+        updateScores();
+      } else {
+        showFeedback('fb_3_1', false, "Erreur sur la réglementation DEAL ou la réaction de neutralisation.");
+      }
+    }
+
+    let ex3_2_ok = false;
+    function checkEx3_2() {
+      const q1 = document.getElementById('ans_3_2_1').value;
+      const q2 = document.getElementById('ans_3_2_2').value;
+
+      if (!q1 || !q2) {
+        showFeedback('fb_3_2', false, "Veuillez répondre aux 2 questions sur l'inox.");
+        return;
+      }
+
+      if (q1 === 'verif_rincage' && q2 === 'corrosion_piqure') {
+        if (!ex3_2_ok) {
+          state.bonusScore += 10;
+          ex3_2_ok = true;
+        }
+        showFeedback('fb_3_2', true, "Remarquable ! En milieu marin réunionnais, l'acide piégé détruit la passivation et cause des piqûres de rouille.");
+        updateScores();
+      } else {
+        showFeedback('fb_3_2', false, "Attention au risque de piqûre sous l'effet conjugué du sel et de l'acide résiduel.");
+      }
+    }
+
+    /* ========================================================
+       GESTION DU SCORE, DÉVERROUILLAGE & ATTESTATION
+       ======================================================== */
+    function updateScores() {
+      // Calcul du niveau 1
+      const n1Count = Object.values(state.n1).filter(Boolean).length;
+      const n1Percent = Math.round((n1Count / 5) * 100);
+
+      document.getElementById('socleProgressText').textContent = `${n1Count} / 5 validés (${n1Percent}%)`;
+      document.getElementById('bonusPointsText').textContent = `${state.bonusScore} pts`;
+
+      // Déblocage Niveau 2
+      if (n1Count === 5 && !state.n2Unlocked) {
+        state.n2Unlocked = true;
+        document.getElementById('lockNoticeNiv2').style.display = 'none';
+        ['card-ex2_1', 'card-ex2_2', 'card-ex2_3', 'card-ex2_4'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('locked');
+        });
+
+        // Déblocage Attestation
+        document.getElementById('attestationLockMsg').style.display = 'none';
+        document.getElementById('attestationBox').style.display = 'block';
+        document.getElementById('btnPrint').style.display = 'inline-flex';
+        document.getElementById('badgeStatusText').textContent = "🟢 Socle CAP Validé !";
+        document.getElementById('badgeStatusText').style.color = "var(--cma-success)";
+      }
+
+      // Déblocage Niveau 3 (si ex2_1, 2_2, 2_3, 2_4 validés)
+      if (ex2_1_ok && ex2_2_ok && ex2_3_ok && ex2_4_ok && !state.n3Unlocked) {
+        state.n3Unlocked = true;
+        document.getElementById('lockNoticeNiv3').style.display = 'none';
+        ['card-ex3_1', 'card-ex3_2'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('locked');
+        });
+      }
+
+      // Mise à jour de l'attestation
+      document.getElementById('attestationBonusText').textContent = `${state.bonusScore} points bonus d'excellence`;
+
+      updateGlobalProgress();
+    }
+
+    function updateGlobalProgress() {
+      const n1Count = Object.values(state.n1).filter(Boolean).length;
+      // Socle compte pour 70% de la barre, étapes pour 15%, bonus pour 15%
+      const baseProg = (n1Count / 5) * 70;
+      const stepProg = (state.currentStep / 4) * 15;
+      const bonusProg = Math.min(15, (state.bonusScore / 40) * 15);
+      const total = Math.min(100, Math.round(baseProg + stepProg + bonusProg));
+      
+      const bar = document.getElementById('globalProgressBar');
+      if (bar) bar.style.width = `${total}%`;
+    }
+
+    function updateLearnerName(name) {
+      const clean = name.trim();
+      state.learnerName = clean || "Apprenant CAP Métallier";
+      document.getElementById('apprenantNameDisplay').textContent = state.learnerName;
+    }
+  </script>
+</body>
+</html>

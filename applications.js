@@ -101,5 +101,16 @@ window.APPLICATIONS = [
   "description": "Visualiser intervalles et barreaux, isoler une inconnue sur une balance et comparer débit idéal et trait de scie.",
   "lien": "./applications/A1S4M2/index.html",
   "publication": "2026-11-13T08:00:00+04:00"
+},
+{
+  "code": "A1S4P1",
+  "annee": 1,
+  "semaine": 4,
+  "discipline": "P",
+  "activite": 1,
+  "titre": "Solutions aqueuses & mesure du pH",
+  "description": "Mesurer le pH de solutions utilisées en métallerie, distinguer acide, neutre et basique et repérer les précautions de sécurité.",
+  "lien": "./applications/A1S4P1/index.html",
+  "publication": "2026-11-10T13:30:00+04:00"
 }
 ];
