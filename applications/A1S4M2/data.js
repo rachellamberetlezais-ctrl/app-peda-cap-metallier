@@ -25,10 +25,10 @@ window.LESSON = {
   "discovery": [
     {
       "title": "Grille de clôture à Sainte-Clotilde",
-      "context": "Longueur entre les axes extrêmes L = 2 400 mm. Entraxe E = 120 mm. On cherche n intervalles. Le nombre de barreaux dépend ensuite du traitement des extrémités.",
+      "context": "Dans l’entreprise Métal Réunion Océan Indien, à la ZI du Chaudron à Sainte-Clotilde, les métalliers préparent des panneaux de clôture pour une résidence à Sainte-Marie. La longueur utile de barreaudage est L = 2 400 mm, mesurée entre les axes extrêmes. L’entraxe constant E = 120 mm se mesure d’axe en axe. Pour préparer le débit matière et le traçage ou le perçage, le chef d’atelier te demande de déterminer le nombre n d’intervalles puis le nombre de barreaux, en précisant le traitement des extrémités.",
       "questions": [
         {
-          "label": "Quelle équation relie n, E et L ?",
+          "label": "Modélisation n × E = L : quelle équation utilise les données ?",
           "type": "choice",
           "options": [
             "120+n = 2 400",
@@ -50,21 +50,21 @@ window.LESSON = {
           "points": 0
         },
         {
-          "label": "Nombre d’intervalles",
+          "label": "Nombre d’intervalles : n = 2 400 ÷ 120 =",
           "type": "number",
           "answer": 20,
           "unit": "intervalles",
           "points": 0
         },
         {
-          "label": "Barreaux si les deux extrémités sont des barreaux à fabriquer",
+          "label": "Deux barreaux extrêmes à fabriquer : N_barreaux = n + 1 =",
           "type": "number",
           "answer": 21,
           "unit": "barreaux",
           "points": 0
         },
         {
-          "label": "Barreaux intérieurs si les deux montants extrêmes existent déjà",
+          "label": "Deux montants extrêmes existants : N_intérieurs = n − 1 =",
           "type": "number",
           "answer": 19,
           "unit": "barreaux",
@@ -84,7 +84,34 @@ window.LESSON = {
           "points": 0
         }
       ],
-      "correction": "120n = 2 400 → n = 2 400/120 = 20. Les 20 intervalles sont délimités par 21 axes ; 19 axes sont intérieurs."
+      "correction": "120n = 2 400 → n = 2 400/120 = 20. Les 20 intervalles sont délimités par 21 axes ; 19 axes sont intérieurs.",
+      "guidance": [
+        {
+          "title": "1. Modélisation géométrique",
+          "text": "La longueur totale est le produit du nombre d’intervalles n par l’entraxe E. Données : L = 2 400 mm ; E = 120 mm. L’inconnue n est le nombre d’intervalles qui couvrent exactement L.",
+          "formula": "n × E = L\nn × 120 = 2 400\nSous forme standard : 120n = 2 400"
+        },
+        {
+          "title": "2. Résolution pas à pas",
+          "text": "Recherche l’opération inverse de la multiplication par 120 pour isoler n. Le quotient à calculer, indiqué dans le dossier, est donné ci-dessous ; le résultat reste à trouver.",
+          "formula": "n = L ÷ E = 2 400 ÷ 120 = … intervalles",
+          "fraction": {
+            "variable": "n",
+            "numerator": "2 400",
+            "denominator": "120"
+          }
+        },
+        {
+          "title": "3. Déduire le nombre de barreaux",
+          "text": "Distingue les deux cas du dossier. Le nombre d’intervalles ne doit pas être confondu avec le nombre de barreaux.",
+          "formula": "Un barreau au départ et un à l’arrivée : N_barreaux = n + 1\nDeux montants d’extrémité déjà existants : N_intérieurs = n − 1"
+        },
+        {
+          "title": "4. Vérification d’atelier et conclusion",
+          "text": "Le dossier propose de contrôler le produit 20 × 120 mm. Vérifie qu’il retrouve la longueur nominale L = 2 400 mm, puis formule la conclusion technique.",
+          "formula": "Contrôle : n × E = L\nCalcul demandé : 20 × 120 mm = … mm"
+        }
+      ]
     }
   ],
   "course": [

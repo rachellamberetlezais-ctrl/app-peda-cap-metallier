@@ -89,7 +89,7 @@ window.APPLICATIONS = [
   "titre": "Proportionnalité : échelles et lecture de plans",
   "description": "Manipuler une règle virtuelle, passer du plan à la cote réelle et préparer un métré de métallerie.",
   "lien": "./applications/A1S4M1/index.html",
-  "formateurSeulement": true
+  "publication": "2026-11-10T08:00:00+04:00"
 },
 {
   "code": "A1S4M2",
@@ -100,6 +100,6 @@ window.APPLICATIONS = [
   "titre": "Équations ax = b et répartition d’atelier",
   "description": "Visualiser intervalles et barreaux, isoler une inconnue sur une balance et comparer débit idéal et trait de scie.",
   "lien": "./applications/A1S4M2/index.html",
-  "formateurSeulement": true
+  "publication": "2026-11-13T08:00:00+04:00"
 }
 ];

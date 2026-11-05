@@ -12,6 +12,18 @@
  function render(ex,id,{training=false,l=0,index=0,evaluation=false}={}){
   const card=document.createElement('article');card.className='exercise-box';card.id=id;
   card.innerHTML=`<div class="exercise-meta"><span>${esc(ex.title)}</span><span class="badge-tag ${l===0?'tag-cap':'tag-expert'}">${evaluation?'Bilan /8':training?l===0?'Socle CAP':'Bonus':'Découverte'}</span></div><h3 class="card-title"><img src="../../assets/fleche_rouge.png" class="icon-bullet" alt="">${esc(ex.title)}</h3><div class="info-callout">${esc(ex.context)}</div>`;
+  if(Array.isArray(ex.guidance)){
+   const guidance=document.createElement('section');guidance.className='discovery-guidance';guidance.setAttribute('aria-label','Indications et formules du dossier pédagogique');
+   const heading=document.createElement('h4');heading.textContent='Les indications du dossier pour te guider';guidance.append(heading);
+   ex.guidance.forEach(g=>{
+    const block=document.createElement('div');block.className='discovery-guide-step';const title=document.createElement('h4');title.textContent=g.title;block.append(title);
+    if(g.text){const text=document.createElement('p');text.textContent=g.text;block.append(text);}
+    if(g.formula){const formula=document.createElement('div');formula.className='discovery-guide-formula';formula.textContent=g.formula;block.append(formula);}
+    if(g.fraction){const fraction=document.createElement('div');fraction.className='discovery-fraction';fraction.setAttribute('role','math');fraction.setAttribute('aria-label',g.fraction.variable+' égale '+g.fraction.numerator+' divisé par '+g.fraction.denominator);fraction.innerHTML=esc(g.fraction.variable)+' = <span class="fraction"><span>'+esc(g.fraction.numerator)+'</span><span>'+esc(g.fraction.denominator)+'</span></span> = …';block.append(fraction);}
+    if(g.headers&&g.rows){const scroll=document.createElement('div');scroll.className='discovery-table-scroll';scroll.tabIndex=0;scroll.setAttribute('role','region');scroll.setAttribute('aria-label','Tableau de proportionnalité du dossier, défilement horizontal possible');const table=document.createElement('table');const caption=document.createElement('caption');caption.textContent='Du relevé graphique à la cote réelle';table.append(caption);const thead=document.createElement('thead'),hr=document.createElement('tr');g.headers.forEach(t=>{const cell=document.createElement('th');cell.scope='col';cell.textContent=t;hr.append(cell);});thead.append(hr);table.append(thead);const body=document.createElement('tbody');g.rows.forEach(row=>{const tr=document.createElement('tr');row.forEach((t,i)=>{const cell=document.createElement(i===0?'th':'td');if(i===0)cell.scope='row';cell.textContent=t;tr.append(cell);});body.append(tr);});table.append(body);scroll.append(table);block.append(scroll);}
+    guidance.append(block);
+   });card.append(guidance);
+  }
   const item={card,fields:[],training,l,index};exercises.push(item);
   ex.questions.forEach((q,j)=>{
    const key=id+'-q'+j,wrap=document.createElement('div');wrap.className='q-item';wrap.id=key+'-wrap';

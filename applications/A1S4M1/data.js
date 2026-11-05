@@ -25,7 +25,7 @@ window.LESSON = {
   "discovery": [
     {
       "title": "Plan d’une varangue à Saint-Denis",
-      "context": "À Sainte-Clotilde, l’atelier prépare une varangue destinée à La Bretagne. Le plan est au 1/20. On relève 14 cm pour la hauteur, 28 cm pour la largeur et 3,5 cm pour le débord de toiture. Les relevés graphiques sont fournis numériquement : ne mesure pas l’écran.",
+      "context": "À Sainte-Clotilde, l’entreprise Métal Réunion Océan Indien prépare l’ossature métallique d’une varangue pour une villa à La Bretagne, à Saint-Denis. Le bureau d’études transmet le plan d’ensemble au 1/20. Avant le débit des profilés tubulaires en acier et des platines d’ancrage, le chef d’atelier te demande de relever les dimensions graphiques, de calculer les cotes réelles en millimètres et de préparer la feuille de débit matière.",
       "questions": [
         {
           "label": "1 cm sur le plan représente combien de cm réels ?",
@@ -111,7 +111,58 @@ window.LESSON = {
           "points": 0
         }
       ],
-      "correction": "14 × 20 = 280 cm = 2,80 m = 2 800 mm. 28 × 20 = 560 cm = 5,60 m = 5 600 mm. Débord : 3,5 × 20 × 10 = 700 mm."
+      "correction": "14 × 20 = 280 cm = 2,80 m = 2 800 mm. 28 × 20 = 560 cm = 5,60 m = 5 600 mm. Débord : 3,5 × 20 × 10 = 700 mm.",
+      "guidance": [
+        {
+          "title": "1. Lire le cartouche et les relevés du plan",
+          "text": "Échelle 1/20, aussi notée 1:20. Les mesures fournies sont : hauteur sous sablière h_plan = 14 cm ; largeur au sol L_plan = 28 cm ; débord de toiture anti-pluie d_plan = 3,5 cm. Les relevés sont numériques : ne mesure pas l’écran avec une règle physique.",
+          "formula": "Au 1/N : 1 unité sur le plan représente N unités réelles, dans la même unité."
+        },
+        {
+          "title": "2. Relier les grandeurs dans la même unité",
+          "text": "Pour passer du dessin réduit à l’ouvrage réel, on multiplie par le dénominateur de l’échelle. Pour revenir du réel au plan, on divise par ce dénominateur.",
+          "formula": "D_réelle = D_plan × N     et     D_plan = D_réelle ÷ N"
+        },
+        {
+          "title": "3. Compléter le tableau de proportionnalité",
+          "text": "Retrouve les unités du tableau du dossier. Calcule d’abord les cm réels, puis les mètres et les cotes d’atelier en mm.",
+          "headers": [
+            "Élément",
+            "Sur plan (cm)",
+            "Réel (cm)",
+            "Réel (m)",
+            "Atelier (mm)"
+          ],
+          "rows": [
+            [
+              "Hauteur sous sablière",
+              "14",
+              "À calculer",
+              "À calculer",
+              "À calculer"
+            ],
+            [
+              "Largeur au sol",
+              "28",
+              "À calculer",
+              "À calculer",
+              "À calculer"
+            ],
+            [
+              "Débord de toiture",
+              "3,5",
+              "À calculer",
+              "À calculer",
+              "À calculer"
+            ]
+          ]
+        },
+        {
+          "title": "4. Passer aux unités de l’atelier",
+          "text": "Dans cette activité, les cotes d’atelier sont demandées en millimètres. Convertis les unités explicitement avant de valider les réponses.",
+          "formula": "1 m = 100 cm = 1 000 mm ; 1 cm = 10 mm\nRéel (cm) = Plan (cm) × N\nAtelier (mm) = Plan (cm) × N × 10\nRéel (m) = Réel (cm) ÷ 100"
+        }
+      ]
     }
   ],
   "course": [
